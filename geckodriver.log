@@ -622,3 +622,4 @@ console.warn: SearchSettings: "get: No settings file exists, new profile?" (new 
 DevTools listening on ws://localhost:60321/devtools/browser/5c0ceb32-8f63-4837-9491-e66ff750ba2e
 1654529276786	Marionette	INFO	Listening on port 33295
 1654529276817	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1654543756399	Marionette	INFO	Stopped listening on port 33295
