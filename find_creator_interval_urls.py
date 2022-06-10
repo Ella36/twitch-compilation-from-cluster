@@ -8,9 +8,11 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.firefox.options import Options
 
 from cluster.cluster import CLUSTERS
+from db.mydb import Mydb
 
 CLUSTER = Path("./cluster")
 URLS = Path("./urls")
+MYDB = Mydb()
 
 class TwitchClipPageSeleniumDriver():
     def __init__(self):
@@ -42,7 +44,7 @@ class TwitchClipPageSeleniumDriver():
         clip_info = list(map(_extract_media_info, valid_cards))
         return clip_info
 
-    def find_creator_clip_info_creator(self, creator, interval):
+    def find_creator_clip_info(self, creator, interval):
         try:
             self.driver = webdriver.Firefox(options=self.options)
             content = self._find_creator_page(creator, interval)
@@ -56,6 +58,11 @@ def write_creator_clip_info_to_csv(creator, clip_info):
     to_csv = lambda x : f"{x['url']},{x['duration']},{x['views']},{x['time_ago']}"
     text = '\n'.join(list(map(to_csv, clip_info)))
     (URLS / f'{creator}.csv').write_text(text)
+
+def write_creator_clip_info_to_db(creator, clip_info):
+    for c in clip_info:
+        MYDB.add(creator, c['url'],c['duration'],c['views'],c['time_ago'])
+    MYDB.commit()
 
 def argparser():
     parser = argparse.ArgumentParser()
@@ -71,5 +78,6 @@ if __name__ == "__main__":
         print(creator)
         clip_info = twitch_clip_page_driver.find_creator_clip_info(creator, args.interval)
         print(f"Found: {len(clip_info)} clips!")
-        write_creator_clip_info_to_csv(creator, clip_info)
+        #write_creator_clip_info_to_csv(creator, clip_info)
+        write_creator_clip_info_to_db(creator, clip_info)
     twitch_clip_page_driver.driver.quit()

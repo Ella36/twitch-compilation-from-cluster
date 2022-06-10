@@ -5,14 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
             "name": "Python: Cluster1 7D",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            //"args": ["cluster1", "7d"]
-            "args": ["--skip_draw"]
+            "args": ["cluster1", "7d"],
         }
     ]
 }
