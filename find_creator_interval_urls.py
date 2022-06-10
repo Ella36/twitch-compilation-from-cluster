@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-from ctypes.util import find_library
 from pathlib import Path
 import time
 import argparse
@@ -7,7 +6,6 @@ import argparse
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.support import expected_conditions as EC
 
 from cluster.cluster import CLUSTERS
 
