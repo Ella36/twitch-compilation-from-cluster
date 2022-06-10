@@ -8,32 +8,36 @@ INPUT = Path('./input')
 BUILD = Path('./build')
 OUTPUT = Path('./output')
 
-# Clear BUILD directory of files
-for f in BUILD.glob('*'):
-    f.unlink()
+def main():
+    # Clear BUILD directory of files
+    for f in BUILD.glob('*'):
+        f.unlink()
 
-# Convert mp4 to intermediate TS
-for i, f in enumerate(sorted(INPUT.glob('*.mp4'))):
-    print(i, f)
+    # Convert mp4 to intermediate TS
+    for i, f in enumerate(sorted(INPUT.glob('*.mp4'))):
+        print(i, f)
+        subprocess.call([
+            'ffmpeg',
+            '-i', f,
+            '-c', 'copy',
+            '-bsf:v', 'h264_mp4toannexb',
+            '-f', 'mpegts',
+            BUILD / f'{i}.ts',
+        ])
+
+    # Merge TS into MP4
+    concat_string = 'concat:' + '|'.join(map(lambda x: str(x), BUILD.glob('*.ts')))
     subprocess.call([
-        'ffmpeg',
-        '-i', f,
+        'ffmpeg', 
+        '-i', concat_string,
         '-c', 'copy',
-        '-bsf:v', 'h264_mp4toannexb',
-        '-f', 'mpegts',
-        BUILD / f'{i}.ts',
+        '-bsf:a', 'aac_adtstoasc',
+        OUTPUT / 'merged.mp4',
     ])
 
-# Merge TS into MP4
-concat_string = 'concat:' + '|'.join(map(lambda x: str(x), BUILD.glob('*.ts')))
-subprocess.call([
-    'ffmpeg', 
-    '-i', concat_string,
-    '-c', 'copy',
-    '-bsf:a', 'aac_adtstoasc',
-    OUTPUT / 'merged.mp4',
-])
+    # Clear BUILD directory of files
+    for f in BUILD.glob('*'):
+        f.unlink()
 
-# Clear BUILD directory of files
-for f in BUILD.glob('*'):
-    f.unlink()
+if __name__ == '__main__':
+    main()

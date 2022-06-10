@@ -1,22 +1,31 @@
 https://ottverse.com/3-easy-ways-to-concatenate-mp4-files-using-ffmpeg/
 
 Workflow
+1. Input cluster to be selected
 1. Gather links clips
     manually gather links to a .txt file
-1. Download links (mp4)2a. Fix file names
+1. Download links (mp4)
+    Format file names, add statistic data
     youtube-dl
-    call from python or bash
-1. Fix file names
+1. (optional) Add text overlay with title, creator
 1. Merge mp4
-    See below. Bash or python. File names can be tricky
-1. Upload mp4 to youtube/media something maybe
+    See below. Bash or python
+1. Upload mp4 to youtube/media
 
 Repeat for as many
 
-# Collecting download mp4
+## Clips
+database
+    records should contain:
+        title, creator, date, link
+        link is unique identifier
+    clip added to a compilation bool
 
-# Merging mp4 files
-Method2 prefered
+config file
+    clusters 
+        names of creator
+        perhaps with weigth for clip selection = total amount of followers
+    
 
 ## Method1
 Slow re-encode mp4 then concatenate
