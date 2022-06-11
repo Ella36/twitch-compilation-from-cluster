@@ -1,75 +1,101 @@
 #!/usr/bin/python3
 # Select clips from creators
 # Keep in mind view count, duration to till 10mins and avoid duplicates
-import pandas as pd
 from pathlib import Path
 import random
-from datetime import datetime
+import argparse
+
+import pandas as pd
+import datetime
+from dateutil.relativedelta import relativedelta
+
+from db.mydb import Mydb
+from cluster.cluster import CLUSTERS
 
 URLS = Path('./urls')
 
-# Select cluster
-from cluster.cluster import CLUSTERS
-cluster = 'cluster1'
-creators = CLUSTERS.by_name(cluster).names
-
-import pandas as pd
-from db.mydb import Mydb
-MYDB = Mydb()
-
-# Read sqlite query results into a pandas DataFrame
-creators_str = '('+','.join([f"'{c}'" for c in creators])+')'
-df = pd.read_sql_query(f"SELECT * FROM clips WHERE creator IN {creators_str}", MYDB.con)
-
-# Verify that result of SQL query is stored in the dataframe
-print(df.head())
-
-# Close connection
-MYDB.con.close()
-
-# Discard invalid clips
-df = df[df['published']==0]
-
-import datetime
-from dateutil.relativedelta import relativedelta
-def get_past_date(days=7):
+def get_past_date(days='7'):
+    days = int(days)
     TODAY = datetime.date.today()
     date = TODAY - relativedelta(days=days)
     return str(date.isoformat())
 
-days = 7
-df = df[df['time'] >= get_past_date(days=days)]
+def read_clips_df_from_db(creators):
+    MYDB = Mydb()
+    # Read sqlite query results into a pandas DataFrame
+    creators_str = '('+','.join([f"'{c}'" for c in creators])+')'
+    df = pd.read_sql_query(f"SELECT * FROM clips WHERE creator IN {creators_str}", MYDB.con)
+    # Verify that result of SQL query is stored in the dataframe
+    print(df.head())
+    # Close connection
+    MYDB.con.close()
+    return df
 
-# Select best clips
-max_duration = 610
-duration = 0
-top_urls = []
+def discard_invalid_clips(df, args):
+    df = df[df['published']==0]
+    df = df[df['time'] >= get_past_date(days=int(args.days))]
+    return df
 
-# Select 2 highest views clips
-count = 0
-n_high_view_first = 2
-df.sort_values(by=['views','duration'])
-for idx, row in df.iterrows():
-    top_urls.append(row.url)
-    duration += row.duration
-    if len(top_urls) >= n_high_view_first:
-        break
+def select_clips(df, args):
+    df_select = pd.DataFrame()
+    # Select best clips
+    max_duration = int(args.max_duration)
+    duration = 0
 
-# Pick from creators
-urls = []
-for creator in creators*10:
-    for idx, row in df.iterrows():
-        if row.creator != creator:
-            continue
-        if row.url in urls:
-            continue
-        if row.duration + duration > max_duration:
-            continue
-        # Add
-        urls.append(row.url)
+    # Select 2 highest views clips
+    df.sort_values(by=['views','duration'])
+    count = 0
+    n_first = int(args.n_first)
+    top_clips = []
+    for _, row in df.iterrows():
         duration += row.duration
-        break
+        top_clips.append(row)
+        count += 1
+        if count >= n_first:
+            break
 
-random.shuffle(urls)
 
-Path('urls.txt').write_text('\n'.join(top_urls+urls))
+    # Pick from creators
+    clips = []
+    creators = list(df['creator'].unique())
+    for creator in creators*10:
+        for _, row in df.iterrows():
+            if row.creator != creator:
+                continue
+            if row.url in [x['url'] for x in top_clips]:
+                continue
+            if row.url in [x['url'] for x in clips]:
+                continue
+            if row.duration + duration > max_duration:
+                continue
+            # Add
+            clips.append(row)
+            duration += row.duration
+            break
+
+    random.shuffle(clips)
+    clips = top_clips + clips
+    df_select = pd.concat(clips, axis=1).T
+    # Shuffle 
+    return df_select
+
+def main(args):
+    creators = CLUSTERS.by_name(args.cluster).names
+    df = read_clips_df_from_db(creators)
+    df = discard_invalid_clips(df, args)
+    # Prompt to manually select clips
+    df_clips = select_clips(df, args)
+    # Prompt to edit selected clips
+    Path('urls.txt').write_text('\n'.join(df_clips['url']))
+
+def argparser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("cluster", default="cluster1", help="clustername ex. cluster1")
+    parser.add_argument("days", default='7', help="7 or 30")
+    parser.add_argument("n_first", default='2', help="2 highest view clips first")
+    parser.add_argument("max_duration", default='610', help="duration in seconds")
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    args = argparser()
+    main(args)

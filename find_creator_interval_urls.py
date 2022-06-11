@@ -54,11 +54,6 @@ class TwitchClipPageSeleniumDriver():
             self.driver.quit() # Quit if anything goes wrong
         return clip_info
 
-def write_creator_clip_info_to_csv(creator, clip_info):
-    to_csv = lambda x : f"{x['url']},{x['duration']},{x['views']},{x['time_ago']}"
-    text = '\n'.join(list(map(to_csv, clip_info)))
-    (URLS / f'{creator}.csv').write_text(text)
-
 def write_creator_clip_info_to_db(creator, clip_info):
     for c in clip_info:
         MYDB.add(creator, c['url'],c['duration'],c['views'],c['time_ago'])
@@ -70,14 +65,16 @@ def argparser():
     parser.add_argument("interval", help="7d or 30d")
     return parser.parse_args()
 
-if __name__ == "__main__":
-    args = argparser()
+def find_creator_interval_urls(args):
     creators = CLUSTERS.by_name(args.cluster).names
     twitch_clip_page_driver = TwitchClipPageSeleniumDriver()
     for creator in creators:
         print(creator)
         clip_info = twitch_clip_page_driver.find_creator_clip_info(creator, args.interval)
         print(f"Found: {len(clip_info)} clips!")
-        #write_creator_clip_info_to_csv(creator, clip_info)
         write_creator_clip_info_to_db(creator, clip_info)
     twitch_clip_page_driver.driver.quit()
+
+if __name__ == "__main__":
+    args = argparser()
+    find_creator_interval_urls(args)
