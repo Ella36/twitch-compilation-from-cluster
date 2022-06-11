@@ -32,6 +32,15 @@ config file
         names of creator
         perhaps with weigth for clip selection = total amount of followers
     
+## 
+Stream for twitch clips
+add `-f 720` options to download 720p (saves bandwidth)
+```
+360          mp4        360p       30fps
+480          mp4        480p       30fps
+720          mp4        720p       30fps
+1080         mp4        1080p      30fps (best)
+```
 
 ## Method1
 Slow re-encode mp4 then concatenate
