@@ -83,25 +83,28 @@ def select_clips(df, args):
     return df_select
 
 def select_clips_prompt(df, args):
-    creators = CLUSTERS.by_name(args.cluster).names
+    #creators = CLUSTERS.by_name(args.cluster).names # Can give errors, no clips 
+    creators = list(df['creator'].unique())
     clips = []
     duration = 0
     df.sort_values(by=['views','duration'])
     while duration <= int(args.max_duration):
         # Setup prompt
         status_str = [f'duration: {duration}']
+        nclips = {}
+        viewtime = {}
         for c in creators:
-            status_str.append('{}:{} {}s'.format(
-                c,
-                sum([x['creator'] == c for x in clips]),
-                sum(int(x['duration']) if x['creator'] == c else 0 for x in clips)))
+            nclips[c] = sum([x['creator'] == c for x in clips])
+            viewtime[c] = sum(int(x['duration']) if x['creator'] == c else 0 for x in clips)
+            status_str.append(f"{c}:{nclips[c]} {viewtime[c]}s")
         status_str = ';'.join(status_str)
 
-        choices = []
+        choices = ['pick_max_view', 'pick_low_n', 'pick_low_duration']
+
         count = {}
         for x in creators:
             count[x] = 0
-        max = 3
+        max = 1
         for _, row in df.iterrows():
             if count[row.creator] >= max:
                 continue
@@ -121,6 +124,25 @@ def select_clips_prompt(df, args):
         ]
         answers = prompt(questions)
         answer = answers['clips']
+
+        # Custom commands to select answer for us
+        if answer == 'pick_low_n':
+            creator = min(nclips, key=nclips.get)
+            for x in choices[2:]:
+                if creator in x:
+                    answer = x
+                    break
+
+        if answer == 'pick_low_duration':
+            creator = min(viewtime, key=viewtime.get)
+            for x in choices[2:]:
+                if creator in x:
+                    answer = x
+                    break
+
+        if answer == 'pick_max_view':
+            row = df.loc[df['views'].idxmax()].T
+            answer = str = f'{row.creator} {row.views} {row.duration} {row.time}'
 
         creator, views, dur, time = answer.split(' ')
         for _, row in df.iterrows():
@@ -144,17 +166,8 @@ def main(args):
     creators = CLUSTERS.by_name(args.cluster).names
     df = read_clips_df_from_db(creators)
     df = discard_invalid_clips(df, args)
-    # Prompt to manually select clips
     #df_clips = select_clips(df, args)
-    # Prompt to edit selected clips
     df_clips = select_clips_prompt(df, args)
-    # Print stats of video script
-    #   duration
-    #   videos per creator already selected
-    # Prompt top 3 clips of creator
-        # days ago?
-        # views
-        # skip URL
     Path('urls.txt').write_text('\n'.join(df_clips['url']))
 
 def argparser():
