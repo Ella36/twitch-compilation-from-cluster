@@ -32,7 +32,8 @@ config file
         names of creator
         perhaps with weigth for clip selection = total amount of followers
     
-## 
+## Download
+youtube-dl
 Stream for twitch clips
 add `-f 720` options to download 720p (saves bandwidth)
 ```

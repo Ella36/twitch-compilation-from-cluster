@@ -1,13 +1,16 @@
 #!/usr/bin/python3
 # Select clips from creators
 # Keep in mind view count, duration to till 10mins and avoid duplicates
+
+
 from pathlib import Path
 import random
 import argparse
-
-import pandas as pd
 import datetime
 from dateutil.relativedelta import relativedelta
+
+import pandas as pd
+from InquirerPy import prompt
 
 from db.mydb import Mydb
 from cluster.cluster import CLUSTERS
@@ -79,13 +82,79 @@ def select_clips(df, args):
     # Shuffle 
     return df_select
 
+def select_clips_prompt(df, args):
+    creators = CLUSTERS.by_name(args.cluster).names
+    clips = []
+    duration = 0
+    df.sort_values(by=['views','duration'])
+    while duration <= int(args.max_duration):
+        # Setup prompt
+        status_str = [f'duration: {duration}']
+        for c in creators:
+            status_str.append('{}:{} {}s'.format(
+                c,
+                sum([x['creator'] == c for x in clips]),
+                sum(int(x['duration']) if x['creator'] == c else 0 for x in clips)))
+        status_str = ';'.join(status_str)
+
+        choices = []
+        count = {}
+        for x in creators:
+            count[x] = 0
+        max = 3
+        for _, row in df.iterrows():
+            if count[row.creator] >= max:
+                continue
+            url = row['url']
+            if url in [x['url'] for x in clips]:
+                continue
+            str = f'{row.creator} {row.views} {row.duration} {row.time}'
+            choices.append(str)
+            count[row.creator] += 1
+        questions = [
+            {
+                'type': 'list',
+                'name': 'clips',
+                'message': 'Select {}'.format(status_str),
+                'choices': choices,
+            },
+        ]
+        answers = prompt(questions)
+        answer = answers['clips']
+
+        creator, views, dur, time = answer.split(' ')
+        for _, row in df.iterrows():
+            if row.creator != creator:
+                continue
+            if row.views != int(views):
+                continue
+            if row.duration != int(dur):
+                continue
+            if row.time != time:
+                continue
+            # Add
+            clips.append(row)
+            duration += int(row.duration)
+            break
+    df_select = pd.concat(clips, axis=1).T
+    return df_select
+
+
 def main(args):
     creators = CLUSTERS.by_name(args.cluster).names
     df = read_clips_df_from_db(creators)
     df = discard_invalid_clips(df, args)
     # Prompt to manually select clips
-    df_clips = select_clips(df, args)
+    #df_clips = select_clips(df, args)
     # Prompt to edit selected clips
+    df_clips = select_clips_prompt(df, args)
+    # Print stats of video script
+    #   duration
+    #   videos per creator already selected
+    # Prompt top 3 clips of creator
+        # days ago?
+        # views
+        # skip URL
     Path('urls.txt').write_text('\n'.join(df_clips['url']))
 
 def argparser():
