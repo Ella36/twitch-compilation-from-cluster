@@ -53,13 +53,25 @@ class Clip:
             date = today - relativedelta(days=int(splitted[0]))
             return str(date.isoformat())
         elif splitted[1].lower() in ['wk', 'wks', 'week', 'weeks', 'w']:
-            date = today - relativedelta(weeks=int(splitted[0]))
+            # Add "Last week catch"
+            n = splitted[0]
+            if n.lower() == "last":
+                n = 1
+            date = today - relativedelta(weeks=int(n))
             return str(date.isoformat())
         elif splitted[1].lower() in ['mon', 'mons', 'month', 'months', 'm']:
-            date = today - relativedelta(months=int(splitted[0]))
+            # Add "Last month"
+            n = splitted[0]
+            if n.lower() == "last":
+                n = 1
+            date = today - relativedelta(months=int(n))
             return str(date.isoformat())
         elif splitted[1].lower() in ['yrs', 'yr', 'years', 'year', 'y']:
-            date = today - relativedelta(years=int(splitted[0]))
+            # Add "Last year"
+            n = splitted[0]
+            if n.lower() == "last":
+                n = 1
+            date = today - relativedelta(years=int(n))
             return str(date.isoformat())
         else:
             return "Wrong Argument format"

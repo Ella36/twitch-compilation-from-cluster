@@ -2,180 +2,175 @@
 # Select clips from creators
 # Keep in mind view count, duration to till 10mins and avoid duplicates
 from pathlib import Path
-import random
 import argparse
 import datetime
 from dateutil.relativedelta import relativedelta
+from dataclasses import dataclass
 
 import pandas as pd
 from InquirerPy import prompt
 
 from db.mydb import Mydb
 from model.cluster import CLUSTERS
+from model.clip import Clip
 
 URLS = Path('./urls')
 
-def get_past_date(days='7'):
+def date_n_days_ago(days: str ='7') -> str:
     days = int(days)
-    TODAY = datetime.date.today()
-    date = TODAY - relativedelta(days=days)
+    today = datetime.date.today()
+    date = today - relativedelta(days=days)
     return str(date.isoformat())
 
-def read_clips_df_from_db(creators):
-    MYDB = Mydb()
+def read_clips_df_from_db(creators: list):
+    db = Mydb()
     # Read sqlite query results into a pandas DataFrame
-    creators_str = '('+','.join([f"'{c}'" for c in creators])+')'
-    df = pd.read_sql_query(f"SELECT * FROM clips WHERE creator IN {creators_str}", MYDB.con)
+    creators_str = '('+','.join([f"'{c.name}'" for c in creators])+')'
+    df = pd.read_sql_query(
+        f"SELECT * FROM clips WHERE creator IN {creators_str}",
+        db.con
+    )
     # Verify that result of SQL query is stored in the dataframe
     print(df.head())
     # Close connection
-    MYDB.con.close()
+    db.con.close()
     return df
 
 def discard_invalid_clips(df, args):
-    df = df[df['published']==0]
-    df = df[df['time'] >= get_past_date(days=int(args.days))]
+    if not args.published_ok:
+        # Only keep clips that have not been published
+        df = df[df['published']==0]
+    # Only keep clips between args.days and now
+    df = df[df['time']>=date_n_days_ago(days=args.days)]
     return df
 
-def select_clips(df, args):
-    df_select = pd.DataFrame()
-    # Select best clips
-    max_duration = int(args.max_duration)
-    duration = 0
+class SelectionHelper:
+    def __init__(self, creators, df):
+        self.creators = creators
+        self.clips = []
+        self.nclips = {}
+        self.viewtime = {}
+        self.duration = 0
+        self.df = df
+        self.df.sort_values(by=['views','duration']) 
+        self.commands = ['pick_max_view', 'pick_low_n', 'pick_low_duration']
 
-    # Select 2 highest views clips
-    df.sort_values(by=['views','duration'])
-    count = 0
-    n_first = int(args.n_first)
-    top_clips = []
-    for _, row in df.iterrows():
-        duration += row.duration
-        top_clips.append(row)
-        count += 1
-        if count >= n_first:
-            break
+    def update(self):
+        for c in self.creators:
+            self.nclips[c] = sum([x.row.creator == c for x in self.clips])
+            self.viewtime[c] = sum(int(x.row.duration) if x.row.creator == c else 0 for x in self.clips)
 
+    @property
+    def status_text(self) -> str:
+        status_str = [f'duration: {self.duration}']
+        for c in self.creators:
+            status_str.append(f"{c}:{self.nclips[c]} {self.viewtime[c]}s")
+        return ';'.join(status_str)
 
-    # Pick from creators
-    clips = []
-    creators = list(df['creator'].unique())
-    for creator in creators*10:
-        for _, row in df.iterrows():
-            if row.creator != creator:
-                continue
-            if row.url in [x['url'] for x in top_clips]:
-                continue
-            if row.url in [x['url'] for x in clips]:
-                continue
-            if row.duration + duration > max_duration:
-                continue
-            # Add
-            clips.append(row)
-            duration += row.duration
-            break
+    def add_selected_clip(self, choice: Clip):
+        self.clips.append(choice)
+        self.duration += int(choice.row.duration)
 
-    random.shuffle(clips)
-    clips = top_clips + clips
-    df_select = pd.concat(clips, axis=1).T
-    # Shuffle 
-    return df_select
+    def pick_low_n(self, choices):
+        creator = min(self.nclips, key=self.nclips.get)
+        for x in choices[2:]:
+            if creator in x:
+                return x
 
-def select_clips_prompt(df, args):
-    #creators = CLUSTERS.by_name(args.cluster).names # Can give errors, no clips 
-    creators = list(df['creator'].unique())
-    clips = []
-    duration = 0
-    df.sort_values(by=['views','duration'])
-    while duration <= int(args.max_duration):
-        # Setup prompt
-        status_str = [f'duration: {duration}']
-        nclips = {}
-        viewtime = {}
-        for c in creators:
-            nclips[c] = sum([x['creator'] == c for x in clips])
-            viewtime[c] = sum(int(x['duration']) if x['creator'] == c else 0 for x in clips)
-            status_str.append(f"{c}:{nclips[c]} {viewtime[c]}s")
-        status_str = ';'.join(status_str)
+    def pick_low_duration(self, choices):
+        creator = min(self.viewtime, key=self.viewtime.get)
+        for x in choices[2:]:
+            if creator in x:
+                return x
 
-        choices = ['pick_max_view', 'pick_low_n', 'pick_low_duration']
-
+    def gen_choices(self):
+        choices = []
         count = {}
-        for x in creators:
+        for x in self.creators:
             count[x] = 0
         max = 1
-        for _, row in df.iterrows():
+        for _, row in self.df.iterrows():
             if count[row.creator] >= max:
                 continue
             url = row['url']
-            if url in [x['url'] for x in clips]:
+            if url in [x.row.url for x in self.clips]:
                 continue
-            str = f'{row.creator} {row.views} {row.duration} {row.time}'
-            choices.append(str)
+            choices.append(Clip(row))
             count[row.creator] += 1
+        self.choices = choices
+        self.choices_str = [str(c) for c in choices]
+        return self.commands + self.choices_str
+
+@dataclass
+class Clip:
+    row: pd.Series
+    def __str__(self):
+        return f'{self.row.creator} {self.row.views} {self.row.duration} {self.row.time}'
+
+def select_clips_prompt(df, args):
+    creators = list(df['creator'].unique())
+    sh = SelectionHelper(creators, df)
+    while sh.duration <= int(args.max_duration):
+        # Setup prompt
+        sh.update()
+        choices = sh.gen_choices()
         questions = [
             {
                 'type': 'list',
                 'name': 'clips',
-                'message': 'Select {}'.format(status_str),
+                'message': 'Select {}'.format(sh.status_text),
                 'choices': choices,
             },
         ]
         answers = prompt(questions)
+
         answer = answers['clips']
 
-        # Custom commands to select answer for us
-        if answer == 'pick_low_n':
-            creator = min(nclips, key=nclips.get)
-            for x in choices[2:]:
-                if creator in x:
-                    answer = x
-                    break
+        # answer is str version of Clip.row
+        # Check if answer in commands
+        if answer in sh.commands:
+            # Custom commands to select answer for us
+            if answer == 'pick_low_n':
+                answer = sh.pick_low_n(choices)
+            elif answer == 'pick_low_duration':
+                answer = sh.pick_low_duration(choices)
+            elif answer == 'pick_max_view':
+                # Pick max views from answer
+                max = 0
+                maxc = None
+                for c in sh.choices:
+                    views = int(c.row.views) 
+                    if views > max:
+                        maxc = c
+                        max = views
+                answer = str(maxc)
+        # Find index of then that index is choices[i] -> row
+        idx = sh.choices_str.index(answer)
+        clip = sh.choices[idx]
+        sh.add_selected_clip(clip)
+    return pd.concat([x.row for x in sh.clips], axis=1).T
 
-        if answer == 'pick_low_duration':
-            creator = min(viewtime, key=viewtime.get)
-            for x in choices[2:]:
-                if creator in x:
-                    answer = x
-                    break
-
-        if answer == 'pick_max_view':
-            row = df.loc[df['views'].idxmax()].T
-            answer = str = f'{row.creator} {row.views} {row.duration} {row.time}'
-
-        creator, views, dur, time = answer.split(' ')
-        for _, row in df.iterrows():
-            if row.creator != creator:
-                continue
-            if row.views != int(views):
-                continue
-            if row.duration != int(dur):
-                continue
-            if row.time != time:
-                continue
-            # Add
-            clips.append(row)
-            duration += int(row.duration)
-            break
-    df_select = pd.concat(clips, axis=1).T
-    return df_select
-
+def get_list_creators(args) -> list:
+    # returns list of Creator
+    creators = CLUSTERS.by_name(args.cluster).creators
+    return creators
 
 def main(args):
-    creators = CLUSTERS.by_name(args.cluster).names
+    creators = get_list_creators(args)
     df = read_clips_df_from_db(creators)
     df = discard_invalid_clips(df, args)
-    #df_clips = select_clips(df, args)
     df_clips = select_clips_prompt(df, args)
     Path('urls.txt').write_text('\n'.join(df_clips['url']))
 
 def argparser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("cluster", default="cluster1", help="clustername ex. cluster1")
-    parser.add_argument("days", default='7', help="7 or 30")
-    parser.add_argument("n_first", default='2', help="2 highest view clips first")
-    parser.add_argument("max_duration", default='610', help="duration in seconds")
+    parser.add_argument('cluster', default='cluster1', help='clustername ex. cluster1')
+    parser.add_argument('days', default='7', help='ex. 7 or 30')
+    parser.add_argument('n_first', default='2', help='2 highest view clips first')
+    parser.add_argument('max_duration', default='610', help='duration in seconds')
+    parser.add_argument('published_ok', action='store_true', help='set to include clips that have already been published')
     return parser.parse_args()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     args = argparser()
     main(args)

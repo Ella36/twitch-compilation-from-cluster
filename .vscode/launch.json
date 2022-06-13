@@ -13,22 +13,22 @@
             "justMyCode": true
         },
         {
-            "name": "Python: Cluster1 7D",
+            "name": "Python: FindCreator Cluster_test 30D",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["cluster1", "7d"],
+            "args": ["cluster_test", "30d"],
         }
         {
-            "name": "Python: Clip Select cluster1 30",
+            "name": "Python: Clip Select cluster_test 30",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["cluster1", "30", "2", "610"],
+            "args": ["cluster_test", "30", "2", "610"],
         },
     ]
 }

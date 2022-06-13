@@ -41,12 +41,10 @@ cluster1 = Cluster(
 )
 
 cluster_test = Cluster(
-    'test',
+    'cluster_test',
     'for_testing',
     [ 
-        Creator('DrLupo'),
-        Creator('WARDELL'),
-        Creator('TenZ'),
+        Creator('turk'),
     ]
 )
 

@@ -1204,3 +1204,123 @@ DevTools listening on ws://localhost:49263/devtools/browser/957f3501-7d43-45e8-a
 1655137120705	Marionette	INFO	Listening on port 45763
 1655137120789	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
 1655137129908	Marionette	INFO	Stopped listening on port 45763
+1655143229284	geckodriver	INFO	Listening on 127.0.0.1:58377
+1655143229784	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "53301" "-no-remote" "-profile" "/tmp/rust_mozprofileXFGn64"
+*** You are running in headless mode.
+1655143230724	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileXFGn64/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:53301/devtools/browser/d9eb8ab9-aa35-415f-b633-9e9c7652e1aa
+1655143232640	Marionette	INFO	Listening on port 46659
+1655143232715	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://ddacn6pr5v0tl.cloudfront.net/custom-moat-video-native.min.js#_moatApi2901096, line 251: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+1655143242295	Marionette	INFO	Stopped listening on port 46659
+1655143310268	geckodriver	INFO	Listening on 127.0.0.1:48887
+1655143310796	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "37625" "-no-remote" "-profile" "/tmp/rust_mozprofileZQcie9"
+*** You are running in headless mode.
+1655143311536	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileZQcie9/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:37625/devtools/browser/7ba3118e-a5b0-4cb3-b0b6-d657c07ddaf3
+1655143312737	Marionette	INFO	Listening on port 41553
+1655143312816	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://ddacn6pr5v0tl.cloudfront.net/custom-moat-video-native.min.js#_moatApi58393438, line 251: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+1655143334751	Marionette	INFO	Stopped listening on port 41553
+
+###!!! [Parent][PImageBridgeParent] Error: RunMessage(msgname=PImageBridge::Msg_WillClose) Channel closing: too late to send/recv, messages will be lost
+
+1655143405044	geckodriver	INFO	Listening on 127.0.0.1:53223
+1655143405051	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "57787" "-no-remote" "-profile" "/tmp/rust_mozprofilemmsHop"
+*** You are running in headless mode.
+1655143405663	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilemmsHop/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:57787/devtools/browser/56dcbf4f-9010-4e55-ab45-aeb069ad2d11
+1655143406923	Marionette	INFO	Listening on port 45317
+1655143406969	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://ddacn6pr5v0tl.cloudfront.net/custom-moat-video-native.min.js#_moatApi29222235, line 251: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+1655143419926	Marionette	INFO	Stopped listening on port 45317
+JavaScript error: resource://gre/modules/AsyncShutdown.jsm, line 718: Error: Phase "Sqlite.jsm: wait until all connections are closed" is finished, it is too late to register completion condition "protections.sqlite#0: waiting for shutdown"
+1655143479906	geckodriver	INFO	Listening on 127.0.0.1:45913
+1655143479915	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "45467" "-no-remote" "-profile" "/tmp/rust_mozprofileqAlkwX"
+*** You are running in headless mode.
+1655143480561	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileqAlkwX/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:45467/devtools/browser/8d95ba36-5e6b-4ad2-bd04-a663eedfd59c
+1655143481706	Marionette	INFO	Listening on port 38009
+1655143481732	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://ddacn6pr5v0tl.cloudfront.net/custom-moat-video-native.min.js#_moatApi61060580, line 251: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+1655143490920	Marionette	INFO	Stopped listening on port 38009
+
+###!!! [Parent][PImageBridgeParent] Error: RunMessage(msgname=PImageBridge::Msg_WillClose) Channel closing: too late to send/recv, messages will be lost
+
+1655143914047	geckodriver	INFO	Listening on 127.0.0.1:45163
+1655143914054	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "46421" "-no-remote" "-profile" "/tmp/rust_mozprofileJU4pao"
+*** You are running in headless mode.
+1655143914604	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileJU4pao/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:46421/devtools/browser/a2efe312-3c69-43f1-b512-631a5d036379
+1655143915918	Marionette	INFO	Listening on port 33757
+1655143915971	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://ddacn6pr5v0tl.cloudfront.net/custom-moat-video-native.min.js#_moatApi43270401, line 251: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+1655143925021	Marionette	INFO	Stopped listening on port 33757
+1655144196937	geckodriver	INFO	Listening on 127.0.0.1:48977
+1655144196944	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "50599" "-no-remote" "-profile" "/tmp/rust_mozprofileY7sSyp"
+*** You are running in headless mode.
+1655144197576	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileY7sSyp/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:50599/devtools/browser/7d0c1622-2b94-47da-9d4d-c69be0e03906
+1655144198814	Marionette	INFO	Listening on port 33771
+1655144198864	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://ddacn6pr5v0tl.cloudfront.net/custom-moat-video-native.min.js#_moatApi80704646, line 251: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+1655144208402	Marionette	INFO	Stopped listening on port 33771
+1655144266977	geckodriver	INFO	Listening on 127.0.0.1:57967
+1655144266984	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "37877" "-no-remote" "-profile" "/tmp/rust_mozprofilex6ycAd"
+*** You are running in headless mode.
+1655144267649	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilex6ycAd/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:37877/devtools/browser/13b60863-b935-4f75-b159-3eae84c4fc8c
+1655144268874	Marionette	INFO	Listening on port 37595
+1655144268905	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://ddacn6pr5v0tl.cloudfront.net/custom-moat-video-native.min.js#_moatApi83985273, line 251: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+1655144278217	Marionette	INFO	Stopped listening on port 37595
+1655144406390	geckodriver	INFO	Listening on 127.0.0.1:50981
+1655144406397	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "53961" "-no-remote" "-profile" "/tmp/rust_mozprofileZSc9ax"
+*** You are running in headless mode.
+1655144407052	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileZSc9ax/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:53961/devtools/browser/b5167c9d-dc88-4e59-af4c-a13d97a8ba00
+1655144408323	Marionette	INFO	Listening on port 37025
+1655144408420	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://ddacn6pr5v0tl.cloudfront.net/custom-moat-video-native.min.js#_moatApi98738930, line 251: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+1655144417911	Marionette	INFO	Stopped listening on port 37025
+1655144705135	geckodriver	INFO	Listening on 127.0.0.1:60101
+1655144705142	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "35729" "-no-remote" "-profile" "/tmp/rust_mozprofileha0nUO"
+*** You are running in headless mode.
+1655144705802	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileha0nUO/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:35729/devtools/browser/eca0683a-eee2-4cd1-980d-acf03ab0ad82
+1655144707167	Marionette	INFO	Listening on port 37457
+1655144707266	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://ddacn6pr5v0tl.cloudfront.net/custom-moat-video-native.min.js#_moatApi66073614, line 251: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+1655144716617	Marionette	INFO	Stopped listening on port 37457
+1655144734558	geckodriver	INFO	Listening on 127.0.0.1:49635
+1655144735082	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "36361" "-no-remote" "-profile" "/tmp/rust_mozprofileySvBt3"
+*** You are running in headless mode.
+1655144735719	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileySvBt3/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:36361/devtools/browser/4b351076-d546-4930-b6d7-f23c34570c26
+1655144737260	Marionette	INFO	Listening on port 41097
+1655144737306	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://ddacn6pr5v0tl.cloudfront.net/custom-moat-video-native.min.js#_moatApi3221147, line 251: WEBGL_debug_renderer_info is deprecated in Firefox and will be removed. Please use RENDERER.
+1655144746551	Marionette	INFO	Stopped listening on port 41097
+
+###!!! [Parent][PImageBridgeParent] Error: RunMessage(msgname=PImageBridge::Msg_WillClose) Channel closing: too late to send/recv, messages will be lost
+
