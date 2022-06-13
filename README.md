@@ -21,6 +21,11 @@ Workflow
 
 Repeat for as many
 
+TODO:
+url.txt after publishing
+    save serialized URLS in a video script file or CSV url.txt 
+    change flags to published
+
 ## Clips
 database
     records should contain:

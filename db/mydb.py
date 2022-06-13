@@ -1,20 +1,40 @@
 #!/usr/bin/python3
 import sqlite3
 
+
+
 class Mydb():
     def __init__(self):
         self.con = sqlite3.connect('file:clips.db')
         self.cur = self.con.cursor()
 
-    def create(self):
+    def create_clips(self):
         self.cur.execute('''DROP table IF EXISTS clips''')
         self.cur.execute('''CREATE TABLE clips
                     (creator text, url text primary key, duration integer, views integer, time text, published integer) ''')
         self.con.commit()
+        print('Created table clips!')
+
+    def create_script(self):
+        self.cur.execute('''DROP table IF EXISTS scripts''')
+        self.cur.execute('''CREATE TABLE scripts
+                    (id integer primary key autoincrement, creators text, urls text, duration integer, time text) ''')
+        self.con.commit()
+        print('Created table scripts!')
+
+    def add_script(self, creators: str, urls: str, duration: int, time: str):
+        self.cur.execute('INSERT INTO scripts(creators, urls, duration, time) VALUES (?,?,?,?)', (creators, urls, duration, time))
+
+    def lookup_url(self, url: str):
+        self.cur.execute("""SELECT * FROM clips WHERE url=?""", (url,))
+        return self.cur.fetchone()
 
     def is_url_in(self, url: str) -> bool:
         self.cur.execute("""SELECT url FROM clips WHERE url=?""", (url,))
         return True if self.cur.fetchone() else False
+
+    def set_publish(self, url: str):
+        self.cur.execute(f"UPDATE clips SET published = '1' where url = '{url}'")
     
     def add(self, clip):
         # Add unpublished clip
@@ -30,8 +50,17 @@ class Mydb():
     def commit(self):
         self.con.commit()
 
+import argparse
+def argparser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--scripts', action='store_true', help='create table scripts')
+    parser.add_argument('-c', '--clips', action='store_true', help='create table clips')
+    return parser.parse_args()
+
 if __name__ == '__main__':
-    # Create table
+    args = argparser()
     db = Mydb()
-    db.create()
-    print('Table created!')
+    if args.scripts:
+        db.create_script()
+    if args.clips:
+        db.create_clips()

@@ -160,7 +160,10 @@ def main(args):
     df = read_clips_df_from_db(creators)
     df = discard_invalid_clips(df, args)
     df_clips = select_clips_prompt(df, args)
+    # Write to url.txt
     Path('urls.txt').write_text('\n'.join(df_clips['url']))
+    # Write to table in database
+    # So we can change flags publish later
 
 def argparser():
     parser = argparse.ArgumentParser()
