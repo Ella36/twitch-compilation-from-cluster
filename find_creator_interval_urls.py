@@ -1,32 +1,30 @@
 #!/usr/bin/python3
-from pathlib import Path
-import time
 import argparse
+import time
 
-from selenium import webdriver
 from bs4 import BeautifulSoup
+from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 
-from cluster.cluster import CLUSTERS
+from model.cluster import CLUSTERS
+from model.cluster import Creator
+from model.clip import Clip
 from db.mydb import Mydb
 
-CLUSTER = Path("./cluster")
-URLS = Path("./urls")
-MYDB = Mydb()
 
 class TwitchClipPageSeleniumDriver():
     def __init__(self):
         self.options = Options()
         self.options.headless = True
 
-    def _find_creator_page(self, creator, interval):
-        self.driver.get(f"https://www.twitch.tv/{creator}/clips?filter=clips&range={interval}")
+    def _find_creator_page(self, creator: Creator, interval: str) -> str:
+        self.driver.get(f"https://www.twitch.tv/{creator.name}/clips?filter=clips&range={interval}")
         time.sleep(7) # Wait for element to load
         content = self.driver.page_source
         self.driver.close() # Should close as we only use 1 tab
         return content
 
-    def _parse_clips_info(self, content):
+    def _extract_clips(self, content: str, creator: Creator) -> list:
         soup = BeautifulSoup(content, features="lxml")
         main_panel = soup.find("main")
         scrollable_area = main_panel.find("div", {"class": "root-scrollable scrollable-area"})
@@ -34,30 +32,33 @@ class TwitchClipPageSeleniumDriver():
         preview_card_images = scroll_list.findAll("a", {"data-a-target": "preview-card-image-link"})
         is_valid_card = lambda a: True if "/clip/" in a.get("href") else False
         valid_cards = filter(is_valid_card, preview_card_images)
-        def _extract_media_info(a):
+        def _extract_clip_from_card(a: dict) -> Clip:
             media_stats = a.select("div[class*='tw-media-card-stat']")
-            return {"url": "https://www.twitch.tv" + a.get("href"),
-                    "duration" : media_stats[0].text,
-                    "views" : media_stats[1].text,
-                    "time_ago" : media_stats[2].text,
-                    }
-        clip_info = list(map(_extract_media_info, valid_cards))
-        return clip_info
+            return Clip(
+                    creator=creator,
+                    url="https://www.twitch.tv" + a.get("href"),
+                    duration=media_stats[0].text,
+                    views=media_stats[1].text,
+                    time=media_stats[2].text
+                    )
+        clips = list(map(_extract_clip_from_card, valid_cards))
+        return clips
 
-    def find_creator_clip_info(self, creator, interval):
+    def find_creator_clips(self, creator: Creator, interval: str) -> list:
         try:
             self.driver = webdriver.Firefox(options=self.options)
             content = self._find_creator_page(creator, interval)
-            clip_info = self._parse_clips_info(content)
+            clips = self._extract_clips(content, creator)
         except Exception as e:
             print(e)
             self.driver.quit() # Quit if anything goes wrong
-        return clip_info
+        return clips
 
-def write_creator_clip_info_to_db(creator, clip_info):
-    for c in clip_info:
-        MYDB.add(creator, c['url'],c['duration'],c['views'],c['time_ago'])
-    MYDB.commit()
+def write_clips_to_db(clips):
+    db = Mydb()
+    for c in clips:
+        db.add(c)
+    db.commit()
 
 def argparser():
     parser = argparse.ArgumentParser()
@@ -65,14 +66,19 @@ def argparser():
     parser.add_argument("interval", help="7d or 30d")
     return parser.parse_args()
 
+def get_list_creators(args) -> list:
+    # returns list of Creator
+    creators = CLUSTERS.by_name(args.cluster).creators
+    return creators
+
 def find_creator_interval_urls(args):
-    creators = CLUSTERS.by_name(args.cluster).names
+    creators = get_list_creators(args)
     twitch_clip_page_driver = TwitchClipPageSeleniumDriver()
     for creator in creators:
-        print(creator)
-        clip_info = twitch_clip_page_driver.find_creator_clip_info(creator, args.interval)
-        print(f"Found: {len(clip_info)} clips!")
-        write_creator_clip_info_to_db(creator, clip_info)
+        print(creator.name)
+        clips = twitch_clip_page_driver.find_creator_clips(creator, args.interval)
+        print(f"Found: {len(clips)} clips!")
+        write_clips_to_db(clips)
     twitch_clip_page_driver.driver.quit()
 
 if __name__ == "__main__":

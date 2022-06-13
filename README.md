@@ -7,6 +7,7 @@ Workflow
     compile clip links with help of algorithm
     prompt user here
     add script of links to database
+    save temporary script to DB for download later
 1. Download links (mp4)
     Format file names, add statistic data
     youtube-dl

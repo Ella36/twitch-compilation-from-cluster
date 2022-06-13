@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 # Select clips from creators
 # Keep in mind view count, duration to till 10mins and avoid duplicates
-
-
 from pathlib import Path
 import random
 import argparse
@@ -13,7 +11,7 @@ import pandas as pd
 from InquirerPy import prompt
 
 from db.mydb import Mydb
-from cluster.cluster import CLUSTERS
+from model.cluster import CLUSTERS
 
 URLS = Path('./urls')
 

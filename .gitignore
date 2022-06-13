@@ -2,3 +2,5 @@
 *.mp4
 *.ts
 urls.txt
+geckodriver.log
+*.pyc
