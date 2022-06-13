@@ -17,9 +17,9 @@ class TwitchClipPageSeleniumDriver():
         self.options = Options()
         self.options.headless = True
 
-    def _find_creator_page(self, creator: Creator, interval: str) -> str:
+    def _find_creator_page(self, creator: Creator, interval: str, args.wait) -> str:
         self.driver.get(f"https://www.twitch.tv/{creator.name}/clips?filter=clips&range={interval}")
-        time.sleep(7) # Wait for element to load
+        time.sleep(int(args.wait)) # Wait for element to load
         content = self.driver.page_source
         self.driver.close() # Should close as we only use 1 tab
         return content
@@ -62,13 +62,20 @@ def write_clips_to_db(clips):
 
 def argparser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("cluster", help="clusterfile with name(s) of twitch channel (creator)")
-    parser.add_argument("interval", help="7d or 30d")
+    parser.add_argument("cluster", nargs='+', help="clusterfile with name(s) of twitch channel (creator)")
+    parser.add_argument("--wait", default='7', help="time in seconds to wait for page to load clip cards")
+    parser.add_argument("--creators", action="store_true", help="set if list of creators")
+    parser.add_argument("--interval", help="7d or 30d")
     return parser.parse_args()
 
 def get_list_creators(args) -> list:
     # returns list of Creator
-    creators = CLUSTERS.by_name(args.cluster).creators
+    if args.creators:
+        creators = list(map(Creator, args.cluster))
+    else:
+        creators = []
+        for c in args.cluster:
+            creators += CLUSTERS.by_name(c).creators
     return creators
 
 def find_creator_interval_urls(args):

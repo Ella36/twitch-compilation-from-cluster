@@ -5,3 +5,4 @@ urls.txt
 geckodriver.log
 *.pyc
 *.db
+*.journal

@@ -19,8 +19,17 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["cluster_test", "30d"],
+            "args": ["cluster_test", "--interval", "30d"],
         }
+        {
+            "name": "Python: FindCreator Clusters 30D",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["cluster_test", "cluster1", "--interval", "30d"],
+        },
         {
             "name": "Python: Clip Select cluster_test 30",
             "type": "python",
@@ -28,7 +37,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["cluster_test", "30", "2", "610"],
+            "args": ["cluster_test", "--days", "30", "--duration", "610"],
         },
     ]
 }

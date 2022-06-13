@@ -30,22 +30,19 @@ class Clusters():
     def creators(self):
         return reduce(operator.add, [c.creators for c in self.clusters])
 
-cluster1 = Cluster(
-    'cluster1',
-    'Cyan - Popular NA FPS',
-    [ 
-        Creator('DrLupo'),
-        Creator('WARDELL'),
-        Creator('TenZ'),
-    ]
-)
-
-cluster_test = Cluster(
-    'cluster_test',
-    'for_testing',
-    [ 
-        Creator('turk'),
-    ]
-)
-
-CLUSTERS = Clusters([cluster1, cluster_test]) 
+CLUSTERS  = Clusters([
+    Cluster(
+        'cluster_test',
+        'for_testing',
+        [ 
+            Creator('turk'),
+        ]
+    ),
+    Cluster(
+        'cluster1',
+        'Cyan - Popular NA FPS',
+        [ 
+            Creator('DrLupo'),
+        ]
+    )
+])

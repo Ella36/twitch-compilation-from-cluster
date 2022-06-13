@@ -13,8 +13,9 @@ from InquirerPy import prompt
 from db.mydb import Mydb
 from model.cluster import CLUSTERS
 from model.clip import Clip
+from model.cluster import Creator
 
-URLS = Path('./urls')
+
 
 def date_n_days_ago(days: str ='7') -> str:
     days = int(days)
@@ -110,7 +111,7 @@ class Clip:
 def select_clips_prompt(df, args):
     creators = list(df['creator'].unique())
     sh = SelectionHelper(creators, df)
-    while sh.duration <= int(args.max_duration):
+    while sh.duration <= int(args.duration):
         # Setup prompt
         sh.update()
         choices = sh.gen_choices()
@@ -155,6 +156,17 @@ def get_list_creators(args) -> list:
     creators = CLUSTERS.by_name(args.cluster).creators
     return creators
 
+
+def get_list_creators(args) -> list:
+    # returns list of Creator
+    if args.creators:
+        creators = list(map(Creator, args.cluster))
+    else:
+        creators = []
+        for c in args.cluster:
+            creators += CLUSTERS.by_name(c).creators
+    return creators
+
 def main(args):
     creators = get_list_creators(args)
     df = read_clips_df_from_db(creators)
@@ -167,11 +179,11 @@ def main(args):
 
 def argparser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('cluster', default='cluster1', help='clustername ex. cluster1')
-    parser.add_argument('days', default='7', help='ex. 7 or 30')
-    parser.add_argument('n_first', default='2', help='2 highest view clips first')
-    parser.add_argument('max_duration', default='610', help='duration in seconds')
-    parser.add_argument('published_ok', action='store_true', help='set to include clips that have already been published')
+    parser.add_argument('cluster', n_args='+', default='cluster1', help='clustername ex. cluster1')
+    parser.add_argument('--days', default='7', help='ex. 7 or 30')
+    parser.add_argument('--duration', default='610', help='duration in seconds')
+    parser.add_argument('--published_ok', action='store_true', help='set to include clips that have already been published')
+    parser.add_argument("--creators", action="store_true", help="set if list of creators")
     return parser.parse_args()
 
 if __name__ == '__main__':
