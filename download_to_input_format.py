@@ -7,25 +7,25 @@ import argparse
 DOWNLOAD = Path('./download')
 INPUT = Path('./input')
 
-def parse_pathfile(pathfile):
-        split = pathfile.stem.strip().split('-')
-        number = split[0]
-        creator = split[1]
-        title = '-'.join(split[2:-1])
-        date = split[-1]
-        date = datetime.strptime(date, '%Y%m%d').strftime("%d %B")
-        return creator, title, date
 
-def format_file(args, f):
-    formatted_filename = '-'.join(str(f.stem).split('-')[:-1]).strip() + '.mp4'
-    target = INPUT / Path(formatted_filename)
+class InputFile:
+    def __init__(self, f: Path):
+        split = f.stem.strip().split('-')
+        self.number = split[0]
+        self.creator = split[1]
+        self.title = '-'.join(split[2:-1])
+        _date = split[-1]
+        self.date = datetime.strptime(_date, '%Y%m%d').strftime("%d %B")
+        self.filename = '-'.join(str(f.stem).split('-')[:-1]).strip() + '.mp4'
+
+def format_file(args, f: Path):
+    input = InputFile(f)
+    target = INPUT / input.filename
     # Add info to video before renaming
     if args.skip_draw:
         f.rename(target)
     else:
-        creator, title, date = parse_pathfile(f)
-        text = f'{creator} - {title}'
-        #text = f'{creator} - {title} - {date}'
+        text = f'{input.creator} - {input.title}'
         vf_string = f"fps=30,scale=-1:720,drawtext=fontfile=/path/to/font.ttf:text='{text}':fontcolor=white:fontsize=48:box=1:boxcolor=black@0.5:boxborderw=5:x=(w-text_w)/2:y=10"
         subprocess.call([
             'ffmpeg', 
@@ -33,7 +33,7 @@ def format_file(args, f):
             '-vf', vf_string,
             '-crf', '32', # optimize, higher is faster and lower quality
             '-codec:a', 'copy',
-            target,
+            target
         ])
 
 def clear_input_directory():
