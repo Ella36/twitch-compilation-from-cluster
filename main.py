@@ -35,11 +35,13 @@ def argparser():
     # Search for clips
     parser.add_argument('cluster', nargs='+', default='cluster1', help='clustername ex. cluster1')
     parser.add_argument("--creators", action="store_true", help="set if list of creators")
-    parser.add_argument('--days', default='7', help='ex. 7 or 30')
+    parser.add_argument("--category", action="store_true", help="set if input is category ex 'Just Chatting'")
+    parser.add_argument("--days", default="30", help="pick n days")
     # Select clips
     parser.add_argument("--cont", action="store_true", help="continue selection from urls.txt")
     parser.add_argument('--duration', default='610', help='duration in seconds')
     parser.add_argument('--published_ok', action='store_true', help='set to include clips that have already been published')
+    parser.add_argument('--lang', default='en', help='set language ex. en, fr, es, ko')
     # Downloader
     parser.add_argument("--resolution", default='720')
     # Input formatter
@@ -53,7 +55,7 @@ def argparser():
 
 if __name__ == '__main__':
     args = argparser()
-    if is_prompt_confirm('Find Creator clips'):
+    if is_prompt_confirm('Find clips'):
         find_creator_interval_urls(args)
     if is_prompt_confirm('Select Clips'):
         select_clips(args)
@@ -66,4 +68,4 @@ if __name__ == '__main__':
     if is_prompt_confirm('Publish script to DB'):
         publish(args)
     if is_prompt_confirm('write title description to title.txt'):
-        write_title_description.write(args)
+        write_title_description.write()

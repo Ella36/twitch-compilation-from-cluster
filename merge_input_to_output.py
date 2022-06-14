@@ -25,7 +25,7 @@ def convert_mp4_to_ts(args):
             '-c', 'copy',
             '-bsf:v', 'h264_mp4toannexb',
             '-f', 'mpegts',
-            Path(args.build) / f'{i}.ts',
+            Path(args.build) / f'{i:03d}.ts',
         ], capture_output=True, text=True)
         with TIME.open("a") as t:
             id, creator, title = [x.strip() for x in f.stem.split('-')]
@@ -47,7 +47,7 @@ class FFMPEGOutputToDurationInSeconds:
 
 def merge_ts_to_mp4(args):
     # Merge TS into MP4
-    concat_string = 'concat:' + '|'.join(map(lambda x: str(x), Path(args.build).glob('*.ts')))
+    concat_string = 'concat:' + '|'.join(map(lambda x: str(x), sorted(Path(args.build).glob('*.ts'))))
     subprocess.call([
         'ffmpeg', 
         '-i', concat_string,
@@ -60,7 +60,7 @@ def merge_input_to_output(args):
     clear_build_directory(args)
     convert_mp4_to_ts(args)
     merge_ts_to_mp4(args)
-    clear_build_directory(args)
+    #clear_build_directory(args)
 
 def argparser():
     parser = argparse.ArgumentParser()

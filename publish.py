@@ -19,10 +19,10 @@ def update_publish_flags_db(urls):
 def write_script_to_db(urls):
     db = Mydb()
     def _extract_data(u):
-        creator, url, duration, duration, time, published, broken = db.lookup_url(u)
+        values = db.lookup_url(u)
         return {
-            'creator': creator,
-            'duration': int(duration),
+            'creator': values[0],
+            'duration': int(values[2]),
             }
     data = list(map(_extract_data, urls))
     creators = ','.join([x['creator'] for x in data])
@@ -37,7 +37,7 @@ def is_prompt_confirm():
     questions = [
         {
             'type': 'confirm',
-            'message': 'Do you want to publish these clips?',
+            'message': 'Do you want to save these clips to DB?',
             'name': 'confirm',
             'default': False,
         },

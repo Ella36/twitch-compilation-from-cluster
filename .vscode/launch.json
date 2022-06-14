@@ -20,7 +20,16 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": ["cluster_test", "--days", "30"],
-        }
+        },
+        {
+            "name": "Python: Find Category clips 30D",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["Just Chatting", "--category", "--days", "30"],
+        },
         {
             "name": "Python: Clip Select cluster_test year continue",
             "type": "python",

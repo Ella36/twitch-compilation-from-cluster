@@ -20,7 +20,7 @@ class Clip:
         self.duration: float = request['duration']
         self.game_id: str = request['game_id']
         self.game: str = game
-        self.language: str = request['language']
+        self.language: str = self._language(request['language'])
         self.thumbnail_url: str = request['thumbnail_url']
         self.title: str = request['title']
         self.url: str = request['url']
@@ -28,3 +28,6 @@ class Clip:
 
     def _created_at(self, x: str) -> str:
         return x.split('T')[0]
+
+    def _language(self, x: str) -> str:
+        return x if x!='en-gb' else 'en'

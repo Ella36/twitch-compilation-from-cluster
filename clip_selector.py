@@ -28,12 +28,26 @@ def date_n_days_ago(days: str ='7') -> str:
     date = today - relativedelta(days=days)
     return str(date.isoformat())
 
-def read_clips_df_from_db(creators: list):
+def read_clips_creators_df_from_db(creators: list):
     db = Mydb()
     # Read sqlite query results into a pandas DataFrame
     creators_str = '('+','.join([f"'{c.name}'" for c in creators])+')'
     df = pd.read_sql_query(
         f"SELECT * FROM clips WHERE creator IN {creators_str}",
+        db.con
+    )
+    # Verify that result of SQL query is stored in the dataframe
+    print(df.head())
+    # Close connection
+    db.con.close()
+    return df
+
+def read_clips_categories_df_from_db(categories: list):
+    db = Mydb()
+    # Read sqlite query results into a pandas DataFrame
+    creators_str = '('+','.join([f"'{c}'" for c in categories])+')'
+    df = pd.read_sql_query(
+        f"SELECT * FROM clips WHERE game IN {creators_str}",
         db.con
     )
     # Verify that result of SQL query is stored in the dataframe
@@ -48,6 +62,8 @@ def discard_invalid_clips(df, args):
         df = df[df['published']==0]
     # Ignore broken clips
     df = df[df['broken']==0]
+    # Filter lang
+    df = df[df['language']==args.lang]
     # Only keep clips between args.days and now
     df = df[df['created_at']>=date_n_days_ago(days=args.days)]
     return df
@@ -189,7 +205,7 @@ class SelectionHelper:
 class Clip:
     row: pd.Series
     def __str__(self):
-        return f'{self.row.creator} {self.row.game_id} {self.row.language} {self.row.view_count} {self.row.duration} {self.row.title}  {self.row.created_at}'
+        return f'{self.row.creator:20} {self.row.game:10} {self.row.language:3} {self.row.view_count:7} {self.row.duration:5} {self.row.title}  {self.row.created_at}'
 
 
 def select_clips_prompt(df, args):
@@ -243,7 +259,6 @@ def get_list_creators(args) -> list:
     creators = CLUSTERS.by_name(args.cluster).creators
     return creators
 
-
 def get_list_creators(args) -> list:
     # returns list of Creator
     if args.creators:
@@ -255,10 +270,15 @@ def get_list_creators(args) -> list:
     return creators
 
 def select_clips(args):
-    creators = get_list_creators(args)
-    df = read_clips_df_from_db(creators)
-    df = discard_invalid_clips(df, args)
-    df_clips = select_clips_prompt(df, args)
+    if args.category:
+        df = read_clips_categories_df_from_db(args.cluster)
+        df = discard_invalid_clips(df, args)
+        df_clips = select_clips_prompt(df, args)
+    else:
+        creators = get_list_creators(args)
+        df = read_clips_creators_df_from_db(creators)
+        df = discard_invalid_clips(df, args)
+        df_clips = select_clips_prompt(df, args)
     # Write to url.txt
     Path('urls.txt').write_text('\n'.join(df_clips['url']))
     # Write to table in database
@@ -272,6 +292,8 @@ def argparser():
     parser.add_argument('--published_ok', action='store_true', help='set to include clips that have already been published')
     parser.add_argument("--creators", action="store_true", help="set if list of creators")
     parser.add_argument("--cont", action="store_true", help="continue selection from urls.txt and error.txt after errors")
+    parser.add_argument('--lang', default='en', help='set language ex. en, fr, es, ko, en-gb')
+    parser.add_argument("--category", action="store_true", help="set if input is category ex 'Just Chatting'")
     return parser.parse_args()
 
 if __name__ == '__main__':

@@ -12,6 +12,13 @@ class TwitchGameIDtoName:
     def __init__(self):
         self.df = pd.read_csv('./model/game_info_semicolon.csv', sep=';')
 
+    def is_valid_game(self, name: str):
+        try:
+           _ = self.df.loc[self.df['name'] == name].iloc[0]["id"]
+           return True
+        except IndexError:
+            return False
+
     def id_to_game(self, idx: str):
         return self.df.loc[self.df['id'] == int(idx)].iloc[0]["name"]
 
