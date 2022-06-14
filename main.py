@@ -15,6 +15,7 @@ from clip_selector import select_clips
 from download_clips import download_clips
 from download_to_input_format import format_download_to_input
 from merge_input_to_output import merge_input_to_output
+import write_title_description
 from publish import publish
 
 def is_prompt_confirm(step: str):
@@ -66,3 +67,5 @@ if __name__ == '__main__':
         merge_input_to_output(args)
     if is_prompt_confirm('Publish script to DB'):
         publish(args)
+    if is_prompt_confirm('write title description to title.txt'):
+        write_title_description.write(args)

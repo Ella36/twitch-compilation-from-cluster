@@ -1966,3 +1966,20 @@ console.warn: SearchSettings: "get: No settings file exists, new profile?" (new 
 DevTools listening on ws://localhost:50897/devtools/browser/4f120749-8516-448c-a763-50378d5ef6d9
 1655174439629	Marionette	INFO	Listening on port 43269
 1655174439690	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1655174451714	Marionette	INFO	Stopped listening on port 43269
+
+###!!! [Parent][PImageBridgeParent] Error: RunMessage(msgname=PImageBridge::Msg_WillClose) Channel closing: too late to send/recv, messages will be lost
+
+1655174452243	geckodriver	INFO	Listening on 127.0.0.1:35791
+1655174452247	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "--remote-debugging-port" "51417" "-no-remote" "-profile" "/tmp/rust_mozprofilepMUQh1"
+*** You are running in headless mode.
+1655174452756	Marionette	INFO	Marionette enabled
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilepMUQh1/search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:51417/devtools/browser/e5d2eab9-32c1-46c4-8c23-1140d24eedc6
+1655174453918	Marionette	INFO	Listening on port 38709
+1655174453966	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1655174465886	Marionette	INFO	Stopped listening on port 38709
+
+###!!! [Parent][PContentParent] Error: Send(msgname=PContent::Msg_DestroyBrowsingContextGroup) Closed channel: cannot send/recv
+

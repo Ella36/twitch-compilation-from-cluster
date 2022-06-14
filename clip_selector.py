@@ -40,6 +40,8 @@ def discard_invalid_clips(df, args):
     if not args.published_ok:
         # Only keep clips that have not been published
         df = df[df['published']==0]
+    # Ignore broken clips
+    df = df[df['broken']==0]
     # Only keep clips between args.days and now
     df = df[df['time']>=date_n_days_ago(days=args.days)]
     return df

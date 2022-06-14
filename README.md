@@ -19,6 +19,10 @@ Workflow
     cluster, creators, date, URls, status (published, script)
 1. Upload mp4 to youtube/media
 
+Rewrite clip finder
+Clusters, creator -> selenium clips  -> df -> sql
+cluster, creators, game and language -> twitch API -> df -> sql
+
 Repeat for as many
 
 TODO:
