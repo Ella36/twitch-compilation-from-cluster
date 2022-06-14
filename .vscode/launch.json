@@ -40,13 +40,13 @@
             "args": ["Just Chatting", "--category", "--days", "30"],
         },
         {
-            "name": "Python: Clip Select cluster_test year continue",
+            "name": "Python: Clip Select league year",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["cluster_test", "--days", "400", "--duration", "60"],
+            "args": ["league", "--days", "400", "--duration", "60"],
         },
         {
             "name": "Python: Clip Select ERROR cluster_test year continue",

@@ -7,6 +7,8 @@
 # 6. Merge to MP4
 # 7. Publish and Update database 
 import argparse
+from pathlib import Path
+import uuid
 
 from InquirerPy import prompt
 
@@ -17,6 +19,9 @@ from download_to_input_format import format_download_to_input
 from merge_input_to_output import merge_input_to_output
 import write_title_description
 from publish import publish
+
+
+
 
 def is_prompt_confirm(step: str):
     questions = [
@@ -37,6 +42,7 @@ def argparser():
     parser.add_argument("--creators", action="store_true", help="set if list of creators")
     parser.add_argument("--category", action="store_true", help="set if input is category ex 'Just Chatting'")
     parser.add_argument("--days", default="30", help="pick n days")
+    parser.add_argument("--project", default="default", help="name of project, creates working directory")
     # Select clips
     parser.add_argument("--cont", action="store_true", help="continue selection from urls.txt")
     parser.add_argument('--duration', default='610', help='duration in seconds')
@@ -46,15 +52,25 @@ def argparser():
     parser.add_argument("--resolution", default='720')
     # Input formatter
     parser.add_argument("--skip_draw", action="store_true")
-    parser.add_argument("--download", default='./download')
-    parser.add_argument("--input", default='./input')
     # Merger
-    parser.add_argument("--build", default='./build')
-    parser.add_argument("--output", default='./output')
     return parser.parse_args()
+
+def create_working_dir(wd):
+    wd = Path(wd)
+    wd.mkdir(exist_ok=True)
+    (wd / Path('./download')).mkdir(parents=True, exist_ok=True)
+    (wd / Path('./input')).mkdir(parents=True, exist_ok=True)
+    (wd / Path('./build')).mkdir(parents=True, exist_ok=True)
+    (wd / Path('./output')).mkdir(parents=True, exist_ok=True)
+    (wd / Path('./thumbnail')).mkdir(parents=True, exist_ok=True)
 
 if __name__ == '__main__':
     args = argparser()
+    if args.project == "default":
+        args.project = str(uuid.uuid4())
+    create_working_dir(args.project)
+    args.wd = Path(args.project)
+
     if is_prompt_confirm('Find clips'):
         find_creator_interval_urls(args)
     if is_prompt_confirm('Select Clips'):
@@ -68,6 +84,6 @@ if __name__ == '__main__':
     if is_prompt_confirm('Publish script to DB'):
         publish(args)
     if is_prompt_confirm('Write title description to title.txt'):
-        write_title_description.write()
+        write_title_description.write(args)
     if is_prompt_confirm('Montage thumbnail'):
-        write_title_description.thumbnail()
+        write_title_description.thumbnail(args)

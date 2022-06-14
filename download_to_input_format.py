@@ -19,7 +19,7 @@ class InputFile:
 
 def format_file(args, f: Path):
     input = InputFile(f)
-    target = Path(args.input) / input.filename
+    target = args.wd / Path('./input') / input.filename
     # Add info to video before renaming
     if args.skip_draw:
         #rename
@@ -37,21 +37,21 @@ def format_file(args, f: Path):
         ])
 
 def clear_input_directory(args):
-    for f in Path(args.input).glob('*'):
+    for f in (args.wd / Path('./input')).glob('*'):
         f.unlink()
 
 def format_download_to_input(args):
     clear_input_directory(args)
-    for f in sorted(Path(args.download).glob('*.mp4')):
+    for f in sorted((args.wd / Path('./download')).glob('*.mp4')):
         format_file(args, f)
 
 def argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--skip_draw", action="store_true")
-    parser.add_argument("--download", default='./download')
-    parser.add_argument("--input", default='./input')
+    parser.add_argument("--project", default='default')
     return parser.parse_args()
 
 if __name__ == "__main__":
     args = argparser()
+    args.wd = Path(args.project)
     format_download_to_input(args)

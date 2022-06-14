@@ -16,11 +16,11 @@ from model.clip import Clip
 from model.cluster import Creator
 
 
-def read_urls():
-    return Path('./urls.txt').read_text().strip().split('\n')
+def read_urls(args):
+    return args.wd / Path('./urls.txt').read_text().strip().split('\n')
 
-def read_errors():
-    return Path('./errors.txt').read_text().strip().split('\n')
+def read_errors(args):
+    return args.wd / Path('./errors.txt').read_text().strip().split('\n')
 
 def date_n_days_ago(days: str ='7') -> str:
     days = int(days)
@@ -82,8 +82,8 @@ class SelectionHelper:
             self.fix_error(args)
 
     def fix_error(self, args):
-        urls = read_urls()
-        errors = read_errors()
+        urls = read_urls(args)
+        errors = read_errors(args)
         db = Mydb()
         broken_idx = []
         i = 0
@@ -142,7 +142,7 @@ class SelectionHelper:
             clip = self.choices[idx]
             self.add_selected_clip(clip, position=i)
         df_clips = pd.concat([x.row for x in self.clips], axis=1).T
-        Path('urls.txt').write_text('\n'.join(df_clips['url']))
+        args.wd / Path('urls.txt').write_text('\n'.join(df_clips['url']))
 
 
     def fill_in_clips(self, urls):
@@ -280,13 +280,14 @@ def select_clips(args):
         df = discard_invalid_clips(df, args)
         df_clips = select_clips_prompt(df, args)
     # Write to url.txt
-    Path('urls.txt').write_text('\n'.join(df_clips['url']))
+    (args.wd / Path('./urls.txt')).write_text('\n'.join(df_clips['url']))
     # Write to table in database
     # So we can change flags publish later
 
 def argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument('cluster', nargs='+', default='cluster1', help='clustername ex. cluster1')
+    parser.add_argument('--project', default="default", help='name of project dir')
     parser.add_argument('--days', default='7', help='ex. 7 or 30')
     parser.add_argument('--duration', default='610', help='duration in seconds')
     parser.add_argument('--published_ok', action='store_true', help='set to include clips that have already been published')
@@ -298,4 +299,5 @@ def argparser():
 
 if __name__ == '__main__':
     args = argparser()
+    args.wd = Path(args.project)
     select_clips(args)

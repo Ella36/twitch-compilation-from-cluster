@@ -8,8 +8,8 @@ from InquirerPy import prompt
 from db.mydb import Mydb
 
 
-def write():
-    TIME = Path('./time.txt')
+def write(args):
+    TIME = args.wd / Path('./time.txt')
     text = TIME.read_text().strip().split('\n')
     description = ''
     # Description
@@ -41,7 +41,7 @@ def write():
         title = prefix + ', '.join(creators_names)
     out = title + '\n\n' + description
     print(out)
-    with Path('./title.txt').open("w+") as f:
+    with (args.wd / Path('./title.txt')).open("w+") as f:
         f.write(out)
 
 def last_index() -> int:
@@ -52,8 +52,8 @@ def last_index() -> int:
         return id
 
 
-def thumbnail():
-    URLS = Path('./urls.txt')
+def thumbnail(args):
+    URLS = args.wd / Path('./urls.txt')
     text = URLS.read_text().strip().split('\n')
     db = Mydb()
     thumbnail_urls = []
@@ -65,11 +65,11 @@ def thumbnail():
 
     # Download JPGs
     # Clear thumbnail dir
-    for f in Path('./thumbnail').glob('*'):
+    for f in (args.wd / Path('./thumbnail')).glob('*'):
         f.unlink()
     def _download_jpg(image_name, url):
         r = requests.get(url, allow_redirects=True)
-        with open(f'./thumbnail/{image_name}.jpg', 'wb') as f:
+        with open(args.wd / Path(f'./thumbnail/{image_name}.jpg'), 'wb') as f:
             f.write(r.content)
     for i, u in enumerate(thumbnail_urls):
         _download_jpg(f'img{i+1:03d}', u)
@@ -98,14 +98,20 @@ def thumbnail():
         #"""magick montage img*.jpg -geometry +1+1   montage_geom.jpg"""
         'magick',
         'montage',
-        f'./thumbnail/{images[0]}',
-        f'./thumbnail/{images[1]}',
-        f'./thumbnail/{images[2]}',
-        f'./thumbnail/{images[3]}',
+        args.wd / (f'./thumbnail/{images[0]}'),
+        args.wd / (f'./thumbnail/{images[1]}'),
+        args.wd / Path(f'./thumbnail/{images[2]}'),
+        args.wd / Path(f'./thumbnail/{images[3]}'),
         '-geometry', '+1+1',
-        'thumbnail.jpg'
+        args.wd / Path('thumbnail.jpg')
     ])
 
+
 if __name__ == '__main__':
-    #thumbnail()
-    write()
+    class argsT():
+        def __init__(self):
+            self.wd = None
+    args = argsT()
+    args.wd = Path('./pinktuber')
+    write(args)
+    thumbnail(args)

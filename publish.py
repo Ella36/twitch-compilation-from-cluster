@@ -6,7 +6,6 @@ from InquirerPy import prompt
 
 from db.mydb import Mydb
 
-URLS_FILE = Path('./urls.txt')
 
 def update_publish_flags_db(urls):
         db = Mydb()
@@ -38,13 +37,14 @@ def is_prompt_confirm():
             'type': 'confirm',
             'message': 'Do you want to save these clips to DB?',
             'name': 'confirm',
-            'default': False,
+            'default': True,
         },
     ]
     answers = prompt(questions)
     return answers['confirm']
 
-def publish(confirm=True):
+def publish(args, confirm=True):
+    URLS_FILE = args.wd / Path('./urls.txt')
     urls = URLS_FILE.read_text().split('\n')
     for u in urls:
         print(u)
@@ -56,4 +56,6 @@ def publish(confirm=True):
         print(f'Publishing cancelled!')
 
 if __name__ == '__main__':
-    publish()
+    args = {}
+    args.wd = Path('./default')
+    publish(args)

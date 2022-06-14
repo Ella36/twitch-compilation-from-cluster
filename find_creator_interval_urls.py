@@ -1,15 +1,12 @@
 #!/usr/bin/python3
 import argparse
-
-from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
 from datetime import timedelta, datetime
 
+from db.mydb import Mydb
+from model import twitch_api
+from model.clip import Clip
 from model.cluster import CLUSTERS
 from model.cluster import Creator
-from model.clip import Clip
-from db.mydb import Mydb
 
 
 twitch_credentials = {
@@ -17,9 +14,6 @@ twitch_credentials = {
    "client_secret": "n23yzkko4ewa4oguwx962pkbg55uby"
 }
 
-# category, language="en"
-
-from model import twitch_api
 
 class TwitchSelectorRequests():
     def __init__(self):

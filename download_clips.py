@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def download_clips(args):
-    urls = Path('./urls.txt').read_text().strip().split('\n')
+    urls = (args.wd / Path('./urls.txt')).read_text().strip().split('\n')
     i = 1
     errors = []
     delimiter = '-KjFAn-ST-'
@@ -16,7 +16,7 @@ def download_clips(args):
             'youtube-dl', 
             u,
             '-f', f'{args.resolution}',
-            '-o', "download/{:03d}{}%(creator)s{}%(title)s{}%(upload_date)s.%(ext)s".format(i, delimiter, delimiter, delimiter),
+            '-o', str(args.wd)+"/download/{:03d}{}%(creator)s{}%(title)s{}%(upload_date)s.%(ext)s".format(i, delimiter, delimiter, delimiter),
         ],capture_output=True, text=True)
         i += 1
         print(p.stdout)
@@ -24,7 +24,7 @@ def download_clips(args):
         error = p.stderr
         if 'ERROR' in error:
             errors.append(u)
-    error_file = Path('./errors.txt')
+    error_file = args.wd / Path('./errors.txt')
     if error_file.exists():
         error_file.unlink()
     with error_file.open("w") as f:
@@ -34,8 +34,10 @@ def argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--download", default='./download')
     parser.add_argument("--resolution", default='720')
+    parser.add_argument("--project", default='default')
     return parser.parse_args()
 
 if __name__ == "__main__":
     args = argparser()
+    args.wd = Path(args.project)
     download_clips(args)

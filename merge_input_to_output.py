@@ -10,24 +10,24 @@ DELIMITER = '-KjFAn-ST-'
 
 def clear_build_directory(args):
     # Clear BUILD directory of files
-    for f in Path(args.build).glob('*'):
+    for f in (args.wd / Path('./build')).glob('*'):
         f.unlink()
 
 import re
-TIME = Path('./time.txt')
 def convert_mp4_to_ts(args):
     # Convert mp4 to intermediate TS
+    TIME = args.wd / Path('./time.txt')
     if TIME.exists():
         TIME.unlink()
     count = 0
-    for i, f in enumerate(sorted(Path(args.input).glob('*.mp4'))):
+    for i, f in enumerate(sorted((args.wd / Path('./input')).glob('*.mp4'))):
         p = subprocess.run([
             'ffmpeg',
             '-i', f,
             '-c', 'copy',
             '-bsf:v', 'h264_mp4toannexb',
             '-f', 'mpegts',
-            Path(args.build) / f'{i:03d}.ts',
+            args.wd / Path('./build') / f'{i:03d}.ts',
         ], capture_output=True, text=True)
         with TIME.open("a") as t:
             try:
@@ -53,15 +53,15 @@ class FFMPEGOutputToDurationInSeconds:
 
 
 def merge_ts_to_mp4(args):
-    filename = str(uuid.uuid4())
+    filename = args.wd.stem
     # Merge TS into MP4
-    concat_string = 'concat:' + '|'.join(map(lambda x: str(x), sorted(Path(args.build).glob('*.ts'))))
+    concat_string = 'concat:' + '|'.join(map(lambda x: str(x), sorted((args.wd / Path('./build')).glob('*.ts'))))
     subprocess.call([
         'ffmpeg', 
         '-i', concat_string,
         '-c', 'copy',
         '-bsf:a', 'aac_adtstoasc',
-        Path(args.output) / f'{filename}.mp4',
+        args.wd / f'{filename}.mp4',
     ])
 
 def merge_input_to_output(args):
@@ -72,12 +72,10 @@ def merge_input_to_output(args):
 
 def argparser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--download", default='./download')
-    parser.add_argument("--input", default='./input')
-    parser.add_argument("--build", default='./build')
-    parser.add_argument("--output", default='./output')
+    parser.add_argument("--project", default='default')
     return parser.parse_args()
 
 if __name__ == "__main__":
     args = argparser()
+    args.wd = Path(args.project)
     merge_input_to_output(args)
