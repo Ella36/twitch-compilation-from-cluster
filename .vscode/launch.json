@@ -19,25 +19,24 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["cluster_test", "--interval", "30d"],
+            "args": ["cluster_test", "--days", "30"],
         }
         {
-            "name": "Python: FindCreator Test Clusters 30D",
+            "name": "Python: Clip Select cluster_test year continue",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["cluster_test", "cluster_test2", "--interval", "30d"],
+            "args": ["cluster_test", "--days", "400", "--duration", "60"],
         },
         {
-            "name": "Python: Clip Select asians year continue",
+            "name": "Python: Clip Select ERROR cluster_test year continue",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["asians", "--cont", "--days", "400", "--duration", "610"],
-        },
+            "args": ["cluster_test", "--cont", "--days", "400", "--duration", "60"],
     ]
 }

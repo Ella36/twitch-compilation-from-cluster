@@ -10,7 +10,11 @@ class Mydb():
     def create_clips(self):
         self.cur.execute('''DROP table IF EXISTS clips''')
         self.cur.execute('''CREATE TABLE clips
-                    (creator text, url text primary key, duration integer, views integer, time text, published integer, broken integer) ''')
+            (creator text, url text primary key, duration float,
+            view_count integer, created_at text, game text,
+            clipper_name text, game_id text, language text, 
+            thumbnail_url text, title text,
+            published integer, broken integer) ''')
         self.con.commit()
         print('Created table clips!')
 
@@ -28,7 +32,7 @@ class Mydb():
         self.cur.execute("""SELECT id FROM scripts ORDER BY id DESC LIMIT 1""")
         return int(self.cur.fetchone()[0])
 
-    def lookup_url(self, url: str):
+    def lookup_url(self, url: str) -> dict:
         self.cur.execute("""SELECT * FROM clips WHERE url=?""", (url,))
         return self.cur.fetchone()
 
@@ -47,12 +51,17 @@ class Mydb():
         published = 0
         broken = 0
         if self.is_url_in(clip.url):
-            print(f'Duplicate not added:\n\t{clip.url}')
+            print(f'Duplicate not added:\n\t{clip.url}\n\t{clip.title}')
             return
-        self.cur.execute(
-            f"INSERT INTO clips VALUES ('{clip.creator.name}','{clip.url}',"
-            f"'{clip.duration}','{clip.views}','{clip.time}','{published}','{broken}')"
-        )
+        clip.title = clip.title.replace("'", "''")
+        string = (
+            f"INSERT INTO clips VALUES ('{clip.creator.name}','{clip.url}','{clip.duration}',"
+            f"'{clip.view_count}','{clip.created_at}','{clip.game}',"
+            f"'{clip.clipper_name}','{clip.game_id}','{clip.language}',"
+            f"'{clip.thumbnail_url}','{clip.title}',"
+            f"'{published}','{broken}')"
+                 )
+        self.cur.execute(string)
     
     def commit(self):
         self.con.commit()

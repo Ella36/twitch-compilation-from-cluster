@@ -34,12 +34,10 @@ def argparser():
     parser = argparse.ArgumentParser()
     # Search for clips
     parser.add_argument('cluster', nargs='+', default='cluster1', help='clustername ex. cluster1')
-    parser.add_argument("--wait", default='7', help="time in seconds to wait for page to load clip cards")
     parser.add_argument("--creators", action="store_true", help="set if list of creators")
-    parser.add_argument("--interval", default="30d", help="pick one of 24hr,7d,30d,all")
+    parser.add_argument('--days', default='7', help='ex. 7 or 30')
     # Select clips
     parser.add_argument("--cont", action="store_true", help="continue selection from urls.txt")
-    parser.add_argument('--days', default='7', help='ex. 7 or 30')
     parser.add_argument('--duration', default='610', help='duration in seconds')
     parser.add_argument('--published_ok', action='store_true', help='set to include clips that have already been published')
     # Downloader

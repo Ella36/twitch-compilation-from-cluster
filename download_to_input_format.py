@@ -5,6 +5,7 @@ import argparse
 import subprocess
 import shutil
 
+
 class InputFile:
     def __init__(self, f: Path):
         split = f.stem.strip().split('-')

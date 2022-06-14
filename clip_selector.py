@@ -16,6 +16,12 @@ from model.clip import Clip
 from model.cluster import Creator
 
 
+def read_urls():
+    return Path('./urls.txt').read_text().strip().split('\n')
+
+def read_errors():
+    return Path('./errors.txt').read_text().strip().split('\n')
+
 def date_n_days_ago(days: str ='7') -> str:
     days = int(days)
     today = datetime.date.today()
@@ -43,7 +49,7 @@ def discard_invalid_clips(df, args):
     # Ignore broken clips
     df = df[df['broken']==0]
     # Only keep clips between args.days and now
-    df = df[df['time']>=date_n_days_ago(days=args.days)]
+    df = df[df['created_at']>=date_n_days_ago(days=args.days)]
     return df
 
 class SelectionHelper:
@@ -54,7 +60,7 @@ class SelectionHelper:
         self.viewtime = {}
         self.duration = 0
         self.df = df
-        self.df.sort_values(by=['views','duration']) 
+        self.df.sort_values(by=['view_count','duration']) 
         self.commands = ['pick_max_view', 'pick_low_n', 'pick_low_duration']
         if fix_errors:
             self.fix_error()
@@ -68,7 +74,8 @@ class SelectionHelper:
         for u in urls:
             if u in errors:
                 broken_idx.append(i)
-                #db.set_broken(u)
+                db.set_broken(u)
+                print(f'Set broken url:\n\t{u}')
                 continue
             for _, row in self.df.iterrows():
                 if row.url == u:
@@ -77,6 +84,8 @@ class SelectionHelper:
             i += 1
         self.update()
         db.commit()
+        # Discard broken links
+        self.df = discard_invalid_clips(self.df, args)
         # Select and fill
         broken_idx.reverse()
         for i in broken_idx:
@@ -107,7 +116,7 @@ class SelectionHelper:
                     max = 0
                     maxc = None
                     for c in self.choices:
-                        views = int(c.row.views) 
+                        views = int(c.row.view_count) 
                         if views > max:
                             maxc = c
                             max = views
@@ -180,14 +189,8 @@ class SelectionHelper:
 class Clip:
     row: pd.Series
     def __str__(self):
-        print(self.row.time)
-        return f'{self.row.creator} {self.row.views} {self.row.duration} {self.row.time}'
+        return f'{self.row.creator} {self.row.game_id} {self.row.language} {self.row.view_count} {self.row.duration} {self.row.title}  {self.row.created_at}'
 
-def read_urls():
-    return Path('./urls.txt').read_text().strip().split('\n')
-
-def read_errors():
-    return Path('./errors.txt').read_text().strip().split('\n')
 
 def select_clips_prompt(df, args):
     creators = list(df['creator'].unique())
@@ -224,7 +227,7 @@ def select_clips_prompt(df, args):
                 max = 0
                 maxc = None
                 for c in sh.choices:
-                    views = int(c.row.views) 
+                    views = int(c.row.view_count) 
                     if views > max:
                         maxc = c
                         max = views
