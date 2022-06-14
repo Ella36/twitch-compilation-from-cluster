@@ -22,6 +22,15 @@
             "args": ["cluster_test", "--days", "30"],
         },
         {
+            "name": "Python: FindCreator Cluster Vtuber 30D",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["vtuber", "--days", "30"],
+        },
+        {
             "name": "Python: Find Category clips 30D",
             "type": "python",
             "request": "launch",

@@ -69,7 +69,7 @@ def discard_invalid_clips(df, args):
     return df
 
 class SelectionHelper:
-    def __init__(self, creators, df, fix_errors=False):
+    def __init__(self, creators, df, args, fix_errors=False):
         self.creators = creators
         self.clips = []
         self.nclips = {}
@@ -79,9 +79,9 @@ class SelectionHelper:
         self.df.sort_values(by=['view_count','duration']) 
         self.commands = ['pick_max_view', 'pick_low_n', 'pick_low_duration']
         if fix_errors:
-            self.fix_error()
+            self.fix_error(args)
 
-    def fix_error(self):
+    def fix_error(self, args):
         urls = read_urls()
         errors = read_errors()
         db = Mydb()
@@ -211,9 +211,9 @@ class Clip:
 def select_clips_prompt(df, args):
     creators = list(df['creator'].unique())
     if args.cont:
-        sh = SelectionHelper(creators, df, fix_errors=True)
+        sh = SelectionHelper(creators, df, args, fix_errors=True)
     else: 
-        sh = SelectionHelper(creators, df)
+        sh = SelectionHelper(creators, df, args)
     while sh.duration <= int(args.duration):
         # Setup prompt
         sh.update()

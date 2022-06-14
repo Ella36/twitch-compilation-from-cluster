@@ -4,7 +4,9 @@
 from pathlib import Path
 import argparse
 import subprocess
+import uuid
 
+DELIMITER = '-KjFAn-ST-'
 
 def clear_build_directory(args):
     # Clear BUILD directory of files
@@ -28,7 +30,12 @@ def convert_mp4_to_ts(args):
             Path(args.build) / f'{i:03d}.ts',
         ], capture_output=True, text=True)
         with TIME.open("a") as t:
-            id, creator, title = [x.strip() for x in f.stem.split('-')]
+            try:
+                id, creator, title = [x.strip() for x in f.stem.split(DELIMITER)]
+            except ValueError:
+                print(f.stem)
+                print(f.stem)
+                print(f.stem)
             t.write(f'{int(count)};;{creator};;{title}\n')
             count += FFMPEGOutputToDurationInSeconds(p.stderr).duration
 
@@ -46,6 +53,7 @@ class FFMPEGOutputToDurationInSeconds:
 
 
 def merge_ts_to_mp4(args):
+    filename = str(uuid.uuid4())
     # Merge TS into MP4
     concat_string = 'concat:' + '|'.join(map(lambda x: str(x), sorted(Path(args.build).glob('*.ts'))))
     subprocess.call([
@@ -53,7 +61,7 @@ def merge_ts_to_mp4(args):
         '-i', concat_string,
         '-c', 'copy',
         '-bsf:a', 'aac_adtstoasc',
-        Path(args.output) / 'merged.mp4',
+        Path(args.output) / f'{filename}.mp4',
     ])
 
 def merge_input_to_output(args):

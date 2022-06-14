@@ -10,12 +10,13 @@ def download_clips(args):
     urls = Path('./urls.txt').read_text().strip().split('\n')
     i = 1
     errors = []
+    delimiter = '-KjFAn-ST-'
     for u in urls:
         p = subprocess.run([
             'youtube-dl', 
             u,
             '-f', f'{args.resolution}',
-            '-o', "download/{:03d}-%(creator)s-%(title)s-%(upload_date)s.%(ext)s".format(i),
+            '-o', "download/{:03d}{}%(creator)s{}%(title)s{}%(upload_date)s.%(ext)s".format(i, delimiter, delimiter, delimiter),
         ],capture_output=True, text=True)
         i += 1
         print(p.stdout)

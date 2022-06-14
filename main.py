@@ -67,5 +67,7 @@ if __name__ == '__main__':
         merge_input_to_output(args)
     if is_prompt_confirm('Publish script to DB'):
         publish(args)
-    if is_prompt_confirm('write title description to title.txt'):
+    if is_prompt_confirm('Write title description to title.txt'):
         write_title_description.write()
+    if is_prompt_confirm('Montage thumbnail'):
+        write_title_description.thumbnail()

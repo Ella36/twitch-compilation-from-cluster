@@ -74,4 +74,29 @@ CLUSTERS  = Clusters([
             Creator('yuggie_tv'),
         ]
     ),
+        Cluster(
+        'vtuber',
+        'vtoobers',
+        [ 
+            Creator('ironmouse'),
+            Creator('shylily'),
+            Creator('nihmune'),
+            Creator('baoo'),
+            Creator('projektmelody'),
+            Creator('silvervale'),
+            Creator('yuzu'),
+            Creator('momo'),
+            Creator('snuffy'),
+            Creator('nyanners'),
+            Creator('harukakaribu'),
+            Creator('veibae'),
+            Creator('remuchii'),
+            Creator('misu'),
+            Creator('filian'),
+            Creator('zentreya'),
+            Creator('elly_vt'),
+            Creator('laynalazar'),
+            Creator('remuchii'),
+        ]
+    ),
 ])

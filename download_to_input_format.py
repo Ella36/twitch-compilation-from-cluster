@@ -5,16 +5,17 @@ import argparse
 import subprocess
 import shutil
 
+DELIMITER = '-KjFAn-ST-'
 
 class InputFile:
     def __init__(self, f: Path):
-        split = f.stem.strip().split('-')
+        split = f.stem.strip().split(DELIMITER)
         self.number = split[0]
         self.creator = split[1]
-        self.title = '-'.join(split[2:-1])
+        self.title = DELIMITER.join(split[2:-1])
         _date = split[-1]
         self.date = datetime.strptime(_date, '%Y%m%d').strftime("%d %B")
-        self.filename = '-'.join(str(f.stem).split('-')[:-1]).strip() + '.mp4'
+        self.filename = DELIMITER.join(str(f.stem).split(DELIMITER)[:-1]).strip() + '.mp4'
 
 def format_file(args, f: Path):
     input = InputFile(f)

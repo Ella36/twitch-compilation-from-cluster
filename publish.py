@@ -6,7 +6,6 @@ from InquirerPy import prompt
 
 from db.mydb import Mydb
 
-
 URLS_FILE = Path('./urls.txt')
 
 def update_publish_flags_db(urls):

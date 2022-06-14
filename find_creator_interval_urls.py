@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import argparse
-import time
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -40,13 +39,19 @@ class TwitchSelectorRequests():
     def get_clips_from_creator(self, creator: Creator, args):
         started_at=datetime.utcnow() - timedelta(days=int(args.days))
         ended_at=datetime.utcnow() - timedelta(hours=12)
-        requests = twitch_api.get_clips_request_by_streamer(
-            self.twitch_oauth_header, creator.name, started_at, ended_at
-        )
+        try:
+            requests = twitch_api.get_clips_request_by_streamer(
+                self.twitch_oauth_header, creator.name, started_at, ended_at
+            )
+        except Exception as e:
+            # banned?
+            print(creator.name)
+            return []
+
         def _format_to_clip(request: dict) -> Clip:
             try:
                 game = twitch_api.TWITCH_GAME_ID_TO_NAME.id_to_game(request['game_id'])
-            except IndexError:
+            except (ValueError, IndexError):
                 game = "unknown"
                 print(f"Game not found!\n\t{request['url']}\n\t{request['title']}")
             return Clip(creator, request, game)

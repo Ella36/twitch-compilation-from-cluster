@@ -20,10 +20,10 @@ class TwitchGameIDtoName:
             return False
 
     def id_to_game(self, idx: str):
-        return self.df.loc[self.df['id'] == int(idx)].iloc[0]["name"]
+        return self.df.loc[self.df['id'] == int(idx)]["name"].iloc[0]
 
     def game_to_id(self, name: str):
-        return self.df.loc[self.df['name'] == name].iloc[0]["id"]
+        return self.df.loc[self.df['name'] == name]["id"].iloc[0]
 
 TWITCH_GAME_ID_TO_NAME = TwitchGameIDtoName()
 

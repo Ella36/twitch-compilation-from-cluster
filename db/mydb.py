@@ -30,7 +30,11 @@ class Mydb():
 
     def select_latest_script_number(self) -> int:
         self.cur.execute("""SELECT id FROM scripts ORDER BY id DESC LIMIT 1""")
-        return int(self.cur.fetchone()[0])
+        return int(self.cur.fetchone()[0])-1 # TODO: verify if -1 is fix
+
+    def select_thumbnail_url(self, url: str) -> str:
+        self.cur.execute("""SELECT thumbnail_url FROM clips WHERE url=?""", (url,))
+        return self.cur.fetchone()[0]
 
     def lookup_url(self, url: str) -> dict:
         self.cur.execute("""SELECT * FROM clips WHERE url=?""", (url,))
@@ -54,6 +58,7 @@ class Mydb():
             print(f'Duplicate not added:\n\t{clip.url}\n\t{clip.title}')
             return
         clip.title = clip.title.replace("'", "''")
+        clip.game = clip.game.replace("'", "''")
         string = (
             f"INSERT INTO clips VALUES ('{clip.creator.name}','{clip.url}','{clip.duration}',"
             f"'{clip.view_count}','{clip.created_at}','{clip.game}',"
