@@ -16,11 +16,10 @@ def update_publish_flags_db(urls):
         db.commit()
         db.con.close()
 
-
 def write_script_to_db(urls):
     db = Mydb()
     def _extract_data(u):
-        creator, _, duration, _, _, _ = db.lookup_url(u)
+        creator, url, duration, duration, time, published, broken = db.lookup_url(u)
         return {
             'creator': creator,
             'duration': int(duration),
@@ -46,7 +45,7 @@ def is_prompt_confirm():
     answers = prompt(questions)
     return answers['confirm']
 
-def publish_to_db(confirm=True):
+def publish(confirm=True):
     urls = URLS_FILE.read_text().split('\n')
     for u in urls:
         print(u)
@@ -58,4 +57,4 @@ def publish_to_db(confirm=True):
         print(f'Publishing cancelled!')
 
 if __name__ == '__main__':
-    publish_to_db()
+    publish()

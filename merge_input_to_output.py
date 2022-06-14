@@ -11,18 +11,38 @@ def clear_build_directory(args):
     for f in Path(args.build).glob('*'):
         f.unlink()
 
+import re
+TIME = Path('./time.txt')
 def convert_mp4_to_ts(args):
     # Convert mp4 to intermediate TS
+    if TIME.exists():
+        TIME.unlink()
+    count = 0
     for i, f in enumerate(sorted(Path(args.input).glob('*.mp4'))):
-        print(i, f)
-        subprocess.call([
+        p = subprocess.run([
             'ffmpeg',
             '-i', f,
             '-c', 'copy',
             '-bsf:v', 'h264_mp4toannexb',
             '-f', 'mpegts',
             Path(args.build) / f'{i}.ts',
-        ])
+        ], capture_output=True, text=True)
+        with TIME.open("a") as t:
+            id, creator, title = [x.strip() for x in f.stem.split('-')]
+            t.write(f'{int(count)};;{creator};;{title}\n')
+            count += FFMPEGOutputToDurationInSeconds(p.stderr).duration
+
+class FFMPEGOutputToDurationInSeconds:
+    # 00:00:00.00 format 
+    def __init__(self, str):
+        m = re.search(r"time=(\d+):(\d+):(\d+.\d+)", str)
+        self.hours = float(m.group(1))
+        self.minutes = float(m.group(2))
+        self.seconds = float(m.group(3))
+
+    @property
+    def duration(self) -> float:
+        return self.hours * 3600 + self.minutes * 60 + self.seconds
 
 
 def merge_ts_to_mp4(args):

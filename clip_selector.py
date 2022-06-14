@@ -16,7 +16,6 @@ from model.clip import Clip
 from model.cluster import Creator
 
 
-
 def date_n_days_ago(days: str ='7') -> str:
     days = int(days)
     today = datetime.date.today()
@@ -46,7 +45,7 @@ def discard_invalid_clips(df, args):
     return df
 
 class SelectionHelper:
-    def __init__(self, creators, df):
+    def __init__(self, creators, df, fix_errors=False):
         self.creators = creators
         self.clips = []
         self.nclips = {}
@@ -55,6 +54,76 @@ class SelectionHelper:
         self.df = df
         self.df.sort_values(by=['views','duration']) 
         self.commands = ['pick_max_view', 'pick_low_n', 'pick_low_duration']
+        if fix_errors:
+            self.fix_error()
+
+    def fix_error(self):
+        urls = read_urls()
+        errors = read_errors()
+        db = Mydb()
+        broken_idx = []
+        i = 0
+        for u in urls:
+            if u in errors:
+                broken_idx.append(i)
+                #db.set_broken(u)
+                continue
+            for _, row in self.df.iterrows():
+                if row.url == u:
+                    self.clips.append(Clip(row))
+                    self.duration += int(row.duration)
+            i += 1
+        self.update()
+        db.commit()
+        # Select and fill
+        broken_idx.reverse()
+        for i in broken_idx:
+            # Prompt for fixes
+            choices = self.gen_choices()
+            questions = [
+                {
+                    'type': 'list',
+                    'name': 'clips',
+                    'message': 'Select {}'.format(self.status_text),
+                    'choices': choices,
+                },
+            ]
+            answers = prompt(questions)
+
+            answer = answers['clips']
+
+            # answer is str version of Clip.row
+            # Check if answer in commands
+            if answer in self.commands:
+                # Custom commands to select answer for us
+                if answer == 'pick_low_n':
+                    answer = self.pick_low_n(choices)
+                elif answer == 'pick_low_duration':
+                    answer = self.pick_low_duration(choices)
+                elif answer == 'pick_max_view':
+                    # Pick max views from answer
+                    max = 0
+                    maxc = None
+                    for c in self.choices:
+                        views = int(c.row.views) 
+                        if views > max:
+                            maxc = c
+                            max = views
+                    answer = str(maxc)
+            # Find index of then that index is choices[i] -> row
+            idx = self.choices_str.index(answer)
+            clip = self.choices[idx]
+            self.add_selected_clip(clip, position=i)
+        df_clips = pd.concat([x.row for x in self.clips], axis=1).T
+        Path('urls.txt').write_text('\n'.join(df_clips['url']))
+
+
+    def fill_in_clips(self, urls):
+        for _, row in self.df.iterrows():
+            if row.url in urls:
+                self.clips.append(Clip(row))
+                self.duration += int(row.duration)
+        self.update()
 
     def update(self):
         for c in self.creators:
@@ -68,8 +137,11 @@ class SelectionHelper:
             status_str.append(f"{c}:{self.nclips[c]} {self.viewtime[c]}s")
         return ';'.join(status_str)
 
-    def add_selected_clip(self, choice: Clip):
-        self.clips.append(choice)
+    def add_selected_clip(self, choice: Clip, position: int = -1):
+        if position == -1:
+            self.clips.append(choice)
+        else:
+            self.clips.insert(position, choice)
         self.duration += int(choice.row.duration)
 
     def pick_low_n(self, choices):
@@ -106,11 +178,21 @@ class SelectionHelper:
 class Clip:
     row: pd.Series
     def __str__(self):
+        print(self.row.time)
         return f'{self.row.creator} {self.row.views} {self.row.duration} {self.row.time}'
+
+def read_urls():
+    return Path('./urls.txt').read_text().strip().split('\n')
+
+def read_errors():
+    return Path('./errors.txt').read_text().strip().split('\n')
 
 def select_clips_prompt(df, args):
     creators = list(df['creator'].unique())
-    sh = SelectionHelper(creators, df)
+    if args.cont:
+        sh = SelectionHelper(creators, df, fix_errors=True)
+    else: 
+        sh = SelectionHelper(creators, df)
     while sh.duration <= int(args.duration):
         # Setup prompt
         sh.update()
@@ -167,7 +249,7 @@ def get_list_creators(args) -> list:
             creators += CLUSTERS.by_name(c).creators
     return creators
 
-def main(args):
+def select_clips(args):
     creators = get_list_creators(args)
     df = read_clips_df_from_db(creators)
     df = discard_invalid_clips(df, args)
@@ -179,13 +261,14 @@ def main(args):
 
 def argparser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('cluster', n_args='+', default='cluster1', help='clustername ex. cluster1')
+    parser.add_argument('cluster', nargs='+', default='cluster1', help='clustername ex. cluster1')
     parser.add_argument('--days', default='7', help='ex. 7 or 30')
     parser.add_argument('--duration', default='610', help='duration in seconds')
     parser.add_argument('--published_ok', action='store_true', help='set to include clips that have already been published')
     parser.add_argument("--creators", action="store_true", help="set if list of creators")
+    parser.add_argument("--cont", action="store_true", help="continue selection from urls.txt and error.txt after errors")
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = argparser()
-    main(args)
+    select_clips(args)

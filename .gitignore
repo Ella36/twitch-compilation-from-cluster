@@ -1,8 +1,8 @@
 *.log
 *.mp4
 *.ts
-urls.txt
-geckodriver.log
 *.pyc
 *.db
 *.journal
+urls.txt
+geckodriver.log

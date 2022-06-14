@@ -39,10 +39,33 @@ CLUSTERS  = Clusters([
         ]
     ),
     Cluster(
-        'cluster1',
-        'Cyan - Popular NA FPS',
+        'cluster_test2',
+        'for_testing2',
         [ 
-            Creator('DrLupo'),
+            Creator('mewnfare'),
         ]
-    )
+    ),
+    Cluster(
+        'asians',
+        'subreddit r/twitchasians',
+        [ 
+            Creator('ahra'),
+            Creator('ariasaki'),
+            Creator('berry0314'),
+            Creator('canahry'),
+            Creator('hyoon'),
+            Creator('kiaraakitty'),
+            Creator('leesherwhy'),
+            Creator('meowko'),
+            Creator('mvngokitty'),
+            Creator('sooflower'),
+            Creator('sorammmm'),
+            Creator('strawberrybunni'),
+            Creator('supcaitlin'),
+            Creator('viptoriaaa'),
+            Creator('woohankyung'),
+            Creator('yeonari'),
+            Creator('yuggie_tv'),
+        ]
+    ),
 ])

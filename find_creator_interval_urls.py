@@ -17,8 +17,8 @@ class TwitchClipPageSeleniumDriver():
         self.options = Options()
         self.options.headless = True
 
-    def _find_creator_page(self, creator: Creator, interval: str, args.wait) -> str:
-        self.driver.get(f"https://www.twitch.tv/{creator.name}/clips?filter=clips&range={interval}")
+    def _find_creator_page(self, creator: Creator, args) -> str:
+        self.driver.get(f"https://www.twitch.tv/{creator.name}/clips?filter=clips&range={args.interval}")
         time.sleep(int(args.wait)) # Wait for element to load
         content = self.driver.page_source
         self.driver.close() # Should close as we only use 1 tab
@@ -44,10 +44,10 @@ class TwitchClipPageSeleniumDriver():
         clips = list(map(_extract_clip_from_card, valid_cards))
         return clips
 
-    def find_creator_clips(self, creator: Creator, interval: str) -> list:
+    def find_creator_clips(self, creator: Creator, args) -> list:
         try:
             self.driver = webdriver.Firefox(options=self.options)
-            content = self._find_creator_page(creator, interval)
+            content = self._find_creator_page(creator, args)
             clips = self._extract_clips(content, creator)
         except Exception as e:
             print(e)
@@ -65,7 +65,7 @@ def argparser():
     parser.add_argument("cluster", nargs='+', help="clusterfile with name(s) of twitch channel (creator)")
     parser.add_argument("--wait", default='7', help="time in seconds to wait for page to load clip cards")
     parser.add_argument("--creators", action="store_true", help="set if list of creators")
-    parser.add_argument("--interval", help="7d or 30d")
+    parser.add_argument("--interval", default="30d", help="pick one of 24hr,7d,30d,all")
     return parser.parse_args()
 
 def get_list_creators(args) -> list:
@@ -83,7 +83,7 @@ def find_creator_interval_urls(args):
     twitch_clip_page_driver = TwitchClipPageSeleniumDriver()
     for creator in creators:
         print(creator.name)
-        clips = twitch_clip_page_driver.find_creator_clips(creator, args.interval)
+        clips = twitch_clip_page_driver.find_creator_clips(creator, args)
         print(f"Found: {len(clips)} clips!")
         write_clips_to_db(clips)
     twitch_clip_page_driver.driver.quit()

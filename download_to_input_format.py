@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 import argparse
 import subprocess
-
+import shutil
 
 class InputFile:
     def __init__(self, f: Path):
@@ -20,7 +20,8 @@ def format_file(args, f: Path):
     target = Path(args.input) / input.filename
     # Add info to video before renaming
     if args.skip_draw:
-        f.rename(target)
+        #rename
+        shutil.copy(f, target)
     else:
         text = f'{input.creator} - {input.title}'
         vf_string = f"fps=30,scale=-1:720,drawtext=fontfile=/path/to/font.ttf:text='{text}':fontcolor=white:fontsize=48:box=1:boxcolor=black@0.5:boxborderw=5:x=(w-text_w)/2:y=10"

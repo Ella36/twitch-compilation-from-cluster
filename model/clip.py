@@ -46,6 +46,12 @@ class Clip:
         elif len(splitted) == 1 and splitted[0].lower() == 'yesterday':
             date = today - relativedelta(days=1)
             return str(date.isoformat())
+        elif splitted[1].lower() in ['second', 'seconds', 's', 'secs']:
+            date = datetime.datetime.now() - relativedelta(seconds=int(splitted[0]))
+            return str(date.date().isoformat())
+        elif splitted[1].lower() in ['minute', 'minutes', 'min', 'mins']:
+            date = datetime.datetime.now() - relativedelta(minutes=int(splitted[0]))
+            return str(date.date().isoformat())
         elif splitted[1].lower() in ['hour', 'hours', 'hr', 'hrs', 'h']:
             date = datetime.datetime.now() - relativedelta(hours=int(splitted[0]))
             return str(date.date().isoformat())
@@ -74,4 +80,5 @@ class Clip:
             date = today - relativedelta(years=int(n))
             return str(date.isoformat())
         else:
-            return "Wrong Argument format"
+            print(f'ERROR: Wrong Argument Format {x}')
+            return str(today.isoformat())

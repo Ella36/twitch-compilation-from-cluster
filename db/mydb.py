@@ -2,7 +2,6 @@
 import sqlite3
 
 
-
 class Mydb():
     def __init__(self):
         self.con = sqlite3.connect('file:clips.db')
@@ -11,7 +10,7 @@ class Mydb():
     def create_clips(self):
         self.cur.execute('''DROP table IF EXISTS clips''')
         self.cur.execute('''CREATE TABLE clips
-                    (creator text, url text primary key, duration integer, views integer, time text, published integer) ''')
+                    (creator text, url text primary key, duration integer, views integer, time text, published integer, broken integer) ''')
         self.con.commit()
         print('Created table clips!')
 
@@ -25,6 +24,10 @@ class Mydb():
     def add_script(self, creators: str, urls: str, duration: int, time: str):
         self.cur.execute('INSERT INTO scripts(creators, urls, duration, time) VALUES (?,?,?,?)', (creators, urls, duration, time))
 
+    def select_latest_script_number(self) -> int:
+        self.cur.execute("""SELECT id FROM scripts ORDER BY id DESC LIMIT 1""")
+        return int(self.cur.fetchone()[0])
+
     def lookup_url(self, url: str):
         self.cur.execute("""SELECT * FROM clips WHERE url=?""", (url,))
         return self.cur.fetchone()
@@ -35,16 +38,20 @@ class Mydb():
 
     def set_publish(self, url: str):
         self.cur.execute(f"UPDATE clips SET published = '1' where url = '{url}'")
+
+    def set_broken(self, url: str):
+        self.cur.execute(f"UPDATE clips SET broken = '1' where url = '{url}'")
     
     def add(self, clip):
         # Add unpublished clip
         published = 0
+        broken = 0
         if self.is_url_in(clip.url):
             print(f'Duplicate not added:\n\t{clip.url}')
             return
         self.cur.execute(
             f"INSERT INTO clips VALUES ('{clip.creator.name}','{clip.url}',"
-            f"'{clip.duration}','{clip.views}','{clip.time}','{published}')"
+            f"'{clip.duration}','{clip.views}','{clip.time}','{published}','{broken}')"
         )
     
     def commit(self):
