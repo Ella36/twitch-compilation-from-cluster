@@ -161,4 +161,27 @@ CLUSTERS  = Clusters([
             Creator('zentreya'),
         ]
     ),
+    Cluster(
+        'na_camgirls',
+        'NA sfw camgirls - DarkGreen Atlas + hottub streamers',
+        [ 
+            Creator('adrianachechik_'),
+            Creator('alinity'),
+            Creator('amouranth'),
+            Creator('evaanna'),
+            Creator('faith'),
+            Creator('gogogirl_tv'),
+            Creator('ibabyrainbow'),
+            Creator('kandyland'),
+            Creator('kiaraakitty'),
+            Creator('kyootbot'),
+            Creator('leynainu'),
+            Creator('littlelianna'),
+            Creator('melina'),
+            Creator('miamalkova'),
+            Creator('missmercyy'),
+            Creator('spoopykitt'),
+            Creator('taylor_jevaux'),
+        ]
+    ),
 ])

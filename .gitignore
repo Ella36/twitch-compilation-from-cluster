@@ -4,8 +4,7 @@
 *.pyc
 *.db
 *.journal
-urls.txt
+*.jpg
+*.txt
+proj*
 geckodriver.log
-title.txt
-title.txt
-urls.txt
