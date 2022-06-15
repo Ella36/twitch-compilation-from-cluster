@@ -18,13 +18,22 @@ from model.cluster import Creator
 
 class ClipsSelector:
     def __init__(self, args):
-        self.creators = get_list_creators(args)
+        self.creators = self._get_list_creators(args)
         self.clips = []
         self.nclips = {}
         self.viewtime = {}
         self.duration = 0
         self.df = self._read_clips_from_db(args)
-        self.commands = ['pick_max_view', 'pick_low_n', 'pick_low_duration']
+
+    def _get_list_creators(self, args) -> list:
+        # returns list of Creator
+        if args.creators:
+            creators = list(map(Creator, args.cluster))
+        else:
+            creators = []
+            for c in args.cluster:
+                creators += CLUSTERS.by_name(c).creators
+        return creators
 
     def _read_clips_from_db(self, args):
         def read_clips_from_db(args):
@@ -80,6 +89,10 @@ class ClipsSelector:
             self.nclips[c] = sum([x.creator == c for x in self.clips])
             self.viewtime[c] = sum(int(x.duration) if x.creator == c else 0 for x in self.clips)
 
+    def select_and_add_clips(self, args):
+        while self.duration <= int(args.duration):
+            self.prompt_choices_add_clip()
+        return self.clips
 
     def add_selected_clip(self, choice: Clip, position: int = -1):
         if position == -1:
@@ -88,19 +101,52 @@ class ClipsSelector:
             self.clips.insert(position, choice)
         self.duration += int(choice.duration)
 
-    def pick_low_n(self, choices):
-        creator = min(self.nclips, key=self.nclips.get)
-        for x in choices[2:]:
-            if creator in x:
-                return x
+    def edit_clips(self, args):
+        self.prompt_choices_edit_compilation()
 
-    def pick_low_duration(self, choices):
-        creator = min(self.viewtime, key=self.viewtime.get)
-        for x in choices[2:]:
-            if creator in x:
-                return x
+    def prompt_choices_edit_compilation(self):
+        self.commands = ['add', 'swap', 'remove']
+        def _status_text(self) -> str:
+            status_str = [f'duration: {self.duration}']
+            for c in self.creators:
+                status_str.append(f"{c}:{self.nclips[c]} {self.viewtime[c]}s")
+            return ';'.join(status_str)
+        def _gen_choices(self) -> list:
+            #self.choices = self.clips
+            #self.choices_str = [c.to_string() for c in choices]
+            #return self.commands + self.choices_str
+            return self.commands
+        choices = _gen_choices(self)
+        questions = [
+            {
+                'type': 'list',
+                'name': 'edit',
+                'message': 'Add/Swap/Remove {}'.format(_status_text(self)),
+                'choices': choices,
+            },
+        ]
+        answer = prompt(questions)['edit']
+        def parse_answer_from_command(self, cmd) -> str:
+            def add(self) -> str:
+                print('add')
+                self.prompt_choices_add_clip()
+            def swap(self) -> str:
+                print('swap')
+            def remove(self) -> str:
+                print('remove')
+            # Custom commands to select answer for us
+            if cmd == 'add':
+                answer = add(self)
+            elif cmd == 'swap':
+                answer = swap(self)
+            elif cmd == 'remove':
+                answer = remove(self)
+            return answer
+        if answer in self.commands:
+            answer = parse_answer_from_command(self, answer)
 
-    def prompt_choices(self):
+    def prompt_choices_add_clip(self):
+        self.commands = ['pick_low_n', 'pick_low_duration', 'pick_max_view']
         def _status_text(self) -> str:
             status_str = [f'duration: {self.duration}']
             for c in self.creators:
@@ -132,81 +178,56 @@ class ClipsSelector:
                 'choices': choices,
             },
         ]
-        answers = prompt(questions)
-        return answers['clips']
-
-    def parse_answer_from_command(self, cmd):
-        # Custom commands to select answer for us
-        if cmd == 'pick_low_n':
-            answer = self.pick_low_n(self.choices)
-        elif cmd == 'pick_low_duration':
-            answer = self.pick_low_duration(self.choices)
-        elif cmd == 'pick_max_view':
-            # Pick max views from answer
-            max = 0
-            maxc = None
-            for c in self.choices:
-                views = int(c.view_count) 
-                if views > max:
-                    maxc = c
-                    max = views
-            answer = maxc.to_string()
-        return answer
-
-    def prompt_and_select_add_clip(self, answer):
-        answer = self.parse_answer_from_command(answer) if answer in self.commands else answer
+        answer = prompt(questions)['clips']
+        def parse_answer_from_command(self, cmd) -> str:
+            def pick_low_n(self) -> str:
+                creator = min(self.nclips, key=self.nclips.get)
+                for x in self.choices[len(self.commands):]:
+                    if creator in x:
+                        return x
+            def pick_low_duration(self) -> str:
+                creator = min(self.viewtime, key=self.viewtime.get)
+                for x in self.choices[len(self.commands):]:
+                    if creator in x:
+                        return x
+            def pick_max_views(self) -> str:
+                max, maxc = 0, None
+                for c in self.choices[len(self.commands):]:
+                    views = int(c.view_count) 
+                    if views > max:
+                        maxc, max = c, views 
+                return maxc.to_string()
+            # Custom commands to select answer for us
+            if cmd == 'pick_low_n':
+                answer = pick_low_n(self)
+            elif cmd == 'pick_low_duration':
+                answer = pick_low_duration(self)
+            elif cmd == 'pick_max_view':
+                answer = pick_max_views(self)
+            return answer
+        if answer in self.commands:
+            answer = parse_answer_from_command(self, answer)
         idx = self.choices_str.index(answer)
         clip = self.choices[idx]
         self.add_selected_clip(clip)
-        self.update()
-
-class SelectionPrompt:
-    def __init__(self):
-
-
-
-def get_list_creators(args) -> list:
-    # returns list of Creator
-    if args.creators:
-        creators = list(map(Creator, args.cluster))
-    else:
-        creators = []
-        for c in args.cluster:
-            creators += CLUSTERS.by_name(c).creators
-    return creators
-
-def select_clips_from_db(args):
-    sh = ClipsSelector(args)
-    if args.cont:
-        compilation_with_errors = Compilation.load(args.wd / 'compilation.pkl')
-        sh.load_compilation(compilation_with_errors)
-    while sh.duration <= int(args.duration):
-        answer = sh.prompt_choices()
-        sh.prompt_and_select_add_clip(answer)
-    df_clips = sh.clipshhhhhhhhhhh
-    # Write to url.txt
-    comp = Compilation()
-    for clip in df_clips:
-        comp.add(clip)
-    comp.dump(args.wd / Path('compilation.pkl'))
-    (args.wd / Path('./urls.txt')).write_text('\n'.join([x.url for x in df_clips]))
 
 def create_compilation_from_db(args):
-    # Create compilation
-    # Clips ordered
-    # Choices prompts
-    # Edit compilation with prompts
-    # new file edit_compilation?
-    # prolly same file since selecting new happens here
-    comp = Compilation()
-    df_clips = select_clips(args)
+    sh = ClipsSelector(args)
+    if args.cont:
+        sh.load_compilation(args.wd / 'compilation.pkl')
+    sh.select_and_add_clips(args)
     # Write to url.txt
-    comp = Compilation()
-    for clip in df_clips:
-        comp.add(clip)
-    comp.dump(args.wd / Path('compilation.pkl'))
-    (args.wd / Path('./urls.txt')).write_text('\n'.join([x.url for x in df_clips]))
+    compilation = Compilation(clips=sh.clips)
+    print(compilation)
+    compilation.dump(args.wd / Path('compilation.pkl'))
 
+def edit_compilation(args):
+    sh = ClipsSelector(args)
+    sh.load_compilation(args.wd / 'compilation.pkl')
+    sh.edit_clips()
+    compilation = Compilation(clips=sh.clips)
+    print(compilation)
+    compilation.dump(args.wd / Path('compilation.pkl'))
 
 def argparser():
     parser = argparse.ArgumentParser()
@@ -224,4 +245,4 @@ def argparser():
 if __name__ == '__main__':
     args = argparser()
     args.wd = Path(args.project)
-    select_clips_from_db(args)
+    create_compilation_from_db(args)

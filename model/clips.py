@@ -86,12 +86,21 @@ from pathlib import Path
 class Compilation:
     def __init__(
         self,
+        clips: list = [],
     ):
         self.list = []
+        if len(clips) > 0:
+            for clip in clips:
+                self.add(clip)
     
     def __iter__(self):
         for element in self.list:
             yield element
+
+    def to_string(self):
+        out = f'Compilation contains {len(self.list)}'
+        for clip in self.clips:
+            out += f"\n\t{clip.to_string()}"
 
     def dump(self, file: Path):
         with file.open('wb') as f:
