@@ -26,7 +26,7 @@ class Mydb():
 
     def read_clips_creators_df_from_db(self, creators: list):
         # Read sqlite query results into a pandas DataFrame
-        creators_str = '('+','.join([f"'{c.name}'" for c in creators])+')'
+        creators_str = '('+','.join([f"'{c}'" for c in creators])+')'
         df = pd.read_sql_query(
             f"SELECT * FROM clips WHERE creator IN {creators_str}",
             self.con

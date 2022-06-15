@@ -18,7 +18,6 @@ from model.cluster import Creator
 
 class ClipsSelector:
     def __init__(self, args):
-        self.creators = self._get_list_creators(args)
         self.clips = []
         self.nclips = {}
         self.viewtime = {}
@@ -28,11 +27,11 @@ class ClipsSelector:
     def _get_list_creators(self, args) -> list:
         # returns list of Creator
         if args.creators:
-            creators = list(map(Creator, args.cluster))
+            creators = args.cluster
         else:
             creators = []
             for c in args.cluster:
-                creators += CLUSTERS.by_name(c).creators
+                creators += CLUSTERS.by_name(c).names
         return creators
 
     def _read_clips_from_db(self, args):
@@ -40,7 +39,9 @@ class ClipsSelector:
             db = Mydb()
             if args.category:
                 df = db.read_clips_categories_df_from_db(args.cluster)
+                self.creators = df["creator"].unique().tolist()
             else:
+                self.creators = self._get_list_creators(args)
                 df = db.read_clips_creators_df_from_db(self.creators)
             db.close()
             return df
@@ -62,18 +63,24 @@ class ClipsSelector:
             return df
         df = read_clips_from_db(args)
         df = discard_invalid_clips(df, args)
-        return df.sort_values(by=['view_count','duration']) 
+        df = df.sort_values(by=['view_count','duration'], ascending=False) 
+        return df
+    
 
     def load_compilation(self, compilation_with_errors: Compilation):
+        def _handle_errors(errors):
+            db = Mydb()
+            for u in [e.clip.url for e in errors]:
+                db.set_broken(u)
+                print(f'Set broken url:\n\t{u}')
+            db.commit()
+            db.close()
+            for e in errors:
+                e.remove_from_disk()
         # Setup where we left off
         # Update DB with existing compilation
         errors = [e for e in compilation_with_errors if e.error]
-        db = Mydb()
-        for u in [e.clip.url for e in errors]:
-            db.set_broken(u)
-            print(f'Set broken url:\n\t{u}')
-        db.commit()
-        db.close()
+        _handle_errors(errors)
         # Sort compilation_with_errors
         compilation_without_errors = [e for e in compilation_with_errors if not e.error]
         sorted_compilation_without_errors = sorted(compilation_without_errors, key=lambda e: e.order)
@@ -81,18 +88,18 @@ class ClipsSelector:
         self.duration = sum([c.duration for c in self.clips])
         # Read clips from db
         self.df = self._read_clips_from_db(args)
-        # Update nview, viewcount dicts
-        self.update()
-
-    def update(self):
-        for c in self.creators:
-            self.nclips[c] = sum([x.creator == c for x in self.clips])
-            self.viewtime[c] = sum(int(x.duration) if x.creator == c else 0 for x in self.clips)
 
     def select_and_add_clips(self, args):
         while self.duration <= int(args.duration):
             self.prompt_choices_add_clip()
         return self.clips
+
+    def remove_selected_clip(self, choice: Clip):
+        self.duration -= int(choice.duration)
+        self.clips.remove(choice)
+
+    def swap_selected_clips_index(self, idx0: int, idx1: int):
+        self.clips[idx0], self.clips[idx1] = self.clips[idx1], self.clips[idx0]
 
     def add_selected_clip(self, choice: Clip, position: int = -1):
         if position == -1:
@@ -102,38 +109,75 @@ class ClipsSelector:
         self.duration += int(choice.duration)
 
     def edit_clips(self, args):
+        def _print_clips(clips):
+            print('\n')
+            for i, clip in enumerate(clips):
+                print(f'{i+1:03d} {clip.to_string()}')
+        _print_clips(self.clips)
         self.prompt_choices_edit_compilation()
+
+    def prompt_choices_swap_clips(self):
+        def _gen_choices(self) -> list:
+            self.choices = self.clips[:]
+            self.choices_str = [c.to_string() for c in self.choices]
+            return self.choices_str
+        choices = _gen_choices(self)
+        questions = [
+            {
+                'type': 'checkbox',
+                'qmark': '😃',
+                'message': 'Select clips to swap (2)',
+                'name': 'swap',
+                'choices': choices
+            }
+        ]
+        answers = prompt(questions)['swap']
+        idx0 = self.choices_str.index(answers[0])
+        idx1 = self.choices_str.index(answers[1])
+        self.swap_selected_clips_index(idx0, idx1)
+
+    def prompt_choices_remove_clips(self):
+        def _gen_choices(self) -> list:
+            self.choices = self.clips[:]
+            self.choices_str = [c.to_string() for c in self.choices]
+            return self.choices_str
+        choices = _gen_choices(self)
+        questions = [
+            {
+                'type': 'checkbox',
+                'qmark': '😃',
+                'message': 'Select clips to remove',
+                'name': 'remove',
+                'choices': choices
+            }
+        ]
+        answers = prompt(questions)['remove']
+        for answer in answers:
+            idx = self.choices_str.index(answer)
+            clip = self.choices[idx]
+            self.remove_selected_clip(clip)
 
     def prompt_choices_edit_compilation(self):
         self.commands = ['add', 'swap', 'remove']
-        def _status_text(self) -> str:
-            status_str = [f'duration: {self.duration}']
-            for c in self.creators:
-                status_str.append(f"{c}:{self.nclips[c]} {self.viewtime[c]}s")
-            return ';'.join(status_str)
         def _gen_choices(self) -> list:
-            #self.choices = self.clips
-            #self.choices_str = [c.to_string() for c in choices]
-            #return self.commands + self.choices_str
             return self.commands
         choices = _gen_choices(self)
         questions = [
             {
                 'type': 'list',
                 'name': 'edit',
-                'message': 'Add/Swap/Remove {}'.format(_status_text(self)),
+                'message': 'Add/Swap/Remove',
                 'choices': choices,
             },
         ]
         answer = prompt(questions)['edit']
         def parse_answer_from_command(self, cmd) -> str:
             def add(self) -> str:
-                print('add')
                 self.prompt_choices_add_clip()
             def swap(self) -> str:
-                print('swap')
+                self.prompt_choices_swap_clips()
             def remove(self) -> str:
-                print('remove')
+                self.prompt_choices_remove_clips()
             # Custom commands to select answer for us
             if cmd == 'add':
                 answer = add(self)
@@ -146,10 +190,19 @@ class ClipsSelector:
             answer = parse_answer_from_command(self, answer)
 
     def prompt_choices_add_clip(self):
-        self.commands = ['pick_low_n', 'pick_low_duration', 'pick_max_view']
+        self.commands = ['pick_max_view', 'pick_low_duration', 'pick_low_n']
+        def _update_nclips_viewtime(self):
+            for c in self.creators:
+                self.nclips[c] = sum([x.creator == c for x in self.clips])
+                self.viewtime[c] = sum(int(x.duration) if x.creator == c else 0 for x in self.clips)
+            self.choices_creators_names = [c.creator.name for c in self.choices]
+            for c in self.creators:
+                if c not in self.choices_creators_names:
+                    del self.nclips[c]
+                    del self.viewtime[c]
         def _status_text(self) -> str:
             status_str = [f'duration: {self.duration}']
-            for c in self.creators:
+            for c in self.choices_creators_names:
                 status_str.append(f"{c}:{self.nclips[c]} {self.viewtime[c]}s")
             return ';'.join(status_str)
         def _gen_choices(self) -> list:
@@ -157,7 +210,7 @@ class ClipsSelector:
             count = {}
             for x in self.creators:
                 count[x] = 0
-            max = 2
+            max = 1
             for _, row in self.df.iterrows():
                 if count[row.creator] >= max:
                     continue
@@ -168,6 +221,7 @@ class ClipsSelector:
                 count[row.creator] += 1
             self.choices = choices
             self.choices_str = [c.to_string() for c in choices]
+            _update_nclips_viewtime(self)
             return self.commands + self.choices_str
         choices = _gen_choices(self)
         questions = [
@@ -182,52 +236,68 @@ class ClipsSelector:
         def parse_answer_from_command(self, cmd) -> str:
             def pick_low_n(self) -> str:
                 creator = min(self.nclips, key=self.nclips.get)
-                for x in self.choices[len(self.commands):]:
-                    if creator in x:
+                for x in self.choices:
+                    if x.creator == creator:
                         return x
             def pick_low_duration(self) -> str:
                 creator = min(self.viewtime, key=self.viewtime.get)
-                for x in self.choices[len(self.commands):]:
-                    if creator in x:
+                for x in self.choices:
+                    if x.creator == creator:
                         return x
             def pick_max_views(self) -> str:
                 max, maxc = 0, None
-                for c in self.choices[len(self.commands):]:
+                for c in self.choices:
                     views = int(c.view_count) 
                     if views > max:
                         maxc, max = c, views 
-                return maxc.to_string()
+                return maxc
             # Custom commands to select answer for us
             if cmd == 'pick_low_n':
-                answer = pick_low_n(self)
+                clip = pick_low_n(self)
             elif cmd == 'pick_low_duration':
-                answer = pick_low_duration(self)
+                clip = pick_low_duration(self)
             elif cmd == 'pick_max_view':
-                answer = pick_max_views(self)
-            return answer
+                clip = pick_max_views(self)
+            return clip
         if answer in self.commands:
-            answer = parse_answer_from_command(self, answer)
-        idx = self.choices_str.index(answer)
-        clip = self.choices[idx]
-        self.add_selected_clip(clip)
+            clip = parse_answer_from_command(self, answer)
+            self.add_selected_clip(clip)
+        else:
+            idx = self.choices_str.index(answer)
+            clip = self.choices[idx]
+            self.add_selected_clip(clip)
 
 def create_compilation_from_db(args):
     sh = ClipsSelector(args)
     if args.cont:
-        sh.load_compilation(args.wd / 'compilation.pkl')
+        sh.load_compilation(args.wd)
     sh.select_and_add_clips(args)
     # Write to url.txt
-    compilation = Compilation(clips=sh.clips)
-    print(compilation)
-    compilation.dump(args.wd / Path('compilation.pkl'))
+    compilation = Compilation(wd=args.wd, clips=sh.clips)
+    print(compilation.to_string())
+    compilation.dump(args.wd)
 
 def edit_compilation(args):
     sh = ClipsSelector(args)
-    sh.load_compilation(args.wd / 'compilation.pkl')
-    sh.edit_clips()
-    compilation = Compilation(clips=sh.clips)
-    print(compilation)
-    compilation.dump(args.wd / Path('compilation.pkl'))
+    compilation = Compilation.load(args.wd)
+    sh.load_compilation(compilation)
+    while is_prompt_confirm('Edit clips'):
+        sh.edit_clips(args)
+    compilation = Compilation(wd=args.wd, clips=sh.clips)
+    print(compilation.to_string())
+    compilation.dump(args.wd)
+
+def is_prompt_confirm(step: str):
+    questions = [
+        {
+            'type': 'confirm',
+            'message': f'Do you want to {step}?',
+            'name': 'confirm',
+            'default': True,
+        },
+    ]
+    answers = prompt(questions)
+    return answers['confirm']
 
 def argparser():
     parser = argparse.ArgumentParser()
@@ -246,3 +316,4 @@ if __name__ == '__main__':
     args = argparser()
     args.wd = Path(args.project)
     create_compilation_from_db(args)
+    edit_compilation(args)

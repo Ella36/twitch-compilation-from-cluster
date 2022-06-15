@@ -12,7 +12,7 @@ class Creator:
     def __post_init__(self):
         self.name = self.name.lower()
 
-class Cluster():
+class Cluster:
     def __init__(self, name: str, description: str, creators: list):
         self.name = name
         self.description = description

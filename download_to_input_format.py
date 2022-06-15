@@ -22,7 +22,6 @@ def format_file(args, f: Path):
     target = args.wd / Path('./input') / input.filename
     # Add info to video before renaming
     if args.skip_draw:
-        #rename
         shutil.copy(f, target)
     else:
         text = f'{input.creator} - {input.title}'
