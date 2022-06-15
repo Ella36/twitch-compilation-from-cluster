@@ -8,3 +8,4 @@
 *.txt
 proj*
 geckodriver.log
+test/compilation.pkl

@@ -237,12 +237,12 @@ class ClipsSelector:
             def pick_low_n(self) -> str:
                 creator = min(self.nclips, key=self.nclips.get)
                 for x in self.choices:
-                    if x.creator == creator:
+                    if x.creator.name == creator:
                         return x
             def pick_low_duration(self) -> str:
                 creator = min(self.viewtime, key=self.viewtime.get)
                 for x in self.choices:
-                    if x.creator == creator:
+                    if x.creator.name == creator:
                         return x
             def pick_max_views(self) -> str:
                 max, maxc = 0, None
@@ -281,7 +281,8 @@ def edit_compilation(args):
     sh = ClipsSelector(args)
     compilation = Compilation.load(args.wd)
     sh.load_compilation(compilation)
-    while is_prompt_confirm('Edit clips'):
+    sh.edit_clips(args)
+    while is_prompt_confirm('Continue Edit clips'):
         sh.edit_clips(args)
     compilation = Compilation(wd=args.wd, clips=sh.clips)
     print(compilation.to_string())
@@ -308,6 +309,7 @@ def argparser():
     parser.add_argument('--published_ok', action='store_true', help='set to include clips that have already been published')
     parser.add_argument("--creators", action="store_true", help="set if list of creators")
     parser.add_argument("--cont", action="store_true", help="continue selection from urls.txt and error.txt after errors")
+    parser.add_argument("--edit", action="store_true", help="edit compilation")
     parser.add_argument('--lang', default='en', help='set language ex. en, fr, es, ko, en-gb')
     parser.add_argument("--category", action="store_true", help="set if input is category ex 'Just Chatting'")
     return parser.parse_args()
@@ -315,5 +317,7 @@ def argparser():
 if __name__ == '__main__':
     args = argparser()
     args.wd = Path(args.project)
-    create_compilation_from_db(args)
-    edit_compilation(args)
+    if args.edit:
+        edit_compilation(args)
+    else:
+        create_compilation_from_db(args)

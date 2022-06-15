@@ -8,8 +8,8 @@ from pathlib import Path
 from model.clips import Compilation
 
 
-def download_clips(args) -> list:
-    compilation = Compilation.load(args.wd / Path('compilation.pkl'))
+def download_clips(args) -> bool:
+    compilation = Compilation.load(args.wd)
     for element in compilation:
         print(element.clip.to_string())
         errors = []
@@ -25,8 +25,8 @@ def download_clips(args) -> list:
         error = p.stderr
         if 'ERROR' in error:
             element.error = True
-    compilation.dump(args.wd / Path('compilation.pkl'))
-    return errors
+    compilation.dump(args.wd)
+    return len(errors) > 0
 
 def argparser():
     parser = argparse.ArgumentParser()

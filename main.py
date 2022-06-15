@@ -13,7 +13,7 @@ import uuid
 from InquirerPy import prompt
 
 from find_and_add_clips_to_db import find_and_add_clips_to_db
-from select_clips_from_db import select_clips_from_db
+from select_clips_from_db import create_compilation_from_db, edit_compilation
 from download_clips import download_clips
 from download_to_input_format import format_download_to_input
 from merge_input_to_output import merge_input_to_output
@@ -85,10 +85,16 @@ if __name__ == '__main__':
 
     if args.confirm or is_prompt_confirm('Find clips'):
         find_and_add_clips_to_db(args)
-    if args.confirm or is_prompt_confirm('Select Clips'):
-        select_clips_from_db(args)
-    if args.confirm or is_prompt_confirm('Download Clips'):
-        download_clips(args)
+    if args.confirm or is_prompt_confirm('Select Clips for Compilation'):
+        create_compilation_from_db(args)
+    if args.confirm or is_prompt_confirm('Download Compilation Clips'):
+        has_errors = download_clips(args)
+    while has_errors:
+        edit_compilation(args)
+        if args.confirm or is_prompt_confirm('Try download again'):
+            has_errors = download_clips(args)
+    if not has_errors and not args.confirm and is_prompt_confirm('Edit Compilation'):
+        edit_compilation(args)
     if args.confirm or is_prompt_confirm('Format download to Input Clips'):
         format_download_to_input(args)
     if args.confirm or is_prompt_confirm('Merge input to output'):
