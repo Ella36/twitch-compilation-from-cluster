@@ -12,15 +12,13 @@ import uuid
 
 from InquirerPy import prompt
 
-from find_creator_interval_urls import find_creator_interval_urls
-from clip_selector import select_clips
+from find_and_add_clips_to_db import find_and_add_clips_to_db
+from select_clips_from_db import select_clips_from_db
 from download_clips import download_clips
 from download_to_input_format import format_download_to_input
 from merge_input_to_output import merge_input_to_output
 import write_title_description
 from publish import publish
-
-
 
 
 def is_prompt_confirm(step: str):
@@ -37,6 +35,11 @@ def is_prompt_confirm(step: str):
 
 def argparser():
     parser = argparse.ArgumentParser()
+    # Database
+    parser.add_argument('-s', '--scripts', action='store_true', help='create table scripts')
+    parser.add_argument('-c', '--clips', action='store_true', help='create table clips')
+    # Confirm
+    parser.add_argument("--confirm", action="store_true", help="autoconfirms")
     # Search for clips
     parser.add_argument('cluster', nargs='+', default='cluster1', help='clustername ex. cluster1')
     parser.add_argument("--creators", action="store_true", help="set if list of creators")
@@ -64,26 +67,35 @@ def create_working_dir(wd):
     (wd / Path('./output')).mkdir(parents=True, exist_ok=True)
     (wd / Path('./thumbnail')).mkdir(parents=True, exist_ok=True)
 
+from model.mydb import Mydb
+
 if __name__ == '__main__':
     args = argparser()
+    db = Mydb()
+    if args.clips or args.scripts:
+        if args.scripts:
+            db.create_script()
+        if args.clips:
+            db.create_clips()
+        exit(0)
     if args.project == "default":
         args.project = str(uuid.uuid4())
     create_working_dir(args.project)
     args.wd = Path(args.project)
 
-    if is_prompt_confirm('Find clips'):
-        find_creator_interval_urls(args)
-    if is_prompt_confirm('Select Clips'):
-        select_clips(args)
-    if is_prompt_confirm('Download Clips'):
+    if args.confirm or is_prompt_confirm('Find clips'):
+        find_and_add_clips_to_db(args)
+    if args.confirm or is_prompt_confirm('Select Clips'):
+        select_clips_from_db(args)
+    if args.confirm or is_prompt_confirm('Download Clips'):
         download_clips(args)
-    if is_prompt_confirm('Format download to Input Clips'):
+    if args.confirm or is_prompt_confirm('Format download to Input Clips'):
         format_download_to_input(args)
-    if is_prompt_confirm('Merge input to output'):
+    if args.confirm or is_prompt_confirm('Merge input to output'):
         merge_input_to_output(args)
+    if args.confirm or is_prompt_confirm('Write title description to title.txt'):
+        write_title_description.write(args)
+    if args.confirm or is_prompt_confirm('Montage thumbnail'):
+        write_title_description.thumbnail(args)
     if is_prompt_confirm('Publish script to DB'):
         publish(args)
-    if is_prompt_confirm('Write title description to title.txt'):
-        write_title_description.write(args)
-    if is_prompt_confirm('Montage thumbnail'):
-        write_title_description.thumbnail(args)

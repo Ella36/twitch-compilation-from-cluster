@@ -5,7 +5,7 @@ import requests
 
 from InquirerPy import prompt
 
-from db.mydb import Mydb
+from model.mydb import Mydb
 
 
 def write(args):

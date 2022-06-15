@@ -4,7 +4,7 @@ import datetime
 
 from InquirerPy import prompt
 
-from db.mydb import Mydb
+from model.mydb import Mydb
 
 
 def update_publish_flags_db(urls):
@@ -59,3 +59,6 @@ if __name__ == '__main__':
     args = {}
     args.wd = Path('./default')
     publish(args)
+
+    #TODO: Fix mistakes in clips table
+    # read pulished table and then update clips where needed

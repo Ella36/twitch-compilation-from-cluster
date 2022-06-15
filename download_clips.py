@@ -5,30 +5,28 @@ import argparse
 import subprocess
 from pathlib import Path
 
+from model.clips import Compilation
 
-def download_clips(args):
-    urls = (args.wd / Path('./urls.txt')).read_text().strip().split('\n')
-    i = 1
-    errors = []
-    delimiter = '-KjFAn-ST-'
-    for u in urls:
+
+def download_clips(args) -> list:
+    compilation = Compilation.load(args.wd / Path('compilation.pkl'))
+    for element in compilation:
+        print(element.clip.to_string())
+        errors = []
+        u = element.clip.url
         p = subprocess.run([
             'youtube-dl', 
             u,
             '-f', f'{args.resolution}',
-            '-o', str(args.wd)+"/download/{:03d}{}%(creator)s{}%(title)s{}%(upload_date)s.%(ext)s".format(i, delimiter, delimiter, delimiter),
+            '-o', element.filename,
         ],capture_output=True, text=True)
-        i += 1
         print(p.stdout)
         print(p.stderr)
         error = p.stderr
         if 'ERROR' in error:
-            errors.append(u)
-    error_file = args.wd / Path('./errors.txt')
-    if error_file.exists():
-        error_file.unlink()
-    with error_file.open("w") as f:
-        f.write('\n'.join(errors))
+            element.error = True
+    compilation.dump(args.wd / Path('compilation.pkl'))
+    return errors
 
 def argparser():
     parser = argparse.ArgumentParser()

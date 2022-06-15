@@ -103,3 +103,14 @@ def get_clips_request_by_streamer(twitch_credentials, streamer_name, started_at,
     query_parameters = f'?broadcaster_id={broadcaster_id}&first=100&started_at={started_at}&ended_at={ended_at}'
 
     return get_request(twitch_credentials, TWITCH_CLIPS_ENDPOINT, query_parameters)
+
+if __name__ == "__main__":
+    twitch_credentials = {
+        "client_id": "3v7w9gbeuaz6d6hiwlk448nw7lrsl3",
+        "client_secret": "n23yzkko4ewa4oguwx962pkbg55uby"
+    }
+    twitch_oauth_header = login(twitch_credentials)
+
+    category_name = "Pools, Hot Tubs, and Beaches"
+    category_id = get_category_id(twitch_oauth_header, category_name)
+    print(category_id)

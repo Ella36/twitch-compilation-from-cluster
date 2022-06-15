@@ -46,7 +46,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["league", "--days", "400", "--duration", "60"],
+            "args": ["league", "--days", "400", "--proj", "test", "--duration", "60"],
         },
         {
             "name": "Python: Clip Select ERROR cluster_test year continue",
