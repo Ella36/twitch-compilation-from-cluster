@@ -56,9 +56,10 @@ def merge_ts_to_mp4(args):
     subprocess.call([
         'ffmpeg', 
         '-i', concat_string,
+        '-y', # Overwrite if exists
         '-c', 'copy',
         '-bsf:a', 'aac_adtstoasc',
-        args.wd / f'{filename}.mp4',
+        args.wd / Path(f'{filename}.mp4'),
     ])
 
 def merge_input_to_output(args):

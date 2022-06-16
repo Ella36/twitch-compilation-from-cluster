@@ -69,6 +69,9 @@ class ClipsSelector:
     
 
     def load_compilation(self, args, compilation_with_errors: Compilation):
+        # Remove elements from compilation if no longer present on disk
+        # Rename files from elements if wrong order ID
+        compilation_with_errors.sync_compilation_with_disk()
         def _handle_errors(errors):
             db = Mydb()
             for u in [e.clip.url for e in errors]:
@@ -184,7 +187,7 @@ class ClipsSelector:
             self.remove_selected_clip(clip)
 
     def prompt_choices_edit_compilation(self):
-        self.commands = ['add', 'swap', 'replace', 'remove']
+        self.commands = ['add', 'swap', 'replace', 'remove', 'quit']
         def _gen_choices(self) -> list:
             return self.commands
         choices = _gen_choices(self)
@@ -215,6 +218,8 @@ class ClipsSelector:
                 answer = remove(self)
             elif cmd == 'replace':
                 answer = replace(self)
+            elif cmd == 'quit':
+                return
             return answer
         if answer in self.commands:
             answer = parse_answer_from_command(self, answer)
@@ -304,11 +309,12 @@ def create_compilation_from_db(args):
     sh = ClipsSelector(args)
     if args.cont:
         compilation = Compilation.load(args.wd)
-        sh.load_compilation(args)
+        sh.load_compilation(args, compilation)
     sh.select_and_add_clips(args)
     # Write to url.txt
     compilation = Compilation(wd=args.wd, clips=sh.clips)
     print(compilation.to_string())
+    compilation.sync_compilation_with_disk()
     compilation.dump(args.wd)
 
 def edit_compilation(args):
@@ -320,6 +326,7 @@ def edit_compilation(args):
         sh.edit_clips(args)
     compilation = Compilation(wd=args.wd, clips=sh.clips)
     print(compilation.to_string())
+    compilation.sync_compilation_with_disk()
     compilation.dump(args.wd)
 
 def is_prompt_confirm(step: str):
@@ -333,12 +340,6 @@ def is_prompt_confirm(step: str):
     ]
     answers = prompt(questions)
     return answers['confirm']
-
-def fix_compilation_disk(args):
-    compilation = Compilation.load(args.wd)
-    if is_prompt_confirm('Fix disk?'):
-        compilation.update_compilation_from_disk()
-        compilation.dump(args.wd)
 
 def argparser():
     parser = argparse.ArgumentParser()

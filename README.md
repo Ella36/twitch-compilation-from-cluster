@@ -21,6 +21,9 @@ Workflow
 
 Repeat for as many
 
+TODO:
+    Create image 2048 x 1152 as banner!
+
 
 ## Clips
 database

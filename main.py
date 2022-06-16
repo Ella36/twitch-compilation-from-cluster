@@ -13,12 +13,13 @@ import uuid
 from InquirerPy import prompt
 
 from find_and_add_clips_to_db import find_and_add_clips_to_db
-from select_clips_from_db import create_compilation_from_db, edit_compilation, fix_compilation_disk
+from select_clips_from_db import create_compilation_from_db, edit_compilation
 from download_clips import download_clips
 from download_to_input_format import format_download_to_input
 from merge_input_to_output import merge_input_to_output
-import write_title_description
+import write_title_description_thumbnail
 from publish import publish
+from model.clips import Compilation
 
 
 def is_prompt_confirm(step: str):
@@ -65,7 +66,7 @@ def create_working_dir(wd):
     (wd / Path('./download')).mkdir(parents=True, exist_ok=True)
     (wd / Path('./input')).mkdir(parents=True, exist_ok=True)
     (wd / Path('./build')).mkdir(parents=True, exist_ok=True)
-    (wd / Path('./output')).mkdir(parents=True, exist_ok=True)
+    # (wd / Path('./output')).mkdir(parents=True, exist_ok=True)
     (wd / Path('./thumbnail')).mkdir(parents=True, exist_ok=True)
 
 from model.mydb import Mydb
@@ -83,7 +84,7 @@ if __name__ == '__main__':
            db.commit()
         exit(0)
     if args.project == "default":
-        args.project = str(uuid.uuid4())
+        args.project = str(uuid.uuid4()).split('-')[0]
     create_working_dir(args.project)
     args.wd = Path(args.project)
 
@@ -93,22 +94,27 @@ if __name__ == '__main__':
         create_compilation_from_db(args)
     has_errors = False
     if args.confirm or is_prompt_confirm('Download Compilation Clips'):
+        compilation = Compilation.load(args.wd)
+        compilation.sync_compilation_with_disk()
         has_errors = download_clips(args)
     while has_errors:
         edit_compilation(args)
         if args.confirm or is_prompt_confirm('Try download again'):
+            compilation = Compilation.load(args.wd)
+            compilation.sync_compilation_with_disk()
             has_errors = download_clips(args)
     if not args.confirm and is_prompt_confirm('Edit Compilation'):
         edit_compilation(args)
-    if not args.confirm and is_prompt_confirm('Fix disk download folder'):
-        fix_compilation_disk(args)
+    if not args.confirm and is_prompt_confirm('Sync compilation with disk'):
+        compilation = Compilation.load(args.wd)
+        compilation.sync_compilation_with_disk()
     if args.confirm or is_prompt_confirm('Format download to Input Clips'):
         format_download_to_input(args)
     if args.confirm or is_prompt_confirm('Merge input to output'):
         merge_input_to_output(args)
     if args.confirm or is_prompt_confirm('Write title description to title.txt'):
-        write_title_description.write(args)
+        write_title_description_thumbnail.title_description(args)
     if args.confirm or is_prompt_confirm('Montage thumbnail'):
-        write_title_description.thumbnail(args)
+        write_title_description_thumbnail.thumbnail(args)
     if is_prompt_confirm('Publish compilation to DB'):
         publish(args)

@@ -2,34 +2,24 @@
 from pathlib import Path
 import datetime
 
-from InquirerPy import prompt
-
 from model.mydb import Mydb
+from model.clips import Compilation
 
-
-def write_script_to_db(urls):
-    db = Mydb()
-    def _extract_data(u):
-        values = db.lookup_url(u)
-        return {
-            'creator': values[0],
-            'duration': int(values[2]),
-            }
-    data = list(map(_extract_data, urls))
-    creators = ','.join([x['creator'] for x in data])
-    urls_joined = ','.join(urls)
-    duration = sum([x['duration'] for x in data])
+def write_compilation_to_db(compilation):
+    creators = ','.join([e.clip.creator.name for e in compilation])
+    urls = ','.join([e.clip.url for e in compilation])
+    duration = ','.join([str(e.clip.duration) for e in compilation])
     time = datetime.date.today().isoformat()
-    db.add_compilation(creators, urls_joined, duration, time)
+    db = Mydb()
+    db.add_compilation(creators, urls, duration, time)
     db.set_published_from_compilations()
     db.commit()
     db.con.close()
 
-def publish(args, confirm=True):
-    URLS_FILE = args.wd / Path('./urls.txt')
-    urls = URLS_FILE.read_text().split('\n')
-    write_script_to_db(urls)
-    print(f'Published {len(urls)} clips!')
+def publish(args):
+    compilation = Compilation.load(args.wd)
+    write_compilation_to_db(compilation)
+    print(f'Published {len(compilation.list)} clips!')
 
 if __name__ == '__main__':
     args = {}

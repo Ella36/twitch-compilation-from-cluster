@@ -79,7 +79,7 @@ class Mydb():
 
     def select_latest_compilation_number(self) -> int:
         self.cur.execute("""SELECT id FROM compilations ORDER BY id DESC LIMIT 1""")
-        return int(self.cur.fetchone()[0])-1 # TODO: verify if -1 is fix
+        return int(self.cur.fetchone()[0])
 
     def select_thumbnail_url(self, url: str) -> str:
         self.cur.execute("""SELECT thumbnail_url FROM clips WHERE url=?""", (url,))
