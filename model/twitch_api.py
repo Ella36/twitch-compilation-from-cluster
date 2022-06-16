@@ -106,12 +106,10 @@ def get_clips_request_by_category(twitch_credentials, category_name, started_at,
 
 
 def get_clips_request_by_streamer(twitch_credentials, streamer_name, started_at, ended_at):
-    
     started_at = started_at.isoformat("T") + "Z"
     ended_at = ended_at.isoformat("T") + "Z"
     broadcaster_id = get_broadcaster_id(twitch_credentials, streamer_name)
     query_parameters = f'?broadcaster_id={broadcaster_id}&first=100&started_at={started_at}&ended_at={ended_at}'
-
     return get_request(twitch_credentials, TWITCH_CLIPS_ENDPOINT, query_parameters)
 
 def get_game_from_id(twitch_credentials, game_id):

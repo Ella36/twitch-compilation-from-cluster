@@ -77,12 +77,12 @@ class Mydb():
     def create_compilation(self):
         self.cur.execute('''DROP table IF EXISTS compilations''')
         self.cur.execute('''CREATE TABLE compilations
-                    (id integer primary key autoincrement, creators text, urls text, duration integer, time text, project text) ''')
+                    (id integer primary key autoincrement, creators text, urls text, duration integer, time text, project text, integer pid) ''')
         self.con.commit()
         print('Created table compilations!')
 
-    def add_compilation(self, creators: str, urls: str, duration: int, time: str, project: str):
-        self.cur.execute('INSERT INTO compilations(creators, urls, duration, time, project) VALUES (?,?,?,?,?)', (creators, urls, duration, time, project))
+    def add_compilation(self, creators: str, urls: str, duration: int, time: str, project: str, pid: int):
+        self.cur.execute('INSERT INTO compilations(creators, urls, duration, time, project, pid) VALUES (?,?,?,?,?,?)', (creators, urls, duration, time, project, pid))
 
     def select_latest_compilation_number(self, project: str) -> int:
         self.cur.execute("""SELECT pid FROM compilations WHERE project=? ORDER BY id DESC LIMIT 1""", (project,))

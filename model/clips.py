@@ -143,6 +143,7 @@ class Compilation:
         self.wd = wd
         self.filename = filename
         self.project = project
+        self.pid = None
         if len(clips) > 0:
             for clip in clips:
                 self.add(clip)

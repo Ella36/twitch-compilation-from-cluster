@@ -11,7 +11,7 @@ def write_compilation_to_db(compilation):
     duration = ','.join([str(e.clip.duration) for e in compilation])
     time = datetime.date.today().isoformat()
     db = Mydb()
-    db.add_compilation(creators, urls, duration, time, compilation.project)
+    db.add_compilation(creators, urls, duration, time, compilation.project, compilation.pid)
     db.set_published_from_compilations()
     db.commit()
     db.con.close()

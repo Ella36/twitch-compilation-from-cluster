@@ -14,7 +14,10 @@ def title_description(args):
         return d.replace('<3', ' ❤ ').replace('>', '').replace('<', '')
     TIME = args.wd / Path('./time.txt')
     text = TIME.read_text().strip().split('\n')
-    description = ''
+    project_name = args.project
+    if 'short' in project_name:
+        project_name = project_name.split('_')[0] + ' #short'
+    description = f'#{project_name}\n'
     # Description
     creators = []
     for t in text:
@@ -29,11 +32,11 @@ def title_description(args):
     compilation_number = new_compilation_number(args)
 
     if len(cmi) == 1:
-        title = """#Twitch Compilation {2} #{0:03d} {1}""".format(compilation_number, cmi[0], args.project)
+        title = """#Twitch Compilation {2} #{0:03d} {1}""".format(compilation_number, cmi[0], project_name)
     elif len(cmi) == 2:
-        title = """#Twitch Compilation {3} #{0:03d} {1} {2}""".format(compilation_number, cmi[0], cmi[1], args.project)
+        title = """#Twitch Compilation {3} #{0:03d} {1} {2}""".format(compilation_number, cmi[0], cmi[1], project_name)
     else:
-        prefix = "#Twitch Compilation {1} #{0:03d} ".format(compilation_number, args.project)
+        prefix = "#Twitch Compilation {1} #{0:03d} ".format(compilation_number, project_name)
         creators_names = [cmi[0], cmi[1]]
         for name in cmi[2:]:
             temp = creators_names[:]
@@ -47,6 +50,9 @@ def title_description(args):
     print(out)
     with (args.wd / Path('./title.txt')).open("w+") as f:
         f.write(out)
+    compilation = Compilation.load(args.wd)
+    compilation.pid = compilation_number
+    compilation.dump(args.wd)
 
 def new_compilation_number(args) -> int:
         db = Mydb()
@@ -89,6 +95,19 @@ def thumbnail(args):
             'choices': choices
         }
     ]
+    if "_short" in args.project:
+        f = args.wd / Path(f'./thumbnail/img001.jpg')
+        f.rename(args.wd / Path('thumbnail.jpg'))
+        subprocess.call([
+            #"""magick montage img*.jpg -geometry +1+1   montage_geom.jpg"""
+            # magick composite thumbnail_overlay_pepega_pink_circle.png thumbnail.jpg out.jpg
+            'magick',
+            'composite',
+            Path('./images/thumbnail_overlay_pepega_pink_circle_short.png'),
+            args.wd / Path('thumbnail.jpg'),
+            args.wd / Path('thumbnail_with_icon.jpg'),
+        ])
+        return
     print(f"Select clips from:\n\t{args.wd / Path('./thumbnail')}")
     images = prompt(questions)['img']
     if len(images) != 4:
