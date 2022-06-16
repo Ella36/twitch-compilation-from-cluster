@@ -6,10 +6,17 @@ import subprocess
 from pathlib import Path
 
 from model.clips import Compilation
+from model.mydb import Mydb
 
 
 def download_clips(args) -> bool:
     compilation = Compilation.load(args.wd)
+    # Temporary lock as published
+    db = Mydb()
+    for element in compilation:
+        db.set_publish_temp(element.clip.url)
+    db.commit()
+    db.close()
     errors = []
     for element in compilation:
         if element.download:

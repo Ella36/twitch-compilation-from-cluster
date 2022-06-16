@@ -42,13 +42,16 @@ def argparser():
     parser.add_argument('--sync', action='store_true', help='update published flag from compilations')
     # Confirm
     parser.add_argument("--confirm", action="store_true", help="autoconfirms")
+    parser.add_argument("--single", action="store_true", help="single URL to skip select clips and publish")
     # Search for clips
     parser.add_argument('cluster', nargs='+', default='cluster1', help='clustername ex. cluster1')
     parser.add_argument("--creators", action="store_true", help="set if list of creators")
     parser.add_argument("--category", action="store_true", help="set if input is category ex 'Just Chatting'")
     parser.add_argument("--id", action="store_true", help="set if input are game id ex 12345 ")
+    parser.add_argument("--clip_id", action="store_true", help="set if input are clip id ex AwkardHelpless... ")
     parser.add_argument("--days", default="30", help="pick n days")
     parser.add_argument("--project", default="default", help="name of project, creates working directory")
+    parser.add_argument("--dir", default="", help="suffix to append to project to create dir")
     # Select clips
     parser.add_argument("--cont", action="store_true", help="continue selection from urls.txt")
     parser.add_argument('--duration', default='610', help='duration in seconds')
@@ -61,14 +64,20 @@ def argparser():
     # Merger
     return parser.parse_args()
 
-def create_working_dir(wd):
-    wd = Path(wd)
+def create_working_dir(args):
+    wd = Path(args.project)
+    if wd.exists:
+        if args.dir != "":
+            wd = Path(str(wd)+args.dir)
+        else:
+            wd = Path(str(wd)+str(uuid.uuid4()).split('-')[0])
     wd.mkdir(exist_ok=True)
     (wd / Path('./download')).mkdir(parents=True, exist_ok=True)
     (wd / Path('./input')).mkdir(parents=True, exist_ok=True)
     (wd / Path('./build')).mkdir(parents=True, exist_ok=True)
     # (wd / Path('./output')).mkdir(parents=True, exist_ok=True)
     (wd / Path('./thumbnail')).mkdir(parents=True, exist_ok=True)
+    return wd
 
 from model.mydb import Mydb
 
@@ -86,8 +95,7 @@ if __name__ == '__main__':
         exit(0)
     if args.project == "default":
         args.project = str(uuid.uuid4()).split('-')[0]
-    create_working_dir(args.project)
-    args.wd = Path(args.project)
+    args.wd = create_working_dir(args)
 
     if args.confirm or is_prompt_confirm('Find clips'):
         find_and_add_clips_to_db(args)
@@ -97,18 +105,13 @@ if __name__ == '__main__':
     if args.confirm or is_prompt_confirm('Download Compilation Clips'):
         compilation = Compilation.load(args.wd)
         compilation.sync_compilation_with_disk()
-        has_errors = download_clips(args)
-    while has_errors:
-        edit_compilation(args)
-        if args.confirm or is_prompt_confirm('Try download again'):
-            compilation = Compilation.load(args.wd)
-            compilation.sync_compilation_with_disk()
-            has_errors = download_clips(args)
+        download_clips(args)
     if not args.confirm and is_prompt_confirm('Edit Compilation'):
         edit_compilation(args)
-    if not args.confirm or is_prompt_confirm('Try download again'):
+    if not args.confirm and is_prompt_confirm('Try download again'):
         compilation = Compilation.load(args.wd)
         compilation.sync_compilation_with_disk()
+        download_clips(args)
     if not args.confirm and is_prompt_confirm('Sync compilation with disk'):
         compilation = Compilation.load(args.wd)
         compilation.sync_compilation_with_disk()

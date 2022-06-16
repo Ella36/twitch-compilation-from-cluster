@@ -19,11 +19,11 @@ class TwitchSelectorRequests():
     def __init__(self):
         self.twitch_oauth_header = twitch_api.login(twitch_credentials)
 
-    def get_clips_from_id(self, category_name: str, args):
+    def get_clips_from_id(self, id: str, args):
         started_at=datetime.utcnow() - timedelta(days=int(args.days))
         ended_at=datetime.utcnow() - timedelta(hours=12)
         requests = twitch_api.get_clips_request_by_id(
-            self.twitch_oauth_header, category_name, started_at, ended_at
+            self.twitch_oauth_header, id, started_at, ended_at
         )
         def _format_to_clip(request: dict) -> Clip:
             try:
@@ -31,7 +31,21 @@ class TwitchSelectorRequests():
             except (ValueError, IndexError):
                 game = "unknown"
                 print(f"Game not found!\n\t{request['game_id']}")
-            return Clip(request['broadcaster_name'], request, game)
+            return Clip(creator=Creator(request['broadcaster_name']),request=request, game=game)
+        clips_formatted = list(map(_format_to_clip, requests))
+        return clips_formatted
+
+    def get_clips_from_clip_id(self, clip_id: str, args):
+        requests = twitch_api.get_clips_request_by_clip_id(
+            self.twitch_oauth_header, clip_id
+        )
+        def _format_to_clip(request: dict) -> Clip:
+            try:
+                game = twitch_api.TWITCH_GAME_ID_TO_NAME.id_to_game(request['game_id'])
+            except (ValueError, IndexError):
+                game = "unknown"
+                print(f"Game not found!\n\t{request['game_id']}")
+            return Clip(creator=Creator(request['broadcaster_name']),request=request, game=game)
         clips_formatted = list(map(_format_to_clip, requests))
         return clips_formatted
 
@@ -80,8 +94,10 @@ def argparser():
     parser.add_argument("cluster", nargs='+', help="clusterfile with name(s) of twitch channel (creator)")
     parser.add_argument("--creators", action="store_true", help="set if list of creators")
     parser.add_argument("--id", action="store_true", help="set if input are game id ex 12345 ")
+    parser.add_argument("--clip_id", action="store_true", help="set if input are clip id ex AwkardHelpless... ")
     parser.add_argument("--category", action="store_true", help="set if input is category ex 'Just Chatting'")
     parser.add_argument("--days", default="30", help="pick n days")
+    parser.add_argument("--project", default="default", help="name of project n days")
     return parser.parse_args()
 
 def get_list_creators(args) -> list:
@@ -109,14 +125,21 @@ def find_and_add_clips_to_db(args):
             clips = twitch_clip_requests.get_clips_from_category(category, args)
             print(f"Found: {len(clips)} clips!")
             write_clips_to_db(clips)
+    elif args.clip_id:
+        twitch_clip_requests = TwitchSelectorRequests()
+        for clip_id in args.cluster:
+            clips = twitch_clip_requests.get_clips_from_clip_id(clip_id, args)
+            print(f"Found: {len(clips)} clips!")
+            write_clips_to_db(clips)
     else:
         creators = get_list_creators(args)
         twitch_clip_requests = TwitchSelectorRequests()
-        for creator in creators:
-            print(creator.name)
-            clips = twitch_clip_requests.get_clips_from_creator(creator, args)
+        for clip_id in creators:
+            print(clip_id.name)
+            clips = twitch_clip_requests.get_clips_from_creator(clip_id, args)
             print(f"Found: {len(clips)} clips!")
             write_clips_to_db(clips)
+        
 
 
 if __name__ == "__main__":

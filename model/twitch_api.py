@@ -96,6 +96,12 @@ def get_clips_request_by_id(twitch_credentials, category_id, started_at, ended_a
     query_parameters = f'?game_id={category_id}&first=100&started_at={started_at}&ended_at={ended_at}'
     return get_request(twitch_credentials, TWITCH_CLIPS_ENDPOINT, query_parameters)
 
+def get_clips_request_by_clip_id(twitch_credentials, clip_id):
+    query_parameters = f'?id={clip_id}'
+    return get_request(twitch_credentials, TWITCH_CLIPS_ENDPOINT, query_parameters)
+
+
+
 
 def get_clips_request_by_category(twitch_credentials, category_name, started_at, ended_at):
     started_at = started_at.isoformat("T") + "Z"

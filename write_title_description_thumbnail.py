@@ -95,7 +95,7 @@ def thumbnail(args):
             'choices': choices
         }
     ]
-    if "_short" in args.project:
+    def _single_image_thumbnail():
         f = args.wd / Path(f'./thumbnail/img001.jpg')
         f.rename(args.wd / Path('thumbnail.jpg'))
         subprocess.call([
@@ -107,9 +107,14 @@ def thumbnail(args):
             args.wd / Path('thumbnail.jpg'),
             args.wd / Path('thumbnail_with_icon.jpg'),
         ])
+    if "_short" in args.project or args.single:
+        _single_image_thumbnail()
         return
     print(f"Select clips from:\n\t{args.wd / Path('./thumbnail')}")
     images = prompt(questions)['img']
+    if len(images) == 1:
+        _single_image_thumbnail()
+        return
     if len(images) != 4:
         print('Select 4!')
 
@@ -143,8 +148,10 @@ if __name__ == '__main__':
         def __init__(self):
             self.wd = None
             self.project = None
+            self.single = None
     args = argsT()
     args.wd = Path('./asmr')
     args.project = "asmr"
+    args.single = False
     title_description(args)
     #thumbnail(args)

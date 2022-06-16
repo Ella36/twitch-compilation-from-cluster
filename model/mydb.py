@@ -24,6 +24,14 @@ class Mydb():
         self.con.commit()
         print('Created table clips!')
 
+    def read_clips_clip_ids_df_from_db(self, urls: list) -> pd.DataFrame:
+        urls_str = '('+','.join([f"'{u}'" for u in urls])+')'
+        df = pd.read_sql_query(
+            f"SELECT * FROM clips WHERE url IN {urls_str}",
+            self.con
+        )
+        return df
+
     def read_clips_creators_df_from_db(self, creators: list) -> pd.DataFrame:
         creators_str = '('+','.join([f"'{c}'" for c in creators])+')'
         df = pd.read_sql_query(
@@ -55,6 +63,10 @@ class Mydb():
             self.con
         )
         return df
+
+
+    def set_publish_temp(self, url: str):
+        self.cur.execute(f"UPDATE clips SET published = '1' where url = '{url}'")
 
     def set_published_from_compilations(self):
         def _set_publish(self, url: str):

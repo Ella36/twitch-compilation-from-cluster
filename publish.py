@@ -8,7 +8,7 @@ from model.clips import Compilation
 def write_compilation_to_db(compilation):
     creators = ','.join([e.clip.creator.name for e in compilation])
     urls = ','.join([e.clip.url for e in compilation])
-    duration = ','.join([str(e.clip.duration) for e in compilation])
+    duration = int(sum([e.clip.duration for e in compilation]))
     time = datetime.date.today().isoformat()
     db = Mydb()
     db.add_compilation(creators, urls, duration, time, compilation.project, compilation.pid)

@@ -22,6 +22,15 @@
             "args": ["--proj", "5680eb4f-a85b-4794-bffc-9940c457fabf"],
         },
         {
+            "name": "Python: Find Valorant ID Cluster_test 30D",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["516575", "--days", "35", "--id", "--project", "valorant"],
+        },
+        {
             "name": "Python: FindCreator Cluster_test 30D",
             "type": "python",
             "request": "launch",
@@ -59,13 +68,13 @@
         },
 
         {
-            "name": "Python: Clip Select turk edit",
+            "name": "Python: Clip Select single",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["cluster_test", "--edit", "--days", "35", "--proj", "5680eb4f-a85b-4794-bffc-9940c457fabf", "--duration", "60"],
+            "args": ["ImportantHonestDillYee-UTG-CJojyXUvroQt", "--clip_id", "--single", "--published_ok", "--days", "35", "--proj", "test"],
         },
         {
             "name": "Python: Clip Select ERROR cluster_test year continue",
