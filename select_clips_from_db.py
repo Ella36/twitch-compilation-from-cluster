@@ -122,6 +122,7 @@ class ClipsSelector:
             for i, clip in enumerate(clips):
                 print(f'{i+1:03d} {clip.to_string()}')
         _print_clips(self.clips)
+        print(f'Total Duration: {int(self.duration)}')
         self.prompt_choices_edit_compilation()
 
     def prompt_choices_swap_clips(self):

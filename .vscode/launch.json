@@ -75,5 +75,15 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": ["cluster_test", "--cont", "--days", "400", "--duration", "60"],
+        },
+        {
+            "name": "Python: Write",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["asmr", "--project", "asmr"],
+        },
     ]
 }

@@ -106,6 +106,9 @@ if __name__ == '__main__':
             has_errors = download_clips(args)
     if not args.confirm and is_prompt_confirm('Edit Compilation'):
         edit_compilation(args)
+    if not args.confirm or is_prompt_confirm('Try download again'):
+        compilation = Compilation.load(args.wd)
+        compilation.sync_compilation_with_disk()
     if not args.confirm and is_prompt_confirm('Sync compilation with disk'):
         compilation = Compilation.load(args.wd)
         compilation.sync_compilation_with_disk()

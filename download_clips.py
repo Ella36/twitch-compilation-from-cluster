@@ -10,9 +10,11 @@ from model.clips import Compilation
 
 def download_clips(args) -> bool:
     compilation = Compilation.load(args.wd)
+    errors = []
     for element in compilation:
+        if element.download:
+            continue
         print(element.clip.to_string())
-        errors = []
         u = element.clip.url
         p = subprocess.run([
             'youtube-dl', 
@@ -25,6 +27,8 @@ def download_clips(args) -> bool:
         error = p.stderr
         if 'ERROR' in error:
             element.error = True
+        else:
+            element.download = True
     compilation.dump(args.wd)
     return len(errors) > 0
 

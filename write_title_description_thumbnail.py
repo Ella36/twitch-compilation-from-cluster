@@ -10,6 +10,8 @@ from model.clips import Compilation
 
 
 def title_description(args):
+    def _filter_description(d):
+        return d.replace('<3', ' ❤ ').replace('>', '').replace('<', '')
     TIME = args.wd / Path('./time.txt')
     text = TIME.read_text().strip().split('\n')
     description = ''
@@ -20,26 +22,27 @@ def title_description(args):
         creators.append(creator)
         seconds = f'{int(seconds)//60:02d}:{int(seconds)%60:02d}'
         creator_url = f'https://twitch.tv/{creator}'
-        description += """{} {:15} {}\n""".format(seconds, creator_url, title)
+        d =  """{} {:15} {}\n""".format(seconds, creator_url, title)
+        description += _filter_description(d)
     # Title
     cmi = list(set(creators))
     compilation_number = new_compilation_number(args)
 
     if len(cmi) == 1:
-        title = """#Twitch Compilation #{0:03d} {1}""".format(compilation_number, cmi[0])
+        title = """#Twitch Compilation {2} #{0:03d} {1}""".format(compilation_number, cmi[0], args.project)
     elif len(cmi) == 2:
-        title = """#Twitch Compilation #{0:03d} {1} {2}""".format(compilation_number, cmi[0], cmi[1])
+        title = """#Twitch Compilation {3} #{0:03d} {1} {2}""".format(compilation_number, cmi[0], cmi[1], args.project)
     else:
-        prefix = "#Twitch Compilation #{0:03d} ".format(compilation_number)
+        prefix = "#Twitch Compilation {1} #{0:03d} ".format(compilation_number, args.project)
         creators_names = [cmi[0], cmi[1]]
         for name in cmi[2:]:
             temp = creators_names[:]
             temp.append(name)
-            if len(', '.join(temp)) + len(prefix) < 90:
+            if len(', '.join(temp)) + len(prefix) < 95:
                 creators_names.append(name)
             else:
                 break
-        title = prefix + ', '.join(creators_names)
+        title = prefix + ', '.join(creators_names) + ', ...'
     out = title + '\n\n' + description
     print(out)
     with (args.wd / Path('./title.txt')).open("w+") as f:
@@ -54,6 +57,7 @@ def new_compilation_number(args) -> int:
             id = 1
         db.commit()
         db.con.close()
+        return id
 
 
 def thumbnail(args):
@@ -95,11 +99,11 @@ def thumbnail(args):
         #"""magick montage img*.jpg -geometry +1+1   montage_geom.jpg"""
         'magick',
         'montage',
-        args.wd / (f'./thumbnail/{images[0]}'),
-        args.wd / (f'./thumbnail/{images[1]}'),
+        args.wd / Path(f'./thumbnail/{images[0]}'),
+        args.wd / Path(f'./thumbnail/{images[1]}'),
         args.wd / Path(f'./thumbnail/{images[2]}'),
         args.wd / Path(f'./thumbnail/{images[3]}'),
-        '-tile 2x2',
+        '-tile', '2x2',
         '-geometry', '+1+1',
         args.wd / Path('thumbnail.jpg')
     ])
@@ -119,8 +123,9 @@ if __name__ == '__main__':
     class argsT():
         def __init__(self):
             self.wd = None
-            self.project = "just_chatting"
+            self.project = None
     args = argsT()
-    args.wd = Path('./pinktuber')
+    args.wd = Path('./asmr')
+    args.project = "asmr"
     title_description(args)
     #thumbnail(args)
