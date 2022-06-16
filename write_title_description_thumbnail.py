@@ -23,7 +23,7 @@ def title_description(args):
         description += """{} {:15} {}\n""".format(seconds, creator_url, title)
     # Title
     cmi = list(set(creators))
-    compilation_number = new_compilation_number()
+    compilation_number = new_compilation_number(args)
 
     if len(cmi) == 1:
         title = """#Twitch Compilation #{0:03d} {1}""".format(compilation_number, cmi[0])
@@ -45,12 +45,15 @@ def title_description(args):
     with (args.wd / Path('./title.txt')).open("w+") as f:
         f.write(out)
 
-def new_compilation_number() -> int:
+def new_compilation_number(args) -> int:
         db = Mydb()
-        id = db.select_latest_compilation_number()
+        id = db.select_latest_compilation_number(args.project)
+        if id:
+            id = int(id[0])+1
+        else:
+            id = 1
         db.commit()
         db.con.close()
-        return id+1
 
 
 def thumbnail(args):
@@ -116,7 +119,8 @@ if __name__ == '__main__':
     class argsT():
         def __init__(self):
             self.wd = None
+            self.project = "just_chatting"
     args = argsT()
     args.wd = Path('./pinktuber')
     title_description(args)
-    thumbnail(args)
+    #thumbnail(args)

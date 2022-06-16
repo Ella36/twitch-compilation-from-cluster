@@ -46,6 +46,7 @@ def argparser():
     parser.add_argument('cluster', nargs='+', default='cluster1', help='clustername ex. cluster1')
     parser.add_argument("--creators", action="store_true", help="set if list of creators")
     parser.add_argument("--category", action="store_true", help="set if input is category ex 'Just Chatting'")
+    parser.add_argument("--id", action="store_true", help="set if input are game id ex 12345 ")
     parser.add_argument("--days", default="30", help="pick n days")
     parser.add_argument("--project", default="default", help="name of project, creates working directory")
     # Select clips

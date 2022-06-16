@@ -137,10 +137,12 @@ class Compilation:
         wd: Path = Path('.'),
         filename: str = 'compilation.pkl',
         clips: list = [],
+        project: str = 'untitled',
     ):
         self.list = []
         self.wd = wd
         self.filename = filename
+        self.project = project
         if len(clips) > 0:
             for clip in clips:
                 self.add(clip)

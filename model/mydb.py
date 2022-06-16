@@ -40,9 +40,16 @@ class Mydb():
         )
         return df
 
+    def read_clips_categories_by_id_df_from_db(self, game_ids: list) -> pd.DataFrame:
+        game_id_str = '('+','.join([f"'{c}'" for c in game_ids])+')'
+        df = pd.read_sql_query(
+            f"SELECT * FROM clips WHERE game_id IN {game_id_str}",
+            self.con
+        )
+        return df
 
     def read_compilations_df_from_db(self) -> pd.DataFrame:
-        # id, creators, urls, duration, time
+        # id, creators, urls, duration, time, project
         df = pd.read_sql_query(
             "SELECT * FROM compilations",
             self.con
@@ -70,16 +77,16 @@ class Mydb():
     def create_compilation(self):
         self.cur.execute('''DROP table IF EXISTS compilations''')
         self.cur.execute('''CREATE TABLE compilations
-                    (id integer primary key autoincrement, creators text, urls text, duration integer, time text) ''')
+                    (id integer primary key autoincrement, creators text, urls text, duration integer, time text, project text) ''')
         self.con.commit()
         print('Created table compilations!')
 
-    def add_compilation(self, creators: str, urls: str, duration: int, time: str):
-        self.cur.execute('INSERT INTO compilations(creators, urls, duration, time) VALUES (?,?,?,?)', (creators, urls, duration, time))
+    def add_compilation(self, creators: str, urls: str, duration: int, time: str, project: str):
+        self.cur.execute('INSERT INTO compilations(creators, urls, duration, time, project) VALUES (?,?,?,?)', (creators, urls, duration, time, project))
 
-    def select_latest_compilation_number(self) -> int:
-        self.cur.execute("""SELECT id FROM compilations ORDER BY id DESC LIMIT 1""")
-        return int(self.cur.fetchone()[0])
+    def select_latest_compilation_number(self, project: str) -> int:
+        self.cur.execute("""SELECT pid FROM compilations WHERE project=? ORDER BY id DESC LIMIT 1""", (project,))
+        return self.cur.fetchone()
 
     def select_thumbnail_url(self, url: str) -> str:
         self.cur.execute("""SELECT thumbnail_url FROM clips WHERE url=?""", (url,))

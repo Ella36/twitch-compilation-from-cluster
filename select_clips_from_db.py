@@ -38,7 +38,10 @@ class ClipsSelector:
     def _read_clips_from_db(self, args):
         def read_clips_from_db(args):
             db = Mydb()
-            if args.category:
+            if args.id:
+                df = db.read_clips_categories_by_id_df_from_db(args.cluster)
+                self.creators = df["creator"].unique().tolist()
+            elif args.category:
                 df = db.read_clips_categories_df_from_db(args.cluster)
                 self.creators = df["creator"].unique().tolist()
             else:
@@ -312,7 +315,7 @@ def create_compilation_from_db(args):
         sh.load_compilation(args, compilation)
     sh.select_and_add_clips(args)
     # Write to url.txt
-    compilation = Compilation(wd=args.wd, clips=sh.clips)
+    compilation = Compilation(wd=args.wd, clips=sh.clips, project=args.project)
     print(compilation.to_string())
     compilation.sync_compilation_with_disk()
     compilation.dump(args.wd)
@@ -324,7 +327,7 @@ def edit_compilation(args):
     sh.edit_clips(args)
     while is_prompt_confirm('Continue Edit clips'):
         sh.edit_clips(args)
-    compilation = Compilation(wd=args.wd, clips=sh.clips)
+    compilation = Compilation(wd=args.wd, clips=sh.clips, project=args.project)
     print(compilation.to_string())
     compilation.sync_compilation_with_disk()
     compilation.dump(args.wd)
@@ -344,7 +347,7 @@ def is_prompt_confirm(step: str):
 def argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument('cluster', nargs='+', default='cluster1', help='clustername ex. cluster1')
-    parser.add_argument('--project', default="default", help='name of project dir')
+    parser.add_argument('--project', default='untitled', help='name of project we publish under ex. just_chatting')
     parser.add_argument('--days', default='7', help='ex. 7 or 30')
     parser.add_argument('--duration', default='610', help='duration in seconds')
     parser.add_argument('--published_ok', action='store_true', help='set to include clips that have already been published')
@@ -353,6 +356,7 @@ def argparser():
     parser.add_argument("--edit", action="store_true", help="edit compilation")
     parser.add_argument('--lang', default='en', help='set language ex. en, fr, es, ko, en-gb')
     parser.add_argument("--category", action="store_true", help="set if input is category ex 'Just Chatting'")
+    parser.add_argument("--id", action="store_true", help="set if input are game id ex 12345 ")
     return parser.parse_args()
 
 if __name__ == '__main__':
