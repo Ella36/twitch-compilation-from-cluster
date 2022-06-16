@@ -22,14 +22,14 @@ def write(args):
         description += """{} {:15} {}\n""".format(seconds, creator_url, title)
     # Title
     cmi = list(set(creators))
-    script_number = last_index()
+    compilation_number = last_index()
 
     if len(cmi) == 1:
-        title = """#Twitch Compilation #{0:03d} {1})""".format(script_number, cmi[0])
+        title = """#Twitch Compilation #{0:03d} {1})""".format(compilation_number, cmi[0])
     elif len(cmi) == 2:
-        title = """#Twitch Compilation #{0:03d} {1} {2}""".format(script_number, cmi[0], cmi[1])
+        title = """#Twitch Compilation #{0:03d} {1} {2}""".format(compilation_number, cmi[0], cmi[1])
     else:
-        prefix = "#Twitch Compilation #{0:03d} ".format(script_number)
+        prefix = "#Twitch Compilation #{0:03d} ".format(compilation_number)
         creators_names = [cmi[0], cmi[1]]
         for name in cmi[2:]:
             temp = creators_names[:]
@@ -46,7 +46,7 @@ def write(args):
 
 def last_index() -> int:
         db = Mydb()
-        id = db.select_latest_script_number()
+        id = db.select_latest_compilation_number()
         db.commit()
         db.con.close()
         return id

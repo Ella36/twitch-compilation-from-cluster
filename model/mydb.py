@@ -24,8 +24,7 @@ class Mydb():
         self.con.commit()
         print('Created table clips!')
 
-    def read_clips_creators_df_from_db(self, creators: list):
-        # Read sqlite query results into a pandas DataFrame
+    def read_clips_creators_df_from_db(self, creators: list) -> pd.DataFrame:
         creators_str = '('+','.join([f"'{c}'" for c in creators])+')'
         df = pd.read_sql_query(
             f"SELECT * FROM clips WHERE creator IN {creators_str}",
@@ -33,8 +32,7 @@ class Mydb():
         )
         return df
 
-    def read_clips_categories_df_from_db(self, categories: list):
-        # Read sqlite query results into a pandas DataFrame
+    def read_clips_categories_df_from_db(self, categories: list) -> pd.DataFrame:
         creators_str = '('+','.join([f"'{c}'" for c in categories])+')'
         df = pd.read_sql_query(
             f"SELECT * FROM clips WHERE game IN {creators_str}",
@@ -42,18 +40,45 @@ class Mydb():
         )
         return df
 
-    def create_script(self):
-        self.cur.execute('''DROP table IF EXISTS scripts''')
-        self.cur.execute('''CREATE TABLE scripts
+
+    def read_compilations_df_from_db(self) -> pd.DataFrame:
+        # id, creators, urls, duration, time
+        df = pd.read_sql_query(
+            "SELECT * FROM compilations",
+            self.con
+        )
+        return df
+
+    def set_published_from_compilations(self):
+        def _set_publish(self, url: str):
+            self.cur.execute(f"UPDATE clips SET published = '1' where url = '{url}'")
+        def _set_all_clips_unpublished(self):
+            self.cur.execute(f"UPDATE clips SET published = '0'")
+        _set_all_clips_unpublished(self)
+        df = self.read_compilations_df_from_db()
+        urls = []
+        for _, row in df.iterrows():
+            # creator_names = row["creators"].split(',')
+            urls += row["urls"].split(',')
+            # duration = row["duration"]
+            # time = row["time"]
+        for url in urls:
+            _set_publish(self, url)
+        self.con.commit()
+        print('Set published flags in clips table from compilations table!')
+    
+    def create_compilation(self):
+        self.cur.execute('''DROP table IF EXISTS compilations''')
+        self.cur.execute('''CREATE TABLE compilations
                     (id integer primary key autoincrement, creators text, urls text, duration integer, time text) ''')
         self.con.commit()
-        print('Created table scripts!')
+        print('Created table compilations!')
 
-    def add_script(self, creators: str, urls: str, duration: int, time: str):
-        self.cur.execute('INSERT INTO scripts(creators, urls, duration, time) VALUES (?,?,?,?)', (creators, urls, duration, time))
+    def add_compilation(self, creators: str, urls: str, duration: int, time: str):
+        self.cur.execute('INSERT INTO compilations(creators, urls, duration, time) VALUES (?,?,?,?)', (creators, urls, duration, time))
 
-    def select_latest_script_number(self) -> int:
-        self.cur.execute("""SELECT id FROM scripts ORDER BY id DESC LIMIT 1""")
+    def select_latest_compilation_number(self) -> int:
+        self.cur.execute("""SELECT id FROM compilations ORDER BY id DESC LIMIT 1""")
         return int(self.cur.fetchone()[0])-1 # TODO: verify if -1 is fix
 
     def select_thumbnail_url(self, url: str) -> str:
@@ -68,9 +93,6 @@ class Mydb():
         self.cur.execute("""SELECT url FROM clips WHERE url=?""", (url,))
         return True if self.cur.fetchone() else False
 
-    def set_publish(self, url: str):
-        self.cur.execute(f"UPDATE clips SET published = '1' where url = '{url}'")
-
     def set_broken(self, url: str):
         self.cur.execute(f"UPDATE clips SET broken = '1' where url = '{url}'")
     
@@ -80,8 +102,8 @@ class Mydb():
         broken = 0
         row  = self.lookup_url(clip.url)
         if row:
-            broken = row.broken
-            published = row.published
+            broken = row[-1]
+            published = row[-2]
             self.cur.execute("""DELETE FROM clips WHERE url=?""", (clip.url,))
         clip.title = clip.title.replace("'", "''")
         clip.game = clip.game.replace("'", "''")

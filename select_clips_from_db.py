@@ -23,6 +23,7 @@ class ClipsSelector:
         self.viewtime = {}
         self.duration = 0
         self.df = self._read_clips_from_db(args)
+        self.clips_removed = []
 
     def _get_list_creators(self, args) -> list:
         # returns list of Creator
@@ -67,7 +68,7 @@ class ClipsSelector:
         return df
     
 
-    def load_compilation(self, compilation_with_errors: Compilation):
+    def load_compilation(self, args, compilation_with_errors: Compilation):
         def _handle_errors(errors):
             db = Mydb()
             for u in [e.clip.url for e in errors]:
@@ -97,6 +98,7 @@ class ClipsSelector:
     def remove_selected_clip(self, choice: Clip):
         self.duration -= int(choice.duration)
         self.clips.remove(choice)
+        self.clips_removed.append(choice)
 
     def swap_selected_clips_index(self, idx0: int, idx1: int):
         self.clips[idx0], self.clips[idx1] = self.clips[idx1], self.clips[idx0]
@@ -136,6 +138,30 @@ class ClipsSelector:
         idx1 = self.choices_str.index(answers[1])
         self.swap_selected_clips_index(idx0, idx1)
 
+    def prompt_choices_replace_clips(self):
+        def _gen_choices(self) -> list:
+            self.choices = self.clips[:]
+            self.choices_str = [c.to_string() for c in self.choices]
+            return self.choices_str
+        choices = _gen_choices(self)
+        questions = [
+            {
+                'type': 'checkbox',
+                'qmark': '😃',
+                'message': 'Select clips to replace',
+                'name': 'replace',
+                'choices': choices
+            }
+        ]
+        answers = prompt(questions)['replace']
+        for answer in answers:
+            idx = self.choices_str.index(answer)
+            clip = self.choices[idx]
+            self.remove_selected_clip(clip)
+        for answer in answers:
+            self.prompt_choices_add_clip()
+
+
     def prompt_choices_remove_clips(self):
         def _gen_choices(self) -> list:
             self.choices = self.clips[:]
@@ -158,7 +184,7 @@ class ClipsSelector:
             self.remove_selected_clip(clip)
 
     def prompt_choices_edit_compilation(self):
-        self.commands = ['add', 'swap', 'remove']
+        self.commands = ['add', 'swap', 'replace', 'remove']
         def _gen_choices(self) -> list:
             return self.commands
         choices = _gen_choices(self)
@@ -178,6 +204,8 @@ class ClipsSelector:
                 self.prompt_choices_swap_clips()
             def remove(self) -> str:
                 self.prompt_choices_remove_clips()
+            def replace(self) -> str:
+                self.prompt_choices_replace_clips()
             # Custom commands to select answer for us
             if cmd == 'add':
                 answer = add(self)
@@ -185,6 +213,8 @@ class ClipsSelector:
                 answer = swap(self)
             elif cmd == 'remove':
                 answer = remove(self)
+            elif cmd == 'replace':
+                answer = replace(self)
             return answer
         if answer in self.commands:
             answer = parse_answer_from_command(self, answer)
@@ -217,7 +247,10 @@ class ClipsSelector:
                 url = row['url']
                 if url in [x.url for x in self.clips]:
                     continue
-                choices.append(Clip(from_row=True,row=row))
+                choice_clip = Clip(from_row=True,row=row)
+                if choice_clip in self.clips_removed:
+                    continue
+                choices.append(choice_clip)
                 count[row.creator] += 1
             self.choices = choices
             self.choices_str = [c.to_string() for c in choices]
@@ -270,7 +303,8 @@ class ClipsSelector:
 def create_compilation_from_db(args):
     sh = ClipsSelector(args)
     if args.cont:
-        sh.load_compilation(args.wd)
+        compilation = Compilation.load(args.wd)
+        sh.load_compilation(args)
     sh.select_and_add_clips(args)
     # Write to url.txt
     compilation = Compilation(wd=args.wd, clips=sh.clips)
@@ -280,7 +314,7 @@ def create_compilation_from_db(args):
 def edit_compilation(args):
     sh = ClipsSelector(args)
     compilation = Compilation.load(args.wd)
-    sh.load_compilation(compilation)
+    sh.load_compilation(args, compilation)
     sh.edit_clips(args)
     while is_prompt_confirm('Continue Edit clips'):
         sh.edit_clips(args)
@@ -299,6 +333,12 @@ def is_prompt_confirm(step: str):
     ]
     answers = prompt(questions)
     return answers['confirm']
+
+def fix_compilation_disk(args):
+    compilation = Compilation.load(args.wd)
+    if is_prompt_confirm('Fix disk?'):
+        compilation.update_compilation_from_disk()
+        compilation.dump(args.wd)
 
 def argparser():
     parser = argparse.ArgumentParser()

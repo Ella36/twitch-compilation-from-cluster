@@ -4,38 +4,35 @@
 from pathlib import Path
 import argparse
 import subprocess
-import uuid
+import re
 
-DELIMITER = '-KjFAn-ST-'
+from model.clips import Compilation
 
 def clear_build_directory(args):
     # Clear BUILD directory of files
     for f in (args.wd / Path('./build')).glob('*'):
         f.unlink()
 
-import re
 def convert_mp4_to_ts(args):
     # Convert mp4 to intermediate TS
     TIME = args.wd / Path('./time.txt')
     if TIME.exists():
         TIME.unlink()
     count = 0
-    for i, f in enumerate(sorted((args.wd / Path('./input')).glob('*.mp4'))):
+    compilation = Compilation.load(args.wd)
+    compilation.order_clips()
+    for e in compilation:
+        f = Path(e.filename_input)
         p = subprocess.run([
             'ffmpeg',
             '-i', f,
             '-c', 'copy',
             '-bsf:v', 'h264_mp4toannexb',
             '-f', 'mpegts',
-            args.wd / Path('./build') / f'{i:03d}.ts',
+            e.filename_build_ts,
         ], capture_output=True, text=True)
         with TIME.open("a") as t:
-            try:
-                id, creator, title = [x.strip() for x in f.stem.split(DELIMITER)]
-            except ValueError:
-                print(f.stem)
-                print(f.stem)
-                print(f.stem)
+            creator, title = e.clip.creator.name, e.clip.title
             t.write(f'{int(count)};;{creator};;{title}\n')
             count += FFMPEGOutputToDurationInSeconds(p.stderr).duration
 

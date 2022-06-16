@@ -4,6 +4,7 @@ import string
 from pathlib import Path
 
 import pandas as pd
+from InquirerPy import prompt
 
 from model.cluster import Creator
 
@@ -81,7 +82,15 @@ class Element:
     
     @property
     def filename(self):
-        return self.wd / Path('./download') / str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}")+".mp4"
+        return self.wd / Path('./download') / Path(str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}-{self.clip.title}")+".mp4")
+
+    @property
+    def filename_input(self):
+        return self.wd / Path('./input') / Path(str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}-{self.clip.title}")+".mp4")
+
+    @property
+    def filename_build_ts(self):
+        return self.wd / Path('./build') / Path(str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}-{self.clip.title}")+".ts")
 
     @property
     def filename_stem_without_order(self):
@@ -97,26 +106,14 @@ class Element:
         if not f.exists():
             find = list(f.parent.glob(f"*{self.filename_stem_without_order}*"))
             if len(find) == 1:
-                print("Removing clip from disk:\t\n{f}")
+                print("\tRemoving clip from disk:\n\t\t{f}")
                 find[0].unlink()
             elif len(find) > 1:
-                print(f"ERROR: CANT UPDATE MULTIPLE FOUND:\n\t{[x.name for x in find]}")
+                print(f"\tERROR: CANT UPDATE MULTIPLE FOUND:\n\t\t{[x.name for x in find]}")
         else:
-            print("Removing clip from disk:\t\n{f}")
+            print("\tRemoving clip from disk:\n\t\t{f}")
             f.unlink()
 
-    def update_order_to_disk(self) -> bool:
-        # Update order if wrong
-        f = Path(self.filename)
-        if not f.exists():
-            find = list(f.parent.glob(f"*{self.filename_stem_without_order}*"))
-            if len(find) == 1:
-                find[0].rename(f.filename)
-                return True
-            elif len(find) > 1:
-                print(f"ERROR: CANT UPDATE MULTIPLE FOUND:\n\t{[x.name for x in find]}")
-                return False
-        return True
 
 import pickle
 from pathlib import Path
@@ -159,25 +156,55 @@ class Compilation:
             compilation = pickle.load(f)
         return compilation
 
-    def update_compilation_from_disk(self):
-        list_copy = self.list[:]
-        for element in list_copy:
-            # Update order
-            if not element.update_order_to_disk():
-                # Can't find on disk
-                if element.download:
-                    # Download flag set, but not present
-                    element.remove_from_disk()
-                    self.list.remove(element)
-            if element.error:
-                # Remove if error
-                element.remove_from_disk()
-                self.list.remove(element)
+    def update_compilation_from_disk(self, is_confirm_with_prompt=True):
+        def _prompt_confirm(step: str):
+            questions = [
+                {
+                    'type': 'confirm',
+                    'message': f'Do you want to {step}?',
+                    'name': 'confirm',
+                    'default': True,
+                },
+            ]
+            answers = prompt(questions)
+            return answers['confirm']
 
-    def clips_in_order(self):
-        return self.list.sort(key=lambda e: e.order)
+        def _find_element_on_disk_and_rename_if_needed(e: Element):
+            print(f"{e.filename_stem_without_order}")
+            f = Path(e.filename)
+            if not f.exists():
+                find = list(f.parent.glob(f"*{e.filename_stem_without_order}*"))
+                if len(find) == 1:
+                    print(f"\tFound(ish) on disk:\n\t\t{find[0]}")
+                    print(f"\tRenaming!\n\t\t{f}")
+                    # Prompt to rename
+                    if not is_confirm_with_prompt or _prompt_confirm("Rename file"):
+                        find[0].rename(f)
+                elif len(find) > 1:
+                    print(f"\tSearching glob:\n\t\t{find}")
+                    print(f"\tERROR: CANT UPDATE MULTIPLE FOUND:\n\t\t{[x.name for x in find]}")
+                else:
+                    print(f"\tNot found!")
+            else:
+                print(f"\tFound on disk:\n\t\t{f}")
+        def _remove_clips_that_are_not_present(elements):
+            download_dir = self.wd / Path('./download')
+            find = list(download_dir.glob(f"*.mp4"))
+            filenames = [e.filename for e in elements]
+            print(f"Looking for clips that dont belong\n\t{filenames}")
+            for f in find:
+                if not (f in filenames ):
+                    print(f"\tClip found on disk not in df:\n\t\t{f}")
+                    if not is_confirm_with_prompt or _prompt_confirm("Remove file"):
+                        f.unlink()
+        for element in self.list:
+            _find_element_on_disk_and_rename_if_needed(element)
+        _remove_clips_that_are_not_present(self.list)
+
+    def order_clips(self):
+        self.list = self.list.sort(key=lambda e: e.order)
+        return self
 
     def add(self, clip: Clip):
-        # TODO: remove download, error?
-        new_element = Element(clip, len(self.list)+1, download=False, error=False)
+        new_element = Element(clip, len(self.list)+1, wd=self.wd, download=False, error=False)
         self.list.append(new_element)

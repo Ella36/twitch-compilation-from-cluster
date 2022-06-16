@@ -2,10 +2,9 @@
 *.mp4
 *.ts
 *.pyc
-*.db
 *.journal
 *.jpg
 *.txt
 proj*
 geckodriver.log
-test/compilation.pkl
+*compilation.pkl

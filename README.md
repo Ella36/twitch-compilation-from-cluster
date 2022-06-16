@@ -19,23 +19,8 @@ Workflow
     cluster, creators, date, URls, status (published, script)
 1. Upload mp4 to youtube/media
 
-Rewrite clip finder
-Clusters, creator -> selenium clips  -> df -> sql
-cluster, creators, game and language -> twitch API -> df -> sql
-
 Repeat for as many
 
-TODO:
-    Easier to delete input file
-    Remove dependency on urls.txt file
-        Change to either new DB table
-        or df .pickle pandas
-        or .txt with CSV values
-    New class with pandas DF seems best. Easier to "tranport" and temporary
-    Migrate scripts to compilation
-    Update clips published tag from compilation 
-    new datastructure compilation to deal with temporary script
-    only publish convert to compilation table once published
 
 ## Clips
 database

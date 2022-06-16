@@ -5,30 +5,21 @@ import argparse
 import subprocess
 import shutil
 
-DELIMITER = '-KjFAn-ST-'
+from model.clips import Compilation, Element
 
-class InputFile:
-    def __init__(self, f: Path):
-        split = f.stem.strip().split(DELIMITER)
-        self.number = split[0]
-        self.creator = split[1]
-        self.title = DELIMITER.join(split[2:-1])
-        _date = split[-1]
-        self.date = datetime.strptime(_date, '%Y%m%d').strftime("%d %B")
-        self.filename = DELIMITER.join(str(f.stem).split(DELIMITER)[:-1]).strip() + '.mp4'
 
-def format_file(args, f: Path):
-    input = InputFile(f)
-    target = args.wd / Path('./input') / input.filename
+def format_file(args, e: Element):
+    input = e.filename
+    target = e.filename_input
     # Add info to video before renaming
     if args.skip_draw:
-        shutil.copy(f, target)
+        shutil.copy(input, target)
     else:
-        text = f'{input.creator} - {input.title}'
+        text = f'{e.clip.creator.name} - {e.clip.title}'
         vf_string = f"fps=30,scale=-1:720,drawtext=fontfile=/path/to/font.ttf:text='{text}':fontcolor=white:fontsize=48:box=1:boxcolor=black@0.5:boxborderw=5:x=(w-text_w)/2:y=10"
         subprocess.call([
             'ffmpeg', 
-            '-i', f,
+            '-i', input,
             '-vf', vf_string,
             '-crf', '32', # optimize, higher is faster and lower quality
             '-codec:a', 'copy',
@@ -41,8 +32,9 @@ def clear_input_directory(args):
 
 def format_download_to_input(args):
     clear_input_directory(args)
-    for f in sorted((args.wd / Path('./download')).glob('*.mp4')):
-        format_file(args, f)
+    compilation = Compilation.load(args.wd)
+    for e in compilation:
+        format_file(args, e)
 
 def argparser():
     parser = argparse.ArgumentParser()
