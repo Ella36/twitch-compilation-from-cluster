@@ -36,6 +36,12 @@ def is_prompt_confirm(step: str):
 
 def argparser():
     parser = argparse.ArgumentParser()
+    # Inputs
+    parser.add_argument("--cluster", nargs='+', help="clusterfile with name(s) of twitch channel (creator)")
+    parser.add_argument("--creators", nargs='+', help="set if list of creators")
+    parser.add_argument("--game_ids", nargs='+', help="set if input are game id ex 12345 ")
+    parser.add_argument("--clip_ids", nargs='+', help="set if input are clip id ex AwkardHelpless... ")
+    parser.add_argument("--categories", nargs='+', help="set if input is category ex 'Just Chatting'")
     # Database
     parser.add_argument('-co', '--compilations', action='store_true', help='create table compilations')
     parser.add_argument('-c', '--clips', action='store_true', help='create table clips')
@@ -44,15 +50,10 @@ def argparser():
     parser.add_argument("--confirm", action="store_true", help="autoconfirms")
     parser.add_argument("--single", action="store_true", help="single URL to skip select clips and publish")
     # Search for clips
-    parser.add_argument('cluster', nargs='+', default='cluster1', help='clustername ex. cluster1')
-    parser.add_argument("--creators", action="store_true", help="set if list of creators")
-    parser.add_argument("--category", action="store_true", help="set if input is category ex 'Just Chatting'")
-    parser.add_argument("--id", action="store_true", help="set if input are game id ex 12345 ")
-    parser.add_argument("--clip_id", action="store_true", help="set if input are clip id ex AwkardHelpless... ")
     parser.add_argument("--days", default="30", help="pick n days")
-    parser.add_argument("--project", default="default", help="name of project, creates working directory")
     parser.add_argument("--dir", default="", help="suffix to append to project to create dir")
     # Select clips
+    parser.add_argument("--project", default="default", help="name of project, creates working directory")
     parser.add_argument("--cont", action="store_true", help="continue selection from urls.txt")
     parser.add_argument('--duration', default='610', help='duration in seconds')
     parser.add_argument('--published_ok', action='store_true', help='set to include clips that have already been published')
@@ -61,6 +62,9 @@ def argparser():
     parser.add_argument("--resolution", default='720')
     # Input formatter
     parser.add_argument("--skip_draw", action="store_true")
+    #
+    parser.add_argument("--title", default="untitled", help="title part before numbers ex. Twitch Compilation -->(NA)<-- #001")
+    parser.add_argument("--description", default="description not added", help="ex. Best twitch clips past 30 days!")
     # Merger
     return parser.parse_args()
 
@@ -83,8 +87,8 @@ from model.mydb import Mydb
 
 if __name__ == '__main__':
     args = argparser()
-    db = Mydb()
     if args.clips or args.compilations or args.sync:
+        db = Mydb()
         if args.compilations:
             db.create_compilation()
         if args.clips:
@@ -92,36 +96,34 @@ if __name__ == '__main__':
         if args.sync:
            db.set_published_from_compilations()
            db.commit()
+        db.close()
         exit(0)
     if args.project == "default":
         args.project = str(uuid.uuid4()).split('-')[0]
     args.wd = create_working_dir(args)
 
-    if args.confirm or is_prompt_confirm('Find clips'):
+    if is_prompt_confirm('Find clips'):
         find_and_add_clips_to_db(args)
     if args.confirm or is_prompt_confirm('Select Clips for Compilation'):
         create_compilation_from_db(args)
-    has_errors = False
     if args.confirm or is_prompt_confirm('Download Compilation Clips'):
         compilation = Compilation.load(args.wd)
         compilation.sync_compilation_with_disk()
         download_clips(args)
-    if not args.confirm and is_prompt_confirm('Edit Compilation'):
+    if is_prompt_confirm('Edit Compilation'):
         edit_compilation(args)
-    if not args.confirm and is_prompt_confirm('Try download again'):
+    if is_prompt_confirm('Download again'):
         compilation = Compilation.load(args.wd)
         compilation.sync_compilation_with_disk()
         download_clips(args)
-    if not args.confirm and is_prompt_confirm('Sync compilation with disk'):
+    if is_prompt_confirm('Sync compilation with disk'):
         compilation = Compilation.load(args.wd)
         compilation.sync_compilation_with_disk()
     if args.confirm or is_prompt_confirm('Format download to Input Clips'):
         format_download_to_input(args)
-    if args.confirm or is_prompt_confirm('Merge input to output'):
         merge_input_to_output(args)
     if args.confirm or is_prompt_confirm('Write title description to title.txt'):
         write_title_description_thumbnail.title_description(args)
-    if args.confirm or is_prompt_confirm('Montage thumbnail'):
         write_title_description_thumbnail.thumbnail(args)
     if is_prompt_confirm('Publish compilation to DB'):
         publish(args)

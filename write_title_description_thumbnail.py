@@ -14,10 +14,9 @@ def title_description(args):
         return d.replace('<3', ' ❤ ').replace('>', '').replace('<', '')
     TIME = args.wd / Path('./time.txt')
     text = TIME.read_text().strip().split('\n')
-    project_name = args.project
-    if 'short' in project_name:
-        project_name = project_name.split('_')[0] + ' #short'
-    description = f'#{project_name}\n'
+    if 'short' in args.title:
+        args.title = args.title.split('_')[0] + ' #short'
+    description = f'{args.description}\n'
     # Description
     creators = []
     for t in text:
@@ -32,11 +31,11 @@ def title_description(args):
     compilation_number = new_compilation_number(args)
 
     if len(cmi) == 1:
-        title = """#Twitch Compilation {2} #{0:03d} {1}""".format(compilation_number, cmi[0], project_name)
+        title = """#Twitch Compilation {2} #{0:03d} {1}""".format(compilation_number, cmi[0], args.title)
     elif len(cmi) == 2:
-        title = """#Twitch Compilation {3} #{0:03d} {1} {2}""".format(compilation_number, cmi[0], cmi[1], project_name)
+        title = """#Twitch Compilation {3} #{0:03d} {1} {2}""".format(compilation_number, cmi[0], cmi[1], args.title)
     else:
-        prefix = "#Twitch Compilation {1} #{0:03d} ".format(compilation_number, project_name)
+        prefix = "#Twitch Compilation {1} #{0:03d} ".format(compilation_number, args.title)
         creators_names = [cmi[0], cmi[1]]
         for name in cmi[2:]:
             temp = creators_names[:]
@@ -110,7 +109,9 @@ def thumbnail(args):
     if "_short" in args.project or args.single:
         _single_image_thumbnail()
         return
-    print(f"Select clips from:\n\t{args.wd / Path('./thumbnail')}")
+    thumbnail_folder = args.wd / Path('./thumbnail')
+    print(f"Select clips from:\n\t{thumbnail_folder}")
+    subprocess.call(['dolphin', thumbnail_folder])
     images = prompt(questions)['img']
     if len(images) == 1:
         _single_image_thumbnail()
@@ -149,9 +150,13 @@ if __name__ == '__main__':
             self.wd = None
             self.project = None
             self.single = None
+            args.title = None
+            args.description = None
     args = argsT()
     args.wd = Path('./asmr')
     args.project = "asmr"
     args.single = False
+    args.description = "some description"
+    args.title = "untitled"
     title_description(args)
     #thumbnail(args)

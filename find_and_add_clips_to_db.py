@@ -5,7 +5,7 @@ from datetime import timedelta, datetime
 from model.mydb import Mydb
 from model import twitch_api
 from model.clips import Clip
-from model.cluster import CLUSTERS
+from cfg.data import CLUSTERS
 from model.cluster import Creator
 
 
@@ -89,58 +89,53 @@ def write_clips_to_db(clips):
         db.add(c)
     db.commit()
 
-def argparser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("cluster", nargs='+', help="clusterfile with name(s) of twitch channel (creator)")
-    parser.add_argument("--creators", action="store_true", help="set if list of creators")
-    parser.add_argument("--id", action="store_true", help="set if input are game id ex 12345 ")
-    parser.add_argument("--clip_id", action="store_true", help="set if input are clip id ex AwkardHelpless... ")
-    parser.add_argument("--category", action="store_true", help="set if input is category ex 'Just Chatting'")
-    parser.add_argument("--days", default="30", help="pick n days")
-    parser.add_argument("--project", default="default", help="name of project n days")
-    return parser.parse_args()
-
-def get_list_creators(args) -> list:
-    if args.creators:
-        creators = list(map(Creator, args.cluster))
-    else:
-        creators = []
-        for c in args.cluster:
-            creators += CLUSTERS.by_name(c).creators
-    return creators
-
 def find_and_add_clips_to_db(args):
-    if args.id:
-        twitch_clip_requests = TwitchSelectorRequests()
-        for game_id in args.cluster:
+    twitch_clip_requests = TwitchSelectorRequests()
+    if args.game_ids:
+        for game_id in args.game_ids:
             clips = twitch_clip_requests.get_clips_from_id(game_id, args)
             print(f"Found: {len(clips)} clips!")
             write_clips_to_db(clips)
-    elif args.category:
-        twitch_clip_requests = TwitchSelectorRequests()
-        for category in args.cluster:
+    if args.categories:
+        for category in args.categories:
             if not twitch_api.TWITCH_GAME_ID_TO_NAME.is_valid_game(category):
-                print(f'Not valid category Check CAPS:\n\t{category}')
-            print(category)
+                print(f'Not valid category name! Check CAPS or USE ID INSTEAD:\n\t{category}')
+                continue
             clips = twitch_clip_requests.get_clips_from_category(category, args)
             print(f"Found: {len(clips)} clips!")
             write_clips_to_db(clips)
-    elif args.clip_id:
-        twitch_clip_requests = TwitchSelectorRequests()
-        for clip_id in args.cluster:
+    if args.clip_ids:
+        for clip_id in args.clip_ids:
             clips = twitch_clip_requests.get_clips_from_clip_id(clip_id, args)
             print(f"Found: {len(clips)} clips!")
             write_clips_to_db(clips)
-    else:
-        creators = get_list_creators(args)
-        twitch_clip_requests = TwitchSelectorRequests()
-        for clip_id in creators:
-            print(clip_id.name)
-            clips = twitch_clip_requests.get_clips_from_creator(clip_id, args)
+    if args.creators:
+        for creator in creators:
+            print(creator.name)
+            clips = twitch_clip_requests.get_clips_from_creator(creator, args)
             print(f"Found: {len(clips)} clips!")
             write_clips_to_db(clips)
-        
+    if args.clusters:
+        creators = []
+        for c in args.cluster:
+            creators += CLUSTERS.by_name(c).creators
+        for creator in creators:
+            print(creator.name)
+            clips = twitch_clip_requests.get_clips_from_creator(creator, args)
+            print(f"Found: {len(clips)} clips!")
+            write_clips_to_db(clips)
 
+def argparser():
+    parser = argparse.ArgumentParser()
+    # Inputs
+    parser.add_argument("--cluster", nargs='+', help="clusterfile with name(s) of twitch channel (creator)")
+    parser.add_argument("--creators", nargs='+', help="set if list of creators")
+    parser.add_argument("--game_ids", nargs='+', help="set if input are game id ex 12345 ")
+    parser.add_argument("--clip_ids", nargs='+', help="set if input are clip id ex AwkardHelpless... ")
+    parser.add_argument("--categories", nargs='+', help="set if input is category ex 'Just Chatting'")
+    # Options
+    parser.add_argument("--days", default="30", help="pick n days")
+    return parser.parse_args()
 
 if __name__ == "__main__":
     args = argparser()

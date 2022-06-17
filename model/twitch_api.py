@@ -8,7 +8,6 @@ TWITCH_BROADCASTER_ENDPOINT = "https://api.twitch.tv/helix/users"
 TWITCH_GAMES_ENDPOINT = "https://api.twitch.tv/helix/games"
 
 
-
 import pandas as pd
 class TwitchGameIDtoName:
     def __init__(self):
@@ -101,8 +100,6 @@ def get_clips_request_by_clip_id(twitch_credentials, clip_id):
     return get_request(twitch_credentials, TWITCH_CLIPS_ENDPOINT, query_parameters)
 
 
-
-
 def get_clips_request_by_category(twitch_credentials, category_name, started_at, ended_at):
     started_at = started_at.isoformat("T") + "Z"
     ended_at = ended_at.isoformat("T") + "Z"
@@ -132,13 +129,17 @@ if __name__ == "__main__":
     }
     twitch_oauth_header = login(twitch_credentials)
 
-    #category_name = "Pools, Hot Tubs, and Beaches"
-    #category_id = get_category_id(twitch_oauth_header, category_name)
-    for game_id in [116747788, 496321134, 766548668]:
-        try:
-            game_name = get_game_from_id(twitch_oauth_header, game_id)
-        except Exception:
-            pass
-        with open('./model/game_info_semicolon.csv', "a") as f:
-            f.write(f'\n"{game_id}";"{game_name}";""')
-        print(game_name)
+    game_name = "The Quarry"
+    game_id = get_category_id(twitch_oauth_header, game_name)
+    with open('./model/game_info_semicolon.csv', "a") as f:
+        f.write(f'\n"{game_id}";"{game_name}";""')
+        print(game_name, game_id)
+
+#    for game_id in [116747788, 496321134, 766548668]:
+#        try:
+#            game_name = get_game_from_id(twitch_oauth_header, game_id)
+#        except Exception:
+#            pass
+#        with open('./model/game_info_semicolon.csv', "a") as f:
+#            f.write(f'\n"{game_id}";"{game_name}";""')
+#        print(game_name)

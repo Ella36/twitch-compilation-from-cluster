@@ -25,34 +25,40 @@ class ClipsSelector:
         self.df = self._read_clips_from_db(args)
         self.clips_removed = []
 
-    def _get_list_creators(self, args) -> list:
-        # returns list of Creator
-        if args.creators:
-            creators = args.cluster
-        else:
-            creators = []
-            for c in args.cluster:
-                creators += CLUSTERS.by_name(c).names
-        return creators
 
     def _read_clips_from_db(self, args):
         def read_clips_from_db(args):
             db = Mydb()
-            if args.id:
-                df = db.read_clips_categories_by_id_df_from_db(args.cluster)
+            df_categories =  pd.DataFrame()
+            df_clip_ids =  pd.DataFrame()
+            df_clusters =  pd.DataFrame()
+            df_creators = pd.DataFrame()
+            df_game_ids =  pd.DataFrame()
+            if args.categories:
+                df_categories = db.read_clips_categories_df_from_db(args.cluster)
                 self.creators = df["creator"].unique().tolist()
-            elif args.category:
-                df = db.read_clips_categories_df_from_db(args.cluster)
-                self.creators = df["creator"].unique().tolist()
-            elif args.clip_id:
+            if args.clip_ids:
                 urls = [f'https://clips.twitch.tv/{clip_id}' for clip_id in args.cluster]
-                df = db.read_clips_clip_ids_df_from_db(urls)
+                df_clip_ids = db.read_clips_clip_ids_df_from_db(urls)
                 self.creators = df["creator"].unique().tolist()
-            else:
-                self.creators = self._get_list_creators(args)
-                df = db.read_clips_creators_df_from_db(self.creators)
+            if args.clusters:
+                self.creators = []
+                for c in args.clusters:
+                    self.creators += CLUSTERS.by_name(c).names
+                df_creators = db.read_clips_creators_df_from_db(self.creators)
+            if args.creators:
+                self.creators = args.creators
+                df_creators = db.read_clips_creators_df_from_db(self.creators)
+            if args.game_ids:
+                df_game_ids = db.read_clips_categories_by_id_df_from_db(args.cluster)
+                self.creators = df["creator"].unique().tolist()
             db.close()
-            return df
+            return pd.concat([
+                df_creators, df_clusters, df_categories,
+                df_clip_ids, df_game_ids
+                ],
+                ignore_index=True
+            )
         def discard_invalid_clips(df, args):
             def _date_n_days_ago(days: str ='7') -> str:
                 days = int(days)
@@ -70,8 +76,7 @@ class ClipsSelector:
             df = df[df['created_at']>=_date_n_days_ago(days=args.days)]
             return df
         df = read_clips_from_db(args)
-        if not(args.single and args.clip_id):
-            df = discard_invalid_clips(df, args)
+        df = discard_invalid_clips(df, args)
         df = df.sort_values(by=['view_count','duration'], ascending=False) 
         return df
     
@@ -102,11 +107,6 @@ class ClipsSelector:
         self.df = self._read_clips_from_db(args)
 
     def select_and_add_clips(self, args):
-        if args.single and args.clip_id:
-            row = self.df.iloc[0]
-            clip = Clip(from_row=True,row=row)
-            self.add_selected_clip(clip)
-            return self.clips
         while self.duration <= int(args.duration):
             self.prompt_choices_add_clip()
         return self.clips
@@ -357,19 +357,20 @@ def is_prompt_confirm(step: str):
 
 def argparser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('cluster', nargs='+', default='cluster1', help='clustername ex. cluster1')
+    # Inputs
+    parser.add_argument("--cluster", nargs='+', help="clusterfile with name(s) of twitch channel (creator)")
+    parser.add_argument("--creators", nargs='+', help="set if list of creators")
+    parser.add_argument("--game_ids", nargs='+', help="set if input are game id ex 12345 ")
+    parser.add_argument("--clip_ids", nargs='+', help="set if input are clip id ex AwkardHelpless... ")
+    parser.add_argument("--categories", nargs='+', help="set if input is category ex 'Just Chatting'")
+    # options
     parser.add_argument('--project', default='untitled', help='name of project we publish under ex. just_chatting')
     parser.add_argument('--days', default='7', help='ex. 7 or 30')
     parser.add_argument('--duration', default='610', help='duration in seconds')
-    parser.add_argument("--clip_id", action="store_true", help="set if input are clip id ex AwkardHelpless... ")
     parser.add_argument('--published_ok', action='store_true', help='set to include clips that have already been published')
-    parser.add_argument("--creators", action="store_true", help="set if list of creators")
     parser.add_argument("--cont", action="store_true", help="continue selection from urls.txt and error.txt after errors")
     parser.add_argument("--edit", action="store_true", help="edit compilation")
-    parser.add_argument("--single", action="store_true", help="skip selection")
     parser.add_argument('--lang', default='en', help='set language ex. en, fr, es, ko, en-gb')
-    parser.add_argument("--category", action="store_true", help="set if input is category ex 'Just Chatting'")
-    parser.add_argument("--id", action="store_true", help="set if input are game id ex 12345 ")
     return parser.parse_args()
 
 if __name__ == '__main__':
