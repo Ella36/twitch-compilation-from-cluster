@@ -19,7 +19,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--proj", "thequarry_30d", "--dir", "test"],
+            "args": ["--project", "pools_short", "--dir", "test"],
         },
         {
             "name": "Python: Find Valorant ID Cluster_test 30D",

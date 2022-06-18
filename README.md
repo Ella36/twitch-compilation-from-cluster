@@ -24,6 +24,12 @@ Repeat for as many
 TODO:
     Create image 2048 x 1152 as banner!
 
+## Upload to google
+```
+pip install --upgrade google-api-python-client
+pip install --upgrade google-auth google-auth-oauthlib google-auth-httplib2
+```
+
 
 ## Clips
 database

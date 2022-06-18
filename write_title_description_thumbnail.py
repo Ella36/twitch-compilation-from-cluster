@@ -105,7 +105,7 @@ def thumbnail(args):
             args.wd / Path('thumbnail.jpg'),
             args.wd / Path('thumbnail_with_icon.jpg'),
         ])
-    if "_short" in args.project or args.single:
+    if args.single:
         _single_image_thumbnail()
         return
     thumbnail_folder = args.wd / Path('./thumbnail')

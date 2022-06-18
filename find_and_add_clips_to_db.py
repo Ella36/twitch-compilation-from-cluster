@@ -94,7 +94,7 @@ def find_and_add_clips_to_db(args):
     if args.game_ids:
         for game_id in args.game_ids:
             clips = twitch_clip_requests.get_clips_from_id(game_id, args)
-            print(f"Found: {len(clips)} clips!")
+            print(f"\tFound: {len(clips)} clips!")
             write_clips_to_db(clips)
     if args.categories:
         for category in args.categories:
@@ -102,27 +102,27 @@ def find_and_add_clips_to_db(args):
                 print(f'Not valid category name! Check CAPS or USE ID INSTEAD:\n\t{category}')
                 continue
             clips = twitch_clip_requests.get_clips_from_category(category, args)
-            print(f"Found: {len(clips)} clips!")
+            print(f"\tFound: {len(clips)} clips!")
             write_clips_to_db(clips)
     if args.clip_ids:
         for clip_id in args.clip_ids:
             clips = twitch_clip_requests.get_clips_from_clip_id(clip_id, args)
-            print(f"Found: {len(clips)} clips!")
+            print(f"\tFound: {len(clips)} clips!")
             write_clips_to_db(clips)
     if args.creators:
         for creator in creators:
             print(creator.name)
             clips = twitch_clip_requests.get_clips_from_creator(creator, args)
-            print(f"Found: {len(clips)} clips!")
+            print(f"\tFound: {len(clips)} clips!")
             write_clips_to_db(clips)
     if args.clusters:
         creators = []
-        for c in args.cluster:
+        for c in args.clusters:
             creators += CLUSTERS.by_name(c).creators
         for creator in creators:
             print(creator.name)
             clips = twitch_clip_requests.get_clips_from_creator(creator, args)
-            print(f"Found: {len(clips)} clips!")
+            print(f"\tFound: {len(clips)} clips!")
             write_clips_to_db(clips)
 
 def argparser():

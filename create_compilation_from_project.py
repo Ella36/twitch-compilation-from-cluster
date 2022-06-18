@@ -76,7 +76,9 @@ def setup_args(args):
     args.resolution = project.resolution
     args.published_ok = project.is_ok_already_published
     args.skip_draw = project.skip_draw
-    args.single = project.single
+    if args.single:
+        # Select only 1 clip
+        args.duration = 1
     print(f'Args set:\n\t{args}')
     return args
 

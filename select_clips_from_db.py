@@ -35,6 +35,14 @@ class ClipsSelector:
             df_creators = pd.DataFrame()
             df_game_ids =  pd.DataFrame()
             self.creators = []
+            if args.clusters: 
+                for c in args.clusters:
+                    self.creators += CLUSTERS.by_name(c).names
+                df_creators = db.read_clips_creators_df_from_db(self.creators)
+                self.creators += df_creators["creator"].unique().tolist()
+            if args.creators: 
+                df_creators = db.read_clips_creators_df_from_db(self.creators)
+                self.creators += df_creators["creator"].unique().tolist()
             if args.categories:
                 df_categories = db.read_clips_categories_df_from_db(args.categories)
                 self.creators += df_categories["creator"].unique().tolist()
@@ -42,24 +50,15 @@ class ClipsSelector:
                 urls = [f'https://clips.twitch.tv/{clip_id}' for clip_id in args.clip_ids]
                 df_clip_ids = db.read_clips_clip_ids_df_from_db(urls)
                 self.creators += df_clip_ids["creator"].unique().tolist()
-            if args.clusters:
-                for c in args.clusters:
-                    self.creators += CLUSTERS.by_name(c).names
-                df_creators = db.read_clips_creators_df_from_db(self.clusters)
-            if args.creators:
-                self.creators += args.creators
-                df_creators = db.read_clips_creators_df_from_db(self.creators)
             if args.game_ids:
                 df_game_ids = db.read_clips_categories_by_id_df_from_db(args.game_ids)
-                self.creators = df_game_ids["creator"].unique().tolist()
+                self.creators += df_game_ids["creator"].unique().tolist()
             db.close()
             self.creators = list(set(self.creators))
             return pd.concat([
                 df_creators, df_clusters, df_categories,
                 df_clip_ids, df_game_ids
-                ],
-                ignore_index=True
-            )
+                ]).drop_duplicates().reset_index(drop=True)
         def discard_invalid_clips(df, args):
             def _date_n_days_ago(days: str ='7') -> str:
                 days = int(days)
@@ -137,7 +136,7 @@ class ClipsSelector:
         self.prompt_choices_edit_compilation()
 
     def _choices_str(self, choices):
-        self.choices_str = [f'{i:03d}-{c.to_string()}' for i,c in enumerate(choices)]
+        return [f'{i:03d}-{c.to_string()}' for i,c in enumerate(choices)]
 
     def prompt_choices_swap_clips(self):
         def _gen_choices(self) -> list:
