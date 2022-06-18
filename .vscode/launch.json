@@ -13,13 +13,13 @@
             "justMyCode": true
         },
         {
-            "name": "Python: Current File --Proj",
+            "name": "Python: From Projectfile",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--proj", "5680eb4f-a85b-4794-bffc-9940c457fabf"],
+            "args": ["--proj", "thequarry_30d", "--dir", "test"],
         },
         {
             "name": "Python: Find Valorant ID Cluster_test 30D",

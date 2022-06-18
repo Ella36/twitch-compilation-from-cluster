@@ -11,7 +11,7 @@ import pandas as pd
 from InquirerPy import prompt
 
 from model.mydb import Mydb
-from model.cluster import CLUSTERS
+from cfg.data import CLUSTERS
 from model.clips import Clip, Compilation
 from model.cluster import Creator
 
@@ -34,25 +34,26 @@ class ClipsSelector:
             df_clusters =  pd.DataFrame()
             df_creators = pd.DataFrame()
             df_game_ids =  pd.DataFrame()
+            self.creators = []
             if args.categories:
-                df_categories = db.read_clips_categories_df_from_db(args.cluster)
-                self.creators = df["creator"].unique().tolist()
+                df_categories = db.read_clips_categories_df_from_db(args.categories)
+                self.creators += df_categories["creator"].unique().tolist()
             if args.clip_ids:
-                urls = [f'https://clips.twitch.tv/{clip_id}' for clip_id in args.cluster]
+                urls = [f'https://clips.twitch.tv/{clip_id}' for clip_id in args.clip_ids]
                 df_clip_ids = db.read_clips_clip_ids_df_from_db(urls)
-                self.creators = df["creator"].unique().tolist()
+                self.creators += df_clip_ids["creator"].unique().tolist()
             if args.clusters:
-                self.creators = []
                 for c in args.clusters:
                     self.creators += CLUSTERS.by_name(c).names
-                df_creators = db.read_clips_creators_df_from_db(self.creators)
+                df_creators = db.read_clips_creators_df_from_db(self.clusters)
             if args.creators:
-                self.creators = args.creators
+                self.creators += args.creators
                 df_creators = db.read_clips_creators_df_from_db(self.creators)
             if args.game_ids:
-                df_game_ids = db.read_clips_categories_by_id_df_from_db(args.cluster)
-                self.creators = df["creator"].unique().tolist()
+                df_game_ids = db.read_clips_categories_by_id_df_from_db(args.game_ids)
+                self.creators = df_game_ids["creator"].unique().tolist()
             db.close()
+            self.creators = list(set(self.creators))
             return pd.concat([
                 df_creators, df_clusters, df_categories,
                 df_clip_ids, df_game_ids
@@ -135,10 +136,13 @@ class ClipsSelector:
         print(f'Total Duration: {int(self.duration)}')
         self.prompt_choices_edit_compilation()
 
+    def _choices_str(self, choices):
+        self.choices_str = [f'{i:03d}-{c.to_string()}' for i,c in enumerate(choices)]
+
     def prompt_choices_swap_clips(self):
         def _gen_choices(self) -> list:
             self.choices = self.clips[:]
-            self.choices_str = [c.to_string() for c in self.choices]
+            self.choices_str = self._choices_str(self.choices)
             return self.choices_str
         choices = _gen_choices(self)
         questions = [
@@ -158,7 +162,7 @@ class ClipsSelector:
     def prompt_choices_replace_clips(self):
         def _gen_choices(self) -> list:
             self.choices = self.clips[:]
-            self.choices_str = [c.to_string() for c in self.choices]
+            self.choices_str = self._choices_str(self.choices)
             return self.choices_str
         choices = _gen_choices(self)
         questions = [
@@ -182,7 +186,7 @@ class ClipsSelector:
     def prompt_choices_remove_clips(self):
         def _gen_choices(self) -> list:
             self.choices = self.clips[:]
-            self.choices_str = [c.to_string() for c in self.choices]
+            self.choices_str = self._choices_str(self.choices)
             return self.choices_str
         choices = _gen_choices(self)
         questions = [
@@ -272,7 +276,7 @@ class ClipsSelector:
                 choices.append(choice_clip)
                 count[row.creator] += 1
             self.choices = choices
-            self.choices_str = [c.to_string() for c in choices]
+            self.choices_str = self._choices_str(choices)
             _update_nclips_viewtime(self)
             return self.commands + self.choices_str
         choices = _gen_choices(self)
@@ -319,11 +323,8 @@ class ClipsSelector:
             clip = self.choices[idx]
             self.add_selected_clip(clip)
 
-def create_compilation_from_db(args):
+def select_compilation_from_db(args):
     sh = ClipsSelector(args)
-    if args.cont:
-        compilation = Compilation.load(args.wd)
-        sh.load_compilation(args, compilation)
     sh.select_and_add_clips(args)
     # Write to url.txt
     compilation = Compilation(wd=args.wd, clips=sh.clips, project=args.project)
@@ -379,4 +380,4 @@ if __name__ == '__main__':
     if args.edit:
         edit_compilation(args)
     else:
-        create_compilation_from_db(args)
+        select_compilation_from_db(args)

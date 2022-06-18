@@ -13,7 +13,7 @@ import uuid
 from InquirerPy import prompt
 
 from find_and_add_clips_to_db import find_and_add_clips_to_db
-from select_clips_from_db import create_compilation_from_db, edit_compilation
+from select_clips_from_db import select_compilation_from_db, edit_compilation
 from download_clips import download_clips
 from download_to_input_format import format_download_to_input
 from merge_input_to_output import merge_input_to_output
@@ -84,14 +84,13 @@ def create_working_dir(args):
     return wd
 
 from model.mydb import Mydb
-
 if __name__ == '__main__':
     args = argparser()
     if args.clips or args.compilations or args.sync:
         db = Mydb()
-        if args.compilations:
+        if args.compilations and is_prompt_confirm('DELETE or CREATE compilations'):
             db.create_compilation()
-        if args.clips:
+        if args.clips and is_prompt_confirm('DELETE or CREATE clips'):
             db.create_clips()
         if args.sync:
            db.set_published_from_compilations()
@@ -105,7 +104,7 @@ if __name__ == '__main__':
     if is_prompt_confirm('Find clips'):
         find_and_add_clips_to_db(args)
     if args.confirm or is_prompt_confirm('Select Clips for Compilation'):
-        create_compilation_from_db(args)
+        select_compilation_from_db(args)
     if args.confirm or is_prompt_confirm('Download Compilation Clips'):
         compilation = Compilation.load(args.wd)
         compilation.sync_compilation_with_disk()

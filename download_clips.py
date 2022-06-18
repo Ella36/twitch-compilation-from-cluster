@@ -17,7 +17,7 @@ def download_clips(args) -> bool:
         db.set_publish_temp(element.clip.url)
     db.commit()
     db.close()
-    errors = []
+    is_error = False
     for element in compilation:
         if element.download:
             continue
@@ -34,10 +34,11 @@ def download_clips(args) -> bool:
         error = p.stderr
         if 'ERROR' in error:
             element.error = True
+            is_error = True
         else:
             element.download = True
     compilation.dump(args.wd)
-    return len(errors) > 0
+    return is_error
 
 def argparser():
     parser = argparse.ArgumentParser()

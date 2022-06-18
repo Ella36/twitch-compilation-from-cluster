@@ -14,8 +14,6 @@ def title_description(args):
         return d.replace('<3', ' ❤ ').replace('>', '').replace('<', '')
     TIME = args.wd / Path('./time.txt')
     text = TIME.read_text().strip().split('\n')
-    if 'short' in args.title:
-        args.title = args.title.split('_')[0] + ' #short'
     description = f'{args.description}\n'
     # Description
     creators = []
@@ -45,7 +43,8 @@ def title_description(args):
             else:
                 break
         title = prefix + ', '.join(creators_names) + ', ...'
-    out = title + '\n\n' + description
+    keywords = f'\n#twitch, #compilation, #{args.title}' + ', '.join([f'#{c}' for c in cmi])
+    out = title + '\n\n' + description + keywords
     print(out)
     with (args.wd / Path('./title.txt')).open("w+") as f:
         f.write(out)

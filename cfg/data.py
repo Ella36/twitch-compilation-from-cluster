@@ -201,10 +201,11 @@ PROJECTS = Projects([
     Project(
         name='thequarry_30d',
         description='Popular The Quarry twitch clips!',
-        title='CSGO',
+        title='The Quarry',
         game_ids=['1937599489'],
         days=30,
         n_per_month=2,
+        is_active=False,
     ),
     Project(
         name='csgo_30d',

@@ -194,6 +194,7 @@ class Compilation:
                         print(f"\Remove file with error!\n\t\t{f.name}")
                         if not is_confirm_with_prompt or _prompt_confirm("Remove file"):
                             f.unlink()
+                            e.download = False
                     elif len(find) > 1:
                         print(f"\tSearching glob:\n\t\t{find}")
                         print(f"\tERROR: CANT REMOVE MULTIPLE FOUND:\n\t\t{[x.name for x in find]}")
@@ -207,17 +208,19 @@ class Compilation:
             f = Path(e.filename)
             if Path(str(f) + ".part").exists():
                 print(f"\tFound .part on disk:\n\t\t{f.name}")
+                e.download = False
                 return
             if not f.exists():
                 find = list(f.parent.glob(f"*{e.filename_stem_without_order}*"))
                 if len(find) == 1:
                     print(f"\tFound(ish) on disk:\n\t\t{find[0].name}")
+                    e.download = True
                     # CHECK FOR .PART
                     suffix = ".part" if re.search(r'\.part$', str(find[0])) else ""
                     f = Path(str(f) + suffix)
                     print(f"\tRenaming!\n\t\t{f.name}")
                     # Prompt to rename
-                    if not is_confirm_with_prompt or _prompt_confirm("Rename file"):
+                    if _prompt_confirm("Rename file"):
                         find[0].rename(f)
                 elif len(find) > 1:
                     print(f"\tSearching glob:\n\t\t{find}")
@@ -226,6 +229,7 @@ class Compilation:
                     print(f"\tNot found!")
             else:
                 print(f"\tFound on disk:\n\t\t{f.name}")
+                e.download = True
         def _remove_clips_that_are_not_present(elements):
             download_dir = self.wd / Path('./download')
             find = list(download_dir.glob(f"*.mp4"))
@@ -233,7 +237,7 @@ class Compilation:
             print(f"Looking for clips that dont belong")
             for f in find:
                 if not (f in filenames ):
-                    print(f"\tClip found on disk not in df:\n\t\t{f}")
+                    print(f"\tClip found on disk not in df:\n\t\t{f.name}")
                     if not is_confirm_with_prompt or _prompt_confirm("Remove file"):
                         f.unlink()
         _remove_elements_with_errors_from_disk(self.list)
