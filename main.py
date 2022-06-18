@@ -15,10 +15,10 @@ from InquirerPy import prompt
 from find_and_add_clips_to_db import find_and_add_clips_to_db
 from select_clips_from_db import select_compilation_from_db, edit_compilation
 from download_clips import download_clips
-from download_to_input_format import format_download_to_input
+from format_download_to_input import format_download_to_input
 from merge_input_to_output import merge_input_to_output
 import write_title_description_thumbnail
-from publish import publish
+from publish_compilation_to_db import publish
 from model.clips import Compilation
 
 
