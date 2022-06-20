@@ -25,7 +25,7 @@ from cfg.data import Project, PROJECTS
 
 
 def create_working_dir(args):
-    wd = Path(args.project)
+    wd = Path('proj-'+args.project)
     if wd.exists:
         if args.dir != "":
             wd = Path(str(wd)+args.dir)
@@ -76,8 +76,9 @@ def setup_args(args):
     args.resolution = project.resolution
     args.published_ok = project.is_ok_already_published
     args.skip_draw = project.skip_draw
-    if args.single:
+    if project.single:
         # Select only 1 clip
+        args.single = True
         args.duration = 1
     print(f'Args set:\n\t{args}')
     return args

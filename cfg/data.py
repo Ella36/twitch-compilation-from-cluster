@@ -11,6 +11,13 @@ CLUSTERS  = Clusters([
         ]
     ),
     Cluster(
+        'offline_tv',
+        'offlien tv & friends',
+        [ 
+            Creator('tinakitten'),
+        ]
+    ),
+    Cluster(
         'asians',
         'subreddit r/twitchasians',
         [ 
@@ -275,7 +282,7 @@ PROJECTS = Projects([
         name='asmr_30d',
         title='ASMR',
         description='Popular Twitch ASMR clips',
-        categories=['ASMR'],
+        game_ids=['509659'],
         days=30,
         n_per_month=2,
     ),
@@ -283,7 +290,7 @@ PROJECTS = Projects([
         name='asmr_short',
         title='ASMR',
         description='Popular Twitch ASMR clips',
-        categories=['ASMR'],
+        game_ids=['509659'],
         days=10,
         n_per_month=3,
         single=True,

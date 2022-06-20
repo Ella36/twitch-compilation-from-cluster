@@ -5,6 +5,9 @@
 *.journal
 *.jpg
 *.txt
+youtube-upload-master
+*compilation.pkl
 proj*
 geckodriver.log
-*compilation.pkl
+.vscode
+

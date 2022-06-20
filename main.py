@@ -69,7 +69,7 @@ def argparser():
     return parser.parse_args()
 
 def create_working_dir(args):
-    wd = Path(args.project)
+    wd = Path('proj-'+args.project)
     if wd.exists:
         if args.dir != "":
             wd = Path(str(wd)+args.dir)

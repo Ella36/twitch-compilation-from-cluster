@@ -1,5 +1,18 @@
 https://ottverse.com/3-easy-ways-to-concatenate-mp4-files-using-ffmpeg/
 
+"""
+When you create the credentials in the APIs Console, make sure you select "Desktop Application"
+
+Add yourself to test users (email)
+"""
+
+### Upload
+```
+PYTHONPATH=. python3 bin/youtube-upload --title "Twitch #ASMR Short thealinarose" --category="Entertainment" --tags="twitch,twitch compilation,compilation,asmr" --default-language="en" --default-audio-language="en" --description="https://twitch.tv/thealinearose LET ME WHISPER IN UR EAR" --privacy private --thumbnail ../../asmr_shorttest/thumbnail_with_icon.jpg ../../asmr_shorttest/asmr_shorttest.mp4 
+```
+
+
+
 Workflow
 1. Input cluster to be selected
 1. Select cluster and add clip links to database
