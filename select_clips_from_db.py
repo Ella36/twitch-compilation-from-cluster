@@ -136,7 +136,7 @@ class ClipsSelector:
         self.prompt_choices_edit_compilation()
 
     def _choices_str(self, choices):
-        return [f'{i:03d}-{c.to_string()}' for i,c in enumerate(choices)]
+        return [f'{i+1:03d}-{c.to_string()}' for i,c in enumerate(choices)]
 
     def prompt_choices_swap_clips(self):
         def _gen_choices(self) -> list:

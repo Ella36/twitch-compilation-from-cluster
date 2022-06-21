@@ -6,6 +6,7 @@
 *.jpg
 *.txt
 youtube-upload-master
+youtubeuploader-bin
 *compilation.pkl
 proj*
 geckodriver.log

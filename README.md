@@ -36,6 +36,12 @@ Repeat for as many
 
 TODO:
     Create image 2048 x 1152 as banner!
+    Create JSON for prep upload
+    palylistTitle to Project config
+    publishAt next day at 4:30PM EU
+
+
+
 
 ## Upload to google
 ```

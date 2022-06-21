@@ -37,7 +37,7 @@ def is_prompt_confirm(step: str):
 def argparser():
     parser = argparse.ArgumentParser()
     # Inputs
-    parser.add_argument("--cluster", nargs='+', help="clusterfile with name(s) of twitch channel (creator)")
+    parser.add_argument("--clusters", nargs='+', help="clusterfile with name(s) of twitch channel (creator)")
     parser.add_argument("--creators", nargs='+', help="set if list of creators")
     parser.add_argument("--game_ids", nargs='+', help="set if input are game id ex 12345 ")
     parser.add_argument("--clip_ids", nargs='+', help="set if input are clip id ex AwkardHelpless... ")
@@ -62,9 +62,11 @@ def argparser():
     parser.add_argument("--resolution", default='720')
     # Input formatter
     parser.add_argument("--skip_draw", action="store_true")
-    #
+    # Publishing
     parser.add_argument("--title", default="untitled", help="title part before numbers ex. Twitch Compilation -->(NA)<-- #001")
     parser.add_argument("--description", default="description not added", help="ex. Best twitch clips past 30 days!")
+    parser.add_argument("--youtube_category_id", default="22", help="Gaming 20,  Entertainment 24, People Blogs 22")
+    parser.add_argument("--playlist_title", help="Name of playlist to publish, written to JSON during title thumbnail writing")
     # Merger
     return parser.parse_args()
 
@@ -122,7 +124,7 @@ if __name__ == '__main__':
         format_download_to_input(args)
         merge_input_to_output(args)
     if args.confirm or is_prompt_confirm('Write title description to title.txt'):
-        write_title_description_thumbnail.title_description(args)
+        write_title_description_thumbnail.write_title_and_json_meta(args)
         write_title_description_thumbnail.thumbnail(args)
     if is_prompt_confirm('Publish compilation to DB'):
         publish(args)

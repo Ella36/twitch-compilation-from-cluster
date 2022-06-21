@@ -8,8 +8,7 @@ from InquirerPy import prompt
 from model.mydb import Mydb
 from model.clips import Compilation
 
-
-def title_description(args):
+def parse_time_file(args):
     def _filter_description(d):
         return d.replace('<3', ' ❤ ').replace('>', '').replace('<', '')
     TIME = args.wd / Path('./time.txt')
@@ -27,30 +26,70 @@ def title_description(args):
     # Title
     cmi = list(set(creators))
     compilation_number = new_compilation_number(args)
+    # Set compilation number
+    compilation = Compilation.load(args.wd)
+    compilation.pid = compilation_number
+    compilation.dump(args.wd)
 
+    title_prefix = "#Twitch Compilation {} #{:03d}".format(args.title, compilation_number)
     if len(cmi) == 1:
-        title = """#Twitch Compilation {2} #{0:03d} {1}""".format(compilation_number, cmi[0], args.title)
+        title = """{} {}""".format(title_prefix, cmi[0])
     elif len(cmi) == 2:
-        title = """#Twitch Compilation {3} #{0:03d} {1} {2}""".format(compilation_number, cmi[0], cmi[1], args.title)
+        title = """{} {} {}""".format(title_prefix, cmi[0], cmi[1])
     else:
-        prefix = "#Twitch Compilation {1} #{0:03d} ".format(compilation_number, args.title)
+        creators_prefix = "{} ".format(title_prefix)
         creators_names = [cmi[0], cmi[1]]
         for name in cmi[2:]:
             temp = creators_names[:]
             temp.append(name)
-            if len(', '.join(temp)) + len(prefix) < 95:
+            if len(', '.join(temp)) + len(creators_prefix) < 95:
                 creators_names.append(name)
             else:
                 break
-        title = prefix + ', '.join(creators_names) + ', ...'
-    keywords = f'\n#twitch, #compilation, #{args.title}' + ', '.join([f'#{c}' for c in cmi])
+        title = creators_prefix + ', '.join(creators_names) + ', ...'
+    keywords = f'\n#twitch, #compilation, #{args.title}, ' + ', '.join([f'#{c}' for c in cmi])
+    return title, description, keywords
+
+
+from datetime import datetime, date
+def _publish_date_formatted():
+    # Next day 5PM
+    today = date.today()
+    tomorrow = datetime(today.year, today.month, today.day+1)
+    tomorrow_16_30 = tomorrow.replace(hour=16, minute=30)
+    return tomorrow_16_30.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+def _record_date_formatted():
+    return datetime.datetime.now().strftime("%Y-%m-%d")
+
+import json
+def write_title_and_json_meta(args):
+    title, description, keywords = parse_time_file()
+    # Write Title
     out = title + '\n\n' + description + keywords
     print(out)
     with (args.wd / Path('./title.txt')).open("w+") as f:
         f.write(out)
-    compilation = Compilation.load(args.wd)
-    compilation.pid = compilation_number
-    compilation.dump(args.wd)
+    # Write Meta JSON
+    meta = {}
+    meta["title"] = title
+    meta["description"] = description
+    meta["keywords"] = keywords
+    meta["privacyStatus"] = "private"
+    meta["madeForKids"] = False,
+    meta["embeddable"] = True,
+    meta["publicStatsViewale"] = True,
+    meta["publishAt"] = _publish_date_formatted()
+    meta["categoryId"] = args.youtube_category_id
+    meta["recordingdate"] = _record_date_formatted()
+    meta["playlistTitles"] = [args.playlist_title]
+    meta["language"] = args.lang
+    # Writing to sample.json
+    json_object = json.dumps(meta, indent = 4)
+    META = args.wd / Path('./meta.json')
+    with META.open("w") as f:
+        f.write(json_object)
+
 
 def new_compilation_number(args) -> int:
         db = Mydb()
@@ -157,5 +196,5 @@ if __name__ == '__main__':
     args.single = False
     args.description = "some description"
     args.title = "untitled"
-    title_description(args)
+    write_title_and_json_meta(args)
     #thumbnail(args)

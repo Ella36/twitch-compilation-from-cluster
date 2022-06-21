@@ -76,6 +76,11 @@ def setup_args(args):
     args.resolution = project.resolution
     args.published_ok = project.is_ok_already_published
     args.skip_draw = project.skip_draw
+    args.youtube_category_id = project.youtube_category_id
+    if project.playlist_title == "untitled":
+        args.playlist = False
+    else:
+        args.playlist = project.playlist_title
     if project.single:
         # Select only 1 clip
         args.single = True
@@ -121,7 +126,7 @@ if __name__ == '__main__':
         format_download_to_input(args)
         merge_input_to_output(args)
     if is_prompt_confirm('Write title description AND thumbnail'):
-        write_title_description_thumbnail.title_description(args)
+        write_title_description_thumbnail.write_title_and_json_meta(args)
         write_title_description_thumbnail.thumbnail(args)
     if is_prompt_confirm('Publish to DB!'):
         publish(args)
