@@ -232,7 +232,9 @@ if __name__ == '__main__':
             out += f'{"-"*40}\n'
             out += f'{date} {", ".join(project_names)}\n'
             for p in project_names:
-                out += f'./create_compilation_from_project.py --project {p}\n'
+                out += f'./create_compilation_from_project.py --project {p} --dir 1\n'
+                pf = f'./proj-{p}-1'
+                out += f"./youtubeuploader-bin/youtubeuploader -filename {pf}/proj-{p}-1.mp4 --metaJSON {pf}/meta.json -thumbnail {pf}/thumbnail_with_icon.jpg -oAuthPort 8082\n"
         print(out)
         # Write to file
         if is_prompt_confirm('Write commands to cmds.txt'):

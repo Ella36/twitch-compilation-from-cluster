@@ -110,9 +110,9 @@ def find_and_add_clips_to_db(args):
             print(f"\tFound: {len(clips)} clips!")
             write_clips_to_db(clips)
     if args.creators:
-        for creator in creators:
-            print(creator.name)
-            clips = twitch_clip_requests.get_clips_from_creator(creator, args)
+        for creator in args.creators:
+            print(creator)
+            clips = twitch_clip_requests.get_clips_from_creator(Creator(creator), args)
             print(f"\tFound: {len(clips)} clips!")
             write_clips_to_db(clips)
     if args.clusters:

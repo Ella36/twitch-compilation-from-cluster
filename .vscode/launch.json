@@ -13,6 +13,24 @@
             "justMyCode": true
         },
         {
+            "name": "Python: create napuplarcyan30",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["--project", "napopularcyan_30d", "--dir", "1"],
+        },
+        {
+            "name": "Python: turk main 1 clip",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["--creators", "turk", "--project", "test", "--dir", "1", "--skip_draw", "--duration", "1"],
+        },
+        {
             "name": "Python: From Projectfile",
             "type": "python",
             "request": "launch",

@@ -34,6 +34,11 @@ def parse_time_file(args):
     title_prefix = "#Twitch Compilation {} #{:03d}".format(args.title, compilation_number)
     if len(cmi) == 1:
         title = """{} {}""".format(title_prefix, cmi[0])
+        if args.single:
+            for t in text:
+                _, _, title = t.split(';;')
+                title = _filter_description(title)
+            title = "#Twitch Compilation {} #{:03d} {}".format(args.title, compilation_number, title)
     elif len(cmi) == 2:
         title = """{} {} {}""".format(title_prefix, cmi[0], cmi[1])
     else:
@@ -47,7 +52,7 @@ def parse_time_file(args):
             else:
                 break
         title = creators_prefix + ', '.join(creators_names) + ', ...'
-    keywords = f'\n#twitch, #compilation, #{args.title}, ' + ', '.join([f'#{c}' for c in cmi])
+    keywords = ['#twitch', '#compilation', f'#{args.title}'] + [f'#{c}' for c in cmi]
     return title, description, keywords
 
 
@@ -57,16 +62,17 @@ def _publish_date_formatted():
     today = date.today()
     tomorrow = datetime(today.year, today.month, today.day+1)
     tomorrow_16_30 = tomorrow.replace(hour=16, minute=30)
-    return tomorrow_16_30.strftime("%Y-%m-%dT%H:%M:%SZ")
+    return tomorrow_16_30.strftime("%Y-%m-%dT%H:%M:%S+02:00")
 
 def _record_date_formatted():
-    return datetime.datetime.now().strftime("%Y-%m-%d")
+    return datetime.now().strftime("%Y-%m-%d")
 
 import json
 def write_title_and_json_meta(args):
-    title, description, keywords = parse_time_file()
+    title, description, keywords = parse_time_file(args)
     # Write Title
-    out = title + '\n\n' + description + keywords
+    keywords_format = ', '.join(keywords)
+    out = title + '\n\n' + description + '\n' + keywords_format
     print(out)
     with (args.wd / Path('./title.txt')).open("w+") as f:
         f.write(out)
@@ -74,15 +80,16 @@ def write_title_and_json_meta(args):
     meta = {}
     meta["title"] = title
     meta["description"] = description
-    meta["keywords"] = keywords
+    meta["tags"] = keywords
     meta["privacyStatus"] = "private"
-    meta["madeForKids"] = False,
-    meta["embeddable"] = True,
-    meta["publicStatsViewale"] = True,
+    meta["madeForKids"] = False
+    meta["embeddable"] = True
+    meta["publicStatsViewable"] = True
     meta["publishAt"] = _publish_date_formatted()
     meta["categoryId"] = args.youtube_category_id
     meta["recordingdate"] = _record_date_formatted()
-    meta["playlistTitles"] = [args.playlist_title]
+    if args.playlist_title:
+        meta["playlistTitles"] = [args.playlist_title]
     meta["language"] = args.lang
     # Writing to sample.json
     json_object = json.dumps(meta, indent = 4)
@@ -90,18 +97,12 @@ def write_title_and_json_meta(args):
     with META.open("w") as f:
         f.write(json_object)
 
-
 def new_compilation_number(args) -> int:
         db = Mydb()
         id = db.select_latest_compilation_number(args.project)
-        if id:
-            id = int(id[0])+1
-        else:
-            id = 1
-        db.commit()
+        id = int(id[0])+1 if id else 1
         db.con.close()
         return id
-
 
 def thumbnail(args):
     compilation = Compilation.load(args.wd)

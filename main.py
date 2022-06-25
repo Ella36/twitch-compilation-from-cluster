@@ -46,6 +46,7 @@ def argparser():
     parser.add_argument('-co', '--compilations', action='store_true', help='create table compilations')
     parser.add_argument('-c', '--clips', action='store_true', help='create table clips')
     parser.add_argument('--sync', action='store_true', help='update published flag from compilations')
+    parser.add_argument('--fix-games', action='store_true', help='fix unknown game titles in db')
     # Confirm
     parser.add_argument("--confirm", action="store_true", help="autoconfirms")
     parser.add_argument("--single", action="store_true", help="single URL to skip select clips and publish")
@@ -66,7 +67,7 @@ def argparser():
     parser.add_argument("--title", default="untitled", help="title part before numbers ex. Twitch Compilation -->(NA)<-- #001")
     parser.add_argument("--description", default="description not added", help="ex. Best twitch clips past 30 days!")
     parser.add_argument("--youtube_category_id", default="22", help="Gaming 20,  Entertainment 24, People Blogs 22")
-    parser.add_argument("--playlist_title", help="Name of playlist to publish, written to JSON during title thumbnail writing")
+    parser.add_argument("--playlist_title", default=False, help="Name of playlist to publish, written to JSON during title thumbnail writing")
     # Merger
     return parser.parse_args()
 
@@ -74,9 +75,9 @@ def create_working_dir(args):
     wd = Path('proj-'+args.project)
     if wd.exists:
         if args.dir != "":
-            wd = Path(str(wd)+args.dir)
+            wd = Path(str(wd)+'-'+args.dir)
         else:
-            wd = Path(str(wd)+str(uuid.uuid4()).split('-')[0])
+            wd = Path(str(wd)+'-'+str(uuid.uuid4()).split('-')[0][:4])
     wd.mkdir(exist_ok=True)
     (wd / Path('./download')).mkdir(parents=True, exist_ok=True)
     (wd / Path('./input')).mkdir(parents=True, exist_ok=True)

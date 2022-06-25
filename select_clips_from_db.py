@@ -41,7 +41,7 @@ class ClipsSelector:
                 df_creators = db.read_clips_creators_df_from_db(self.creators)
                 self.creators += df_creators["creator"].unique().tolist()
             if args.creators: 
-                df_creators = db.read_clips_creators_df_from_db(self.creators)
+                df_creators = db.read_clips_creators_df_from_db(args.creators)
                 self.creators += df_creators["creator"].unique().tolist()
             if args.categories:
                 df_categories = db.read_clips_categories_df_from_db(args.categories)

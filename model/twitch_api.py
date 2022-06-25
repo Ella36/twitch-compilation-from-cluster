@@ -129,17 +129,19 @@ if __name__ == "__main__":
     }
     twitch_oauth_header = login(twitch_credentials)
 
-    game_name = "The Quarry"
-    game_id = get_category_id(twitch_oauth_header, game_name)
-    with open('./model/game_info_semicolon.csv', "a") as f:
-        f.write(f'\n"{game_id}";"{game_name}";""')
-        print(game_name, game_id)
+    #game_name = "The Quarry"
+    #game_id = get_category_id(twitch_oauth_header, game_name)
+    #with open('./model/game_info_semicolon.csv', "a") as f:
+    #    f.write(f'\n"{game_id}";"{game_name}";""')
+    #    print(game_name, game_id)
 
-#    for game_id in [116747788, 496321134, 766548668]:
-#        try:
-#            game_name = get_game_from_id(twitch_oauth_header, game_id)
-#        except Exception:
-#            pass
-#        with open('./model/game_info_semicolon.csv', "a") as f:
-#            f.write(f'\n"{game_id}";"{game_name}";""')
-#        print(game_name)
+    lookup = []
+
+    for game_id in lookup:
+        try:
+            game_name = get_game_from_id(twitch_oauth_header, game_id)
+        except Exception:
+            pass
+        with open('./model/game_info_semicolon.csv', "a") as f:
+            f.write(f'\n"{game_id}";"{game_name}";""')
+        print(game_name)

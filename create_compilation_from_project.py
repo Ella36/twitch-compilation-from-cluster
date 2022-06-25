@@ -28,9 +28,9 @@ def create_working_dir(args):
     wd = Path('proj-'+args.project)
     if wd.exists:
         if args.dir != "":
-            wd = Path(str(wd)+args.dir)
+            wd = Path(str(wd)+'-'+args.dir)
         else:
-            wd = Path(str(wd)+str(uuid.uuid4()).split('-')[0])
+            wd = Path(str(wd)+'-'+str(uuid.uuid4()).split('-')[0][:4])
     wd.mkdir(exist_ok=True)
     (wd / Path('./download')).mkdir(parents=True, exist_ok=True)
     (wd / Path('./input')).mkdir(parents=True, exist_ok=True)
@@ -56,6 +56,7 @@ def argparser():
     # Inputs
     parser.add_argument("--project", default="default", help="name of project, creates working directory")
     parser.add_argument("--dir", default="", help="suffix to project wd")
+    parser.add_argument("--clip_ids", nargs='+', help="set if input are clip id ex AwkardHelpless... ")
     return parser.parse_args()
 
 def setup_args(args):
@@ -68,7 +69,7 @@ def setup_args(args):
     args.days = project.days
     args.duration = project.duration
     args.categories = project.categories
-    args.clip_ids = project.clip_ids
+    #args.clip_ids = project.clip_ids
     args.game_ids = project.game_ids
     args.clusters = project.clusters
     args.creators = project.creators
@@ -78,13 +79,22 @@ def setup_args(args):
     args.skip_draw = project.skip_draw
     args.youtube_category_id = project.youtube_category_id
     if project.playlist_title == "untitled":
-        args.playlist = False
+        args.playlist_title = False
     else:
-        args.playlist = project.playlist_title
+        args.playlist_title = project.playlist_title
     if project.single:
         # Select only 1 clip
         args.single = True
         args.duration = 1
+    else:
+        args.single = False
+    # Add clip_ids
+    if args.clip_ids:
+        args.clip_ids = args.clip_ids
+        args.game_ids = [] 
+        args.clusters = [] 
+        args.creators = [] 
+        args.published_ok = True
     print(f'Args set:\n\t{args}')
     return args
 

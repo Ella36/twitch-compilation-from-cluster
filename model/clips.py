@@ -220,8 +220,8 @@ class Compilation:
                     f = Path(str(f) + suffix)
                     print(f"\tRenaming!\n\t\t{f.name}")
                     # Prompt to rename
-                    if _prompt_confirm("Rename file"):
-                        find[0].rename(f)
+                    # if _prompt_confirm("Rename file"):
+                    find[0].rename(f)
                 elif len(find) > 1:
                     print(f"\tSearching glob:\n\t\t{find}")
                     print(f"\tERROR: CANT UPDATE MULTIPLE FOUND:\n\t\t{[x.name for x in find]}")
