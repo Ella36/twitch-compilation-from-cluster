@@ -5,10 +5,16 @@
 *.journal
 *.jpg
 *.txt
+*.png
+*.xcf
+*.json
+images
 youtube-upload-master
 youtubeuploader-bin
+thumbnails_save
 *compilation.pkl
 proj*
 geckodriver.log
 .vscode
-
+proj-*/meta.json
+!project.py
