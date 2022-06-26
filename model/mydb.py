@@ -97,7 +97,9 @@ class Mydb():
         self.cur.execute('INSERT INTO compilations(creators, urls, duration, time, project, pid) VALUES (?,?,?,?,?,?)', (creators, urls, duration, time, project, pid))
 
     def select_latest_compilation_number(self, project: str) -> int:
-        self.cur.execute("""SELECT pid FROM compilations WHERE project=? ORDER BY id DESC LIMIT 1""", (project,))
+        # Project is like projectname_interval  
+        #self.cur.execute("""SELECT pid FROM compilations WHERE project=? ORDER BY id DESC LIMIT 1""", (project,))
+        self.cur.execute(f"""SELECT COUNT(pid) FROM compilations WHERE project LIKE '{project.split('_')[0]}_%'""")
         return self.cur.fetchone()
 
     def select_thumbnail_url(self, url: str) -> str:

@@ -37,7 +37,7 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--project", "pools_short", "--dir", "test"],
+            "args": ["--project", "pools_single", "--dir", "test"],
         },
         {
             "name": "Python: Find Valorant ID Cluster_test 30D",

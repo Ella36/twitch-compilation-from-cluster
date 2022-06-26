@@ -9,6 +9,7 @@ from model.mydb import Mydb
 from model.clips import Compilation
 
 def parse_time_file(args):
+    compilation_number = new_compilation_number(args)
     def _filter_description(d):
         return d.replace('<3', ' ❤ ').replace('>', '').replace('<', '')
     TIME = args.wd / Path('./time.txt')
@@ -25,7 +26,6 @@ def parse_time_file(args):
         description += _filter_description(d)
     # Title
     cmi = list(set(creators))
-    compilation_number = new_compilation_number(args)
     # Set compilation number
     compilation = Compilation.load(args.wd)
     compilation.pid = compilation_number
