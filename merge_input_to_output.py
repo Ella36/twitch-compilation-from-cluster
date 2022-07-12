@@ -34,7 +34,9 @@ def convert_mp4_to_ts(args):
         with TIME.open("a") as t:
             creator, title = e.clip.creator.name, e.clip.title
             t.write(f'{int(count)};;{creator};;{title}\n')
-            count += FFMPEGOutputToDurationInSeconds(p.stderr).duration
+            # Sometimes doesn't print duration, use clip duration instead
+            # count += FFMPEGOutputToDurationInSeconds(p.stderr).duration
+            count += e.clip.duration
 
 class FFMPEGOutputToDurationInSeconds:
     # 00:00:00.00 format 

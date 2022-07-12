@@ -32,7 +32,7 @@ def download_clips(args) -> bool:
         print(p.stdout)
         print(p.stderr)
         error = p.stderr
-        if 'ERROR' in error:
+        if any(e in error for e in ('ERROR', 'TypeError')):
             element.error = True
             is_error = True
         else:

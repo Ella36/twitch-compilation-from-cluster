@@ -35,6 +35,20 @@ class TwitchSelectorRequests():
         clips_formatted = list(map(_format_to_clip, requests))
         return clips_formatted
 
+    def get_clips_from_clip_url(self, clip_url: str, args):
+        requests = twitch_api.get_clips_request_by_clip_url(
+            self.twitch_oauth_header, clip_url
+        )
+        def _format_to_clip(request: dict) -> Clip:
+            try:
+                game = twitch_api.TWITCH_GAME_ID_TO_NAME.id_to_game(request['game_id'])
+            except (ValueError, IndexError):
+                game = "unknown"
+                print(f"Game not found!\n\t{request['game_id']}")
+            return Clip(creator=Creator(request['broadcaster_name']),request=request, game=game)
+        clips_formatted = list(map(_format_to_clip, requests))
+        return clips_formatted
+
     def get_clips_from_clip_id(self, clip_id: str, args):
         requests = twitch_api.get_clips_request_by_clip_id(
             self.twitch_oauth_header, clip_id
@@ -107,6 +121,11 @@ def find_and_add_clips_to_db(args):
     if args.clip_ids:
         for clip_id in args.clip_ids:
             clips = twitch_clip_requests.get_clips_from_clip_id(clip_id, args)
+            print(f"\tFound: {len(clips)} clips!")
+            write_clips_to_db(clips)
+    if args.clip_urls:
+        for clip_url in args.clip_urls:
+            clips = twitch_clip_requests.get_clips_from_clip_url(clip_url, args)
             print(f"\tFound: {len(clips)} clips!")
             write_clips_to_db(clips)
     if args.creators:

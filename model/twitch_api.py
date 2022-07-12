@@ -1,4 +1,5 @@
 import requests
+import pandas as pd
 
 TWITCH_OAUTH_ENDPOINT = "https://id.twitch.tv/oauth2/token"
 TWITCH_CLIPS_ENDPOINT = "https://api.twitch.tv/helix/clips"
@@ -8,7 +9,6 @@ TWITCH_BROADCASTER_ENDPOINT = "https://api.twitch.tv/helix/users"
 TWITCH_GAMES_ENDPOINT = "https://api.twitch.tv/helix/games"
 
 
-import pandas as pd
 class TwitchGameIDtoName:
     def __init__(self):
         self.df = pd.read_csv('./model/game_info_semicolon.csv', sep=';')
@@ -99,6 +99,10 @@ def get_clips_request_by_clip_id(twitch_credentials, clip_id):
     query_parameters = f'?id={clip_id}'
     return get_request(twitch_credentials, TWITCH_CLIPS_ENDPOINT, query_parameters)
 
+def get_clips_request_by_clip_url(twitch_credentials, clip_url):
+    clip_id = clip_url.split('/')[-1]
+    query_parameters = f'?id={clip_id}'
+    return get_request(twitch_credentials, TWITCH_CLIPS_ENDPOINT, query_parameters)
 
 def get_clips_request_by_category(twitch_credentials, category_name, started_at, ended_at):
     started_at = started_at.isoformat("T") + "Z"

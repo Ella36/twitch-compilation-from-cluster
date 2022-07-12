@@ -302,6 +302,7 @@ PROJECTS = Projects([
         description='popular league of legends clips past 7 days',
         game_ids=['21779'],
         days=7,
+        duration=300,
         n_per_month=4,
     ),
     Project(

@@ -1,15 +1,14 @@
 #!/usr/bin/python3
 from pathlib import Path
 import subprocess
-import requests
 
+import requests
 from InquirerPy import prompt
 
 from model.mydb import Mydb
 from model.clips import Compilation
 
 def parse_time_file(args):
-    compilation_number = new_compilation_number(args)
     def _filter_description(d):
         return d.replace('<3', ' ❤ ').replace('>', '').replace('<', '')
     TIME = args.wd / Path('./time.txt')
@@ -28,17 +27,18 @@ def parse_time_file(args):
     cmi = list(set(creators))
     # Set compilation number
     compilation = Compilation.load(args.wd)
-    compilation.pid = compilation_number
+    pid = int(args.pid) if args.pid else new_pid(args)
+    compilation.pid = pid
     compilation.dump(args.wd)
 
-    title_prefix = "#Twitch Compilation {} #{:03d}".format(args.title, compilation_number)
+    title_prefix = "#Twitch Compilation {} #{:03d}".format(args.title, pid)
     if len(cmi) == 1:
         title = """{} {}""".format(title_prefix, cmi[0])
         if args.single:
             for t in text:
                 _, _, title = t.split(';;')
                 title = _filter_description(title)
-            title = "#Twitch Compilation {} #{:03d} {}".format(args.title, compilation_number, title)
+            title = "#Twitch Compilation {} #{:03d} {}".format(args.title, pid, title)
     elif len(cmi) == 2:
         title = """{} {} {}""".format(title_prefix, cmi[0], cmi[1])
     else:
@@ -53,7 +53,15 @@ def parse_time_file(args):
                 break
         title = creators_prefix + ', '.join(creators_names) + ', ...'
     keywords = ['#twitch', '#compilation', f'#{args.title}'] + [f'#{c}' for c in cmi]
+    XMR_stuff = "\n".join([
+        "\nHelp me upgrade these videos to 1080p", 
+        "by sending some fake internet money Monero XMR to",
+        "43mhYBMmuD3f32BaqWSd1L5TXzbRU9f2re7VHaTQv8HVXYvqJzhPbHQSnzAdvE8mwJ2RhX7BbDKTeKNjPtjFoLJ64FEZzWW",
+        "QR Code\nhttps://i.imgur.com/YdjeO54.png\n"
+    ])
+    description += XMR_stuff
     return title, description, keywords
+
 
 
 from datetime import datetime, date
@@ -97,9 +105,9 @@ def write_title_and_json_meta(args):
     with META.open("w") as f:
         f.write(json_object)
 
-def new_compilation_number(args) -> int:
+def new_pid(args) -> int:
         db = Mydb()
-        id = db.select_latest_compilation_number(args.project)
+        id = db.select_latest_pid(args.project)
         id = int(id[0])+1 if id else 1
         db.con.close()
         return id

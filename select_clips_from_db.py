@@ -48,7 +48,10 @@ class ClipsSelector:
                 self.creators += df_categories["creator"].unique().tolist()
             if args.clip_ids:
                 urls = [f'https://clips.twitch.tv/{clip_id}' for clip_id in args.clip_ids]
-                df_clip_ids = db.read_clips_clip_ids_df_from_db(urls)
+                df_clip_ids = db.read_clips_clip_urls_df_from_db(urls)
+                self.creators += df_clip_ids["creator"].unique().tolist()
+            if args.clip_urls:
+                df_clip_ids = db.read_clips_clip_urls_df_from_db(args.clip_urls)
                 self.creators += df_clip_ids["creator"].unique().tolist()
             if args.game_ids:
                 df_game_ids = db.read_clips_categories_by_id_df_from_db(args.game_ids)
@@ -329,6 +332,24 @@ def select_compilation_from_db(args):
     compilation = Compilation(wd=args.wd, clips=sh.clips, project=args.project)
     print(compilation.to_string())
     compilation.sync_compilation_with_disk()
+    compilation.dump(args.wd)
+
+def load_compilation_from_published_project(args):
+    sh = ClipsSelector(args)
+    args.days = 9999
+    df = sh._read_clips_from_db(args) # Also discards clips args.published_ok
+    # df is not ordered as args.clip_urls
+    clips = []
+    # Sort clips by order in args.clip_urls
+    for url in args.clip_urls:
+        try:
+            result = df[df['url'] == url].iloc[0]
+        except IndexError:
+            print(f'URL no longer present in DB:\n\t{url}')
+            continue
+        clips.append(Clip(from_row=True,row=result))
+    compilation = Compilation(wd=args.wd, clips=clips, project=args.project)
+    print(compilation.to_string())
     compilation.dump(args.wd)
 
 def edit_compilation(args):

@@ -24,7 +24,7 @@ class Mydb():
         self.con.commit()
         print('Created table clips!')
 
-    def read_clips_clip_ids_df_from_db(self, urls: list) -> pd.DataFrame:
+    def read_clips_clip_urls_df_from_db(self, urls: list) -> pd.DataFrame:
         urls_str = '('+','.join([f"'{u}'" for u in urls])+')'
         df = pd.read_sql_query(
             f"SELECT * FROM clips WHERE url IN {urls_str}",
@@ -94,13 +94,18 @@ class Mydb():
         print('Created table compilations!')
 
     def add_compilation(self, creators: str, urls: str, duration: int, time: str, project: str, pid: int):
+        # Overwrite if already exists
+        self.cur.execute(f"DELETE FROM compilations WHERE project='{project}' AND pid='{pid}'")
         self.cur.execute('INSERT INTO compilations(creators, urls, duration, time, project, pid) VALUES (?,?,?,?,?,?)', (creators, urls, duration, time, project, pid))
 
-    def select_latest_compilation_number(self, project: str) -> int:
-        # Project is like projectname_interval  
-        #self.cur.execute("""SELECT pid FROM compilations WHERE project=? ORDER BY id DESC LIMIT 1""", (project,))
+    def select_latest_pid(self, project: str) -> int:
         self.cur.execute(f"""SELECT COUNT(pid) FROM compilations WHERE project LIKE '{project.split('_')[0]}_%'""")
         return self.cur.fetchone()
+
+    def select_urls_from_project_and_pid(self, project: str, pid: str) -> tuple:
+        self.cur.execute(f"SELECT urls FROM compilations WHERE project = '{project}' and pid = '{pid}'")
+        return self.cur.fetchone()[0].split(',')
+
 
     def select_thumbnail_url(self, url: str) -> str:
         self.cur.execute("""SELECT thumbnail_url FROM clips WHERE url=?""", (url,))
