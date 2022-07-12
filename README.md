@@ -13,18 +13,27 @@ see `./proj-cluster_sample_30d-1/` for example
 
 ## Requirements
 Python3 3.10+, lower may work
+
 youtube-dl (pip)
+
 pandas (pip)
+
 [ffmpeg](https://ffmpeg.org)
+
 [imagemagick](https://imagemagick.org)
+
 [youtubeuploader-bin](https://github.com/porjo/youtubeuploader)
+
 `OpenSans-Regular.ttf` or any font to draw text on video (`format_download_to_input.py`)
 also see `requirements.txt`
 
 ## Resources
 Twitch Atlas: https://stats.roki.sh/atlas
+
 Youtube API: https://developers.google.com/youtube/v3/guides/uploading_a_video
+
 Twitch API: https://dev.twitch.tv/docs/api/reference#get-clips
+
 
 ## Use
 There's only a few steps to create a compilation.
@@ -96,9 +105,12 @@ to set arguments from project configuration in `data.py`
 ```
 ## Setup upload
 See 'setup' at https://github.com/porjo/youtubeuploader
+
 Requires
 ```./client_secrets.json```
+
 When you create the credentials in the APIs Console, make sure you select "Desktop Application"
+
 Add yourself to test users (email)
 
 ## Notes on program Workflow 
