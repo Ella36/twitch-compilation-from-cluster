@@ -375,29 +375,3 @@ def is_prompt_confirm(step: str):
     ]
     answers = prompt(questions)
     return answers['confirm']
-
-def argparser():
-    parser = argparse.ArgumentParser()
-    # Inputs
-    parser.add_argument("--cluster", nargs='+', help="clusterfile with name(s) of twitch channel (creator)")
-    parser.add_argument("--creators", nargs='+', help="set if list of creators")
-    parser.add_argument("--game_ids", nargs='+', help="set if input are game id ex 12345 ")
-    parser.add_argument("--clip_ids", nargs='+', help="set if input are clip id ex AwkardHelpless... ")
-    parser.add_argument("--categories", nargs='+', help="set if input is category ex 'Just Chatting'")
-    # options
-    parser.add_argument('--project', default='untitled', help='name of project we publish under ex. just_chatting')
-    parser.add_argument('--days', default='7', help='ex. 7 or 30')
-    parser.add_argument('--duration', default='610', help='duration in seconds')
-    parser.add_argument('--published_ok', action='store_true', help='set to include clips that have already been published')
-    parser.add_argument("--cont", action="store_true", help="continue selection from urls.txt and error.txt after errors")
-    parser.add_argument("--edit", action="store_true", help="edit compilation")
-    parser.add_argument('--lang', default='en', help='set language ex. en, fr, es, ko, en-gb')
-    return parser.parse_args()
-
-if __name__ == '__main__':
-    args = argparser()
-    args.wd = Path(args.project)
-    if args.edit:
-        edit_compilation(args)
-    else:
-        select_compilation_from_db(args)

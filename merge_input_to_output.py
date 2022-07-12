@@ -2,11 +2,11 @@
 # Merge files (.mp4) from /input to a single merged (.mp4) in /output
 # clears /build directory for intermediate files
 from pathlib import Path
-import argparse
-import subprocess
 import re
+import subprocess
 
 from model.clips import Compilation
+
 
 def clear_build_directory(args):
     # Clear BUILD directory of files
@@ -68,14 +68,3 @@ def merge_input_to_output(args):
     clear_build_directory(args)
     convert_mp4_to_ts(args)
     merge_ts_to_mp4(args)
-    #clear_build_directory(args)
-
-def argparser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--project", default='default')
-    return parser.parse_args()
-
-if __name__ == "__main__":
-    args = argparser()
-    args.wd = Path(args.project)
-    merge_input_to_output(args)

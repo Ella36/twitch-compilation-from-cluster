@@ -1,7 +1,5 @@
 #!/usr/bin/python3
-from datetime import datetime
 from pathlib import Path
-import argparse
 import subprocess
 import shutil
 
@@ -36,14 +34,3 @@ def format_download_to_input(args):
     compilation = Compilation.load(args.wd)
     for e in compilation:
         format_file(args, e)
-
-def argparser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--skip_draw", action="store_true")
-    parser.add_argument("--project", default='default')
-    return parser.parse_args()
-
-if __name__ == "__main__":
-    args = argparser()
-    args.wd = Path(args.project)
-    format_download_to_input(args)

@@ -1,8 +1,10 @@
 #!/usr/bin/python3
+from datetime import datetime, date
 from pathlib import Path
+import json
+import requests
 import subprocess
 
-import requests
 from InquirerPy import prompt
 
 from model.mydb import Mydb
@@ -53,20 +55,12 @@ def parse_time_file(args):
                 break
         title = creators_prefix + ', '.join(creators_names) + ', ...'
     keywords = ['#twitch', '#compilation', f'#{args.title}'] + [f'#{c}' for c in cmi]
-    XMR_stuff = "\n".join([
-        "\nHelp me upgrade these videos to 1080p", 
-        "by sending some fake internet money Monero XMR to",
-        "43mhYBMmuD3f32BaqWSd1L5TXzbRU9f2re7VHaTQv8HVXYvqJzhPbHQSnzAdvE8mwJ2RhX7BbDKTeKNjPtjFoLJ64FEZzWW",
-        "QR Code\nhttps://i.imgur.com/YdjeO54.png\n"
-    ])
-    description += XMR_stuff
+    description_postfix_file = Path('description_postfix.txt')
+    description_postfix = description_postfix_file.read_text()
+    description += '\n'+description_postfix+'\n'
     return title, description, keywords
 
-
-
-from datetime import datetime, date
 def _publish_date_formatted():
-    # Next day 5PM
     today = date.today()
     tomorrow = datetime(today.year, today.month, today.day+1)
     tomorrow_16_30 = tomorrow.replace(hour=16, minute=30)
@@ -75,7 +69,6 @@ def _publish_date_formatted():
 def _record_date_formatted():
     return datetime.now().strftime("%Y-%m-%d")
 
-import json
 def write_title_and_json_meta(args):
     title, description, keywords = parse_time_file(args)
     # Write Title
@@ -149,7 +142,7 @@ def thumbnail(args):
             # magick composite thumbnail_overlay_pepega_pink_circle.png thumbnail.jpg out.jpg
             'magick',
             'composite',
-            Path('./images/thumbnail_overlay_pepega_pink_circle_short.png'),
+            Path('./images/thumbnail_overlay_single.png'),
             args.wd / Path('thumbnail.jpg'),
             args.wd / Path('thumbnail_with_icon.jpg'),
         ])
@@ -185,25 +178,7 @@ def thumbnail(args):
         # magick composite thumbnail_overlay_pepega_pink_circle.png thumbnail.jpg out.jpg
         'magick',
         'composite',
-        Path('./images/thumbnail_overlay_pepega_pink_circle.png'),
+        Path('./images/thumbnail_overlay.png'),
         args.wd / Path('thumbnail.jpg'),
         args.wd / Path('thumbnail_with_icon.jpg'),
     ])
-
-
-if __name__ == '__main__':
-    class argsT():
-        def __init__(self):
-            self.wd = None
-            self.project = None
-            self.single = None
-            args.title = None
-            args.description = None
-    args = argsT()
-    args.wd = Path('./asmr')
-    args.project = "asmr"
-    args.single = False
-    args.description = "some description"
-    args.title = "untitled"
-    write_title_and_json_meta(args)
-    #thumbnail(args)

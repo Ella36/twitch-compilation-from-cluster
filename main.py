@@ -82,7 +82,6 @@ def create_working_dir(args):
     (wd / Path('./download')).mkdir(parents=True, exist_ok=True)
     (wd / Path('./input')).mkdir(parents=True, exist_ok=True)
     (wd / Path('./build')).mkdir(parents=True, exist_ok=True)
-    # (wd / Path('./output')).mkdir(parents=True, exist_ok=True)
     (wd / Path('./thumbnail')).mkdir(parents=True, exist_ok=True)
     return wd
 

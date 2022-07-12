@@ -1,23 +1,18 @@
 #!/usr/bin/python3
-import argparse
 from datetime import timedelta, datetime
+import argparse
 
-from model.mydb import Mydb
+from cfg.data import CLUSTERS
 from model import twitch_api
 from model.clips import Clip
-from cfg.data import CLUSTERS
 from model.cluster import Creator
+from model.mydb import Mydb
 
-
-twitch_credentials = {
-   "client_id": "3v7w9gbeuaz6d6hiwlk448nw7lrsl3",
-   "client_secret": "n23yzkko4ewa4oguwx962pkbg55uby"
-}
-
+from cfg.secrets import TWITCH_CREDENTIALS
 
 class TwitchSelectorRequests():
     def __init__(self):
-        self.twitch_oauth_header = twitch_api.login(twitch_credentials)
+        self.twitch_oauth_header = twitch_api.login(TWITCH_CREDENTIALS)
 
     def get_clips_from_id(self, id: str, args):
         started_at=datetime.utcnow() - timedelta(days=int(args.days))

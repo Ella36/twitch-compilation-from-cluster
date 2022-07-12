@@ -1,6 +1,8 @@
 import requests
 import pandas as pd
 
+from cfg.secrets import TWITCH_CREDENTIALS
+
 TWITCH_OAUTH_ENDPOINT = "https://id.twitch.tv/oauth2/token"
 TWITCH_CLIPS_ENDPOINT = "https://api.twitch.tv/helix/clips"
 TWITCH_CATEGORY_ENDPOINT = "https://api.twitch.tv/helix/search/categories"
@@ -27,7 +29,6 @@ class TwitchGameIDtoName:
         return self.df.loc[self.df['name'] == name]["id"].iloc[0]
 
 TWITCH_GAME_ID_TO_NAME = TwitchGameIDtoName()
-
 
 def login(twitch_credentials):
     twitch_client_id = twitch_credentials["client_id"]
@@ -127,11 +128,7 @@ def get_game_from_id(twitch_credentials, game_id):
     return game_data[0]["name"]
 
 if __name__ == "__main__":
-    twitch_credentials = {
-        "client_id": "3v7w9gbeuaz6d6hiwlk448nw7lrsl3",
-        "client_secret": "n23yzkko4ewa4oguwx962pkbg55uby"
-    }
-    twitch_oauth_header = login(twitch_credentials)
+    twitch_oauth_header = login(TWITCH_CREDENTIALS)
 
     #game_name = "The Quarry"
     #game_id = get_category_id(twitch_oauth_header, game_name)
