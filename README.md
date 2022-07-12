@@ -8,7 +8,7 @@ A Cluster is based off Twitch Atlas (13.3MB!)
 Closely related creators can be put in a cluster defined in config file and a compilation can be made
 
 Sample speed-up gif of output 1min video 360p mp4
-see ./proj-cluster_sample_30d-1/ for example
+see `./proj-cluster_sample_30d-1/` for example
 ![Sample video output](./output.gif)
 
 ## Requirements
@@ -18,7 +18,13 @@ pandas (pip)
 [ffmpeg](https://ffmpeg.org)
 [imagemagick](https://imagemagick.org)
 [youtubeuploader-bin](https://github.com/porjo/youtubeuploader)
+`OpenSans-Regular.ttf` or any font to draw text on video (`format_download_to_input.py`)
 also see `requirements.txt`
+
+## Resources
+Twitch Atlas: https://stats.roki.sh/atlas
+Youtube API: https://developers.google.com/youtube/v3/guides/uploading_a_video
+Twitch API: https://dev.twitch.tv/docs/api/reference#get-clips
 
 ## Use
 There's only a few steps to create a compilation.

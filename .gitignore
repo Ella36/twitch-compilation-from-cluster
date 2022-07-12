@@ -1,4 +1,4 @@
-*.db
+clips.db
 *.journal
 *.jpg
 *.json
@@ -34,6 +34,8 @@ youtube-upload-master
 !proj-cluster_sample_30d-1/time.txt
 !proj-cluster_sample_30d-1/title.txt
 !proj-cluster_sample_30d-1/thumbnail/*.jpg
+!proj-cluster_sample_30d-1/thumbnail_with_icon.jpg
+!proj-cluster_sample_30d-1/thumbnail.jpg
 !proj-cluster_sample_30d-1/input/*
 !proj-cluster_sample_30d-1/download/*
 !proj-cluster_sample_30d-1/build/
