@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 from datetime import datetime, date
 from pathlib import Path
 import json
@@ -9,6 +9,7 @@ from InquirerPy import prompt
 
 from model.mydb import Mydb
 from model.clips import Compilation
+
 
 def parse_time_file(args):
     def _filter_description(d):
@@ -29,7 +30,10 @@ def parse_time_file(args):
     cmi = list(set(creators))
     # Set compilation number
     compilation = Compilation.load(args.wd)
-    pid = int(args.pid) if args.pid else new_pid(args)
+    try:
+        pid = int(args.pid)
+    except AttributeError:
+        pid = new_pid(args)
     compilation.pid = pid
     compilation.dump(args.wd)
 

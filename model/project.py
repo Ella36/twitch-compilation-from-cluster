@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 from dataclasses import dataclass, field
 
 from .cluster import Cluster

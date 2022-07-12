@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 # List dates when new releases should be made
 from dataclasses import dataclass
 from datetime import timedelta

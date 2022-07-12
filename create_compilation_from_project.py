@@ -12,17 +12,16 @@ import uuid
 
 from InquirerPy import prompt
 
-from find_and_add_clips_to_db import find_and_add_clips_to_db
-from select_clips_from_db import select_compilation_from_db, edit_compilation, load_compilation_from_published_project   
+from cfg.data import Project, PROJECTS
 from download_clips import download_clips
+from find_and_add_clips_to_db import find_and_add_clips_to_db
 from format_download_to_input import format_download_to_input
 from merge_input_to_output import merge_input_to_output
-import write_title_description_thumbnail
-from publish_compilation_to_db import publish
 from model.clips import Compilation
 from model.mydb import Mydb
-
-from cfg.data import Project, PROJECTS
+from publish_compilation_to_db import publish
+from select_clips_from_db import select_compilation_from_db, edit_compilation, load_compilation_from_published_project   
+import write_title_description_thumbnail
 
 
 def create_working_dir(args):
@@ -152,8 +151,9 @@ if __name__ == '__main__':
     if is_prompt_confirm('Format and Merge video'):
         format_download_to_input(args)
         merge_input_to_output(args)
-    if is_prompt_confirm('Write title description AND thumbnail'):
+    if is_prompt_confirm('Write title description'):
         write_title_description_thumbnail.write_title_and_json_meta(args)
+    if is_prompt_confirm('Write thumbnail'):
         write_title_description_thumbnail.thumbnail(args)
     if is_prompt_confirm('Publish to DB!'):
         publish(args)

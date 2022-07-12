@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 # 1. Update clusters
 # 2. Scrape find clips from creators or clusters
 # 3. Select clips from creators or cluster
@@ -41,6 +41,7 @@ def argparser():
     parser.add_argument("--creators", nargs='+', help="set if list of creators")
     parser.add_argument("--game_ids", nargs='+', help="set if input are game id ex 12345 ")
     parser.add_argument("--clip_ids", nargs='+', help="set if input are clip id ex AwkardHelpless... ")
+    parser.add_argument("--clip_urls", nargs='+', help="set if input are clip urls")
     parser.add_argument("--categories", nargs='+', help="set if input is category ex 'Just Chatting'")
     # Database
     parser.add_argument('-co', '--compilations', action='store_true', help='create table compilations')
@@ -125,6 +126,7 @@ if __name__ == '__main__':
         merge_input_to_output(args)
     if args.confirm or is_prompt_confirm('Write title description to title.txt'):
         write_title_description_thumbnail.write_title_and_json_meta(args)
+    if args.confirm or is_prompt_confirm('Create thumbnail'):
         write_title_description_thumbnail.thumbnail(args)
     if is_prompt_confirm('Publish compilation to DB'):
         publish(args)

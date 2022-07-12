@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 # Merge files (.mp4) from /input to a single merged (.mp4) in /output
 # clears /build directory for intermediate files
 from pathlib import Path

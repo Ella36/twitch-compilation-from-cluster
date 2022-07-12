@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 # Select clips from creators
 # Keep in mind view count, duration to till 10mins and avoid duplicates
 from pathlib import Path
