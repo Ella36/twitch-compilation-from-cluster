@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # Select clips from creators
 # Keep in mind view count, duration to till 10mins and avoid duplicates
+from logging import raiseExceptions
 from pathlib import Path
 import argparse
 import datetime
@@ -327,9 +328,12 @@ class ClipsSelector:
 
 def select_compilation_from_db(args):
     sh = ClipsSelector(args)
-    sh.select_and_add_clips(args)
-    # Write to url.txt
-    compilation = Compilation(wd=args.wd, clips=sh.clips, project=args.project)
+    if not args.gui:
+        sh.select_and_add_clips(args)
+        # Write to url.txt
+        compilation = Compilation(wd=args.wd, clips=sh.clips, project=args.project)
+    else:
+        raiseExceptions("Not implemented yet!")
     print(compilation.to_string())
     compilation.sync_compilation_with_disk()
     compilation.dump(args.wd)
@@ -356,10 +360,13 @@ def edit_compilation(args):
     sh = ClipsSelector(args)
     compilation = Compilation.load(args.wd)
     sh.load_compilation(args, compilation)
-    sh.edit_clips(args)
-    while is_prompt_confirm('Continue Edit clips'):
+    if not args.gui:
         sh.edit_clips(args)
-    compilation = Compilation(wd=args.wd, clips=sh.clips, project=args.project)
+        while is_prompt_confirm('Continue Edit clips'):
+            sh.edit_clips(args)
+        compilation = Compilation(wd=args.wd, clips=sh.clips, project=args.project)
+    else:
+        raiseExceptions("Not implemented yet!")
     print(compilation.to_string())
     compilation.sync_compilation_with_disk()
     compilation.dump(args.wd)

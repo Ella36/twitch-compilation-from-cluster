@@ -36,6 +36,8 @@ def is_prompt_confirm(step: str):
 
 def argparser():
     parser = argparse.ArgumentParser()
+    # Use GUI for selecting/editing
+    parser.add_argument('-g', '--gui', action='store_true', default=True, help='Use GUI')
     # Inputs
     parser.add_argument("--clusters", nargs='+', help="clusterfile with name(s) of twitch channel (creator)")
     parser.add_argument("--creators", nargs='+', help="set if list of creators")
