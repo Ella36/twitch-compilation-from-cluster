@@ -32,7 +32,7 @@ def parse_time_file(args):
     compilation = Compilation.load(args.wd)
     try:
         pid = int(args.pid)
-    except AttributeError:
+    except (AttributeError, TypeError):
         pid = new_pid(args)
     compilation.pid = pid
     compilation.dump(args.wd)
