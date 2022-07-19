@@ -340,8 +340,17 @@ def select_compilation_from_db(args):
         if file.exists():
             file.unlink()
         # Wait for GUI edit
-        is_prompt_confirm('Read compilation.json')
-        compilation = Compilation.from_json('./compilation.json')
+        is_prompt_confirm('Read compilation.csv')
+        # Read URLs from CSV in a txt file. Then read from DB
+        file = Path('./compilation.csv')
+        urls = file.read_text().strip().split(',')
+        db = Mydb()
+        df_clip_ids = db.read_clips_clip_urls_df_from_db(urls)
+        db.close()
+        clips = []
+        for _, row in df_clip_ids.iterrows():
+                clips.append(Clip(from_row=True,row=row))
+        compilation = Compilation(wd=args.wd, clips=clips, project=args.project)
     print(compilation.to_string())
     compilation.sync_compilation_with_disk()
     compilation.dump(args.wd)
@@ -385,8 +394,17 @@ def edit_compilation(args):
         with file.open('w') as f:
             f.write(compilation_json)
         # Wait for GUI edit
-        is_prompt_confirm('Read compilation.json')
-        compilation = Compilation.from_json('./compilation.json')
+        is_prompt_confirm('Read compilation.csv')
+        # Read URLs from CSV in a txt file. Then read from DB
+        file = Path('./compilation.csv')
+        urls = file.read_text().strip().split(',')
+        db = Mydb()
+        df_clip_ids = db.read_clips_clip_urls_df_from_db(urls)
+        db.close()
+        clips = []
+        for _, row in df_clip_ids.iterrows():
+                clips.append(Clip(from_row=True,row=row))
+        compilation = Compilation(wd=args.wd, clips=clips, project=args.project)
     print(compilation.to_string())
     compilation.sync_compilation_with_disk()
     compilation.dump(args.wd)
