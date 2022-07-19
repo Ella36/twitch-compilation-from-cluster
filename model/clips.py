@@ -9,6 +9,8 @@ from InquirerPy import prompt
 
 from model.cluster import Creator
 
+import jsonpickle
+
 
 class Clip:
     def __init__(
@@ -154,6 +156,16 @@ class Compilation:
     def __iter__(self):
         for element in self.list:
             yield element
+
+    def to_json(self):
+        return jsonpickle.encode(self)
+
+    @classmethod
+    def from_json(cls, filename: Path):
+        file = Path(filename)
+        encoded = file.read_text()
+        thawed = jsonpickle.decode(encoded)
+        return thawed
 
     def to_string(self):
         out = f'Compilation contains {len(self.list)}'

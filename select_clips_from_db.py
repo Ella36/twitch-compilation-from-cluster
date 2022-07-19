@@ -3,10 +3,8 @@
 # Keep in mind view count, duration to till 10mins and avoid duplicates
 from logging import raiseExceptions
 from pathlib import Path
-import argparse
 import datetime
 from dateutil.relativedelta import relativedelta
-from dataclasses import dataclass
 
 import pandas as pd
 from InquirerPy import prompt
@@ -14,7 +12,6 @@ from InquirerPy import prompt
 from model.mydb import Mydb
 from cfg.data import CLUSTERS
 from model.clips import Clip, Compilation
-from model.cluster import Creator
 
 
 class ClipsSelector:
@@ -328,12 +325,23 @@ class ClipsSelector:
 
 def select_compilation_from_db(args):
     sh = ClipsSelector(args)
-    if not args.gui:
+    if args.console:
         sh.select_and_add_clips(args)
         # Write to url.txt
         compilation = Compilation(wd=args.wd, clips=sh.clips, project=args.project)
     else:
-        raiseExceptions("Not implemented yet!")
+        # Save choices to clips.json
+        clips_json = sh.df.reset_index().to_json(orient='index')
+        file = Path('./clips.json')
+        with file.open('w') as f:
+            f.write(clips_json)
+        # Clear compilation.json
+        file = Path('./compilation.json')
+        if file.exists():
+            file.unlink()
+        # Wait for GUI edit
+        is_prompt_confirm('Read compilation.json')
+        compilation = Compilation.from_json('./compilation.json')
     print(compilation.to_string())
     compilation.sync_compilation_with_disk()
     compilation.dump(args.wd)
@@ -360,13 +368,25 @@ def edit_compilation(args):
     sh = ClipsSelector(args)
     compilation = Compilation.load(args.wd)
     sh.load_compilation(args, compilation)
-    if not args.gui:
+    if args.console:
         sh.edit_clips(args)
         while is_prompt_confirm('Continue Edit clips'):
             sh.edit_clips(args)
         compilation = Compilation(wd=args.wd, clips=sh.clips, project=args.project)
     else:
-        raiseExceptions("Not implemented yet!")
+        # Save choices to clips.json
+        clips_json = sh.df.reset_index().to_json(orient='index')
+        file = Path('./clips.json')
+        with file.open('w') as f:
+            f.write(clips_json)
+        # Save compilations to compilation.json
+        compilation_json = compilation.to_json()
+        file = Path('./compilation.json')
+        with file.open('w') as f:
+            f.write(compilation_json)
+        # Wait for GUI edit
+        is_prompt_confirm('Read compilation.json')
+        compilation = Compilation.from_json('./compilation.json')
     print(compilation.to_string())
     compilation.sync_compilation_with_disk()
     compilation.dump(args.wd)

@@ -198,6 +198,16 @@ Example table compilations
 |--|--------|----|--------|----|-------|---|
 |3|c1,c2,c3,c4|url1,url2,url3,url4|633|2022-06-14|just_chatting_30d|3|
 
+## Implementing GUI
+```mermaid
+flowchart LR;
+    selfdf-->jsonclips
+    Compilation--may not exist-->jsoncompilation-->Compilation*
+    selfdf[(self.df choices)]
+    jsonclips[(clips.JSON)]
+    jsoncompilation[(compilation.JSON)]
+```
+
     
 ## Download
 youtube-dl
