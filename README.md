@@ -114,22 +114,66 @@ When you create the credentials in the APIs Console, make sure you select "Deskt
 Add yourself to test users (email)
 
 ## Notes on program Workflow 
-1. Configure cluster/project in cfg/
-1. Select cluster and add clip links to database
-1. Grab clip info by clip_urls, clip_ids, creators, clusters, project,... and add to table clips
-1. Select clips and filter valid/invalid clips
-    prompt user through console to select clips
-    save temporary script to *.pkl for download later
-1. Download links (mp4)
-    Format file names, add statistic data
-    youtube-dl
-1. (optional) Add text overlay with title, creator
-1. Merge mp4
-    ffmpeg concatenate
-    update links in database using script
-1. Create meta json with title, keywords, description
-1. Create thumbnail with imagemagick
-1. Upload mp4 to youtube
+Set setting vars with arguments main.py or load project settings to set arg
+1. Find clips
+```mermaid
+flowchart LR;
+    twitch<-->find_and_add_clips
+    find_and_add_clips-->clips
+    twitch((Twitch API))
+    clips[(Clips)]
+```
+2. Create compilation by selecting clips
+```mermaid
+flowchart LR;
+    clips-->select_clips-->gui-->compilation
+    clips[(Clips)]
+    select_clips-->console-->compilation
+    compilation[(compilation.pkl)]
+```
+3. Download/Edit
+```mermaid
+flowchart LR;
+    download<-->selection_clips
+    compilation-->download
+    compilation<-->selection_clips
+    download-->create
+    compilation[(compilation.pkl)]
+    create([create video])
+```
+4. Creating the video
+```mermaid
+flowchart LR;
+    compilation-->format_download_to_input-->merge_input_to_output
+    merge_input_to_output-->meta
+    compilation[(compilation.pkl)]
+    meta([timing data])
+```
+5. Writing title, description, metadata
+```mermaid
+flowchart LR;
+    subgraph read data
+    compilation-->write_description_thumbnail
+    meta2-->write_description_thumbnail
+    twitch-->write_description_thumbnail
+    end
+    write_description_thumbnail-->meta
+    compilation[(compilation.pkl)]
+    twitch((Twitch API))
+    meta([thumbnail,title,description,meta.json])
+    meta2([timing data])
+```
+6. Updating publish and uploading
+```mermaid
+flowchart LR;
+    meta-->youtube_uploader-->youtube
+    youtube((Youtube API))
+    meta([thumbnail,title,description,meta.json])
+    compilation-->compilations--set publish flag-->clips
+    compilation[(compilation.pkl)]
+    compilations[(Compilations)]
+    clips[(Clips)]
+```
 
 ## Config file
 cfg/data.py
@@ -153,6 +197,16 @@ Example table compilations
 |id|creators|urls|duration|time|project|pid|
 |--|--------|----|--------|----|-------|---|
 |3|c1,c2,c3,c4|url1,url2,url3,url4|633|2022-06-14|just_chatting_30d|3|
+
+## Implementing GUI
+```mermaid
+flowchart LR;
+    selfdf-->jsonclips
+    Compilation--may not exist-->jsoncompilation-->Compilation*
+    selfdf[(self.df choices)]
+    jsonclips[(clips.JSON)]
+    jsoncompilation[(compilation.JSON)]
+```
 
     
 ## Download

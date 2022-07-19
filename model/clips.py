@@ -3,6 +3,8 @@ import unicodedata
 import string
 from pathlib import Path
 import re
+import json
+from types import SimpleNamespace
 
 import pandas as pd
 from InquirerPy import prompt
@@ -155,6 +157,33 @@ class Compilation:
         for element in self.list:
             yield element
 
+    def to_json(self):
+        # compilation to json
+        dict = {}
+        dict["project"] = self.project
+        dict["wd"] = str(self.wd)
+        dict["n"] = len(self.list)
+        clips = []
+        for e in self.list:
+            element = {}
+            element["download"] = e.download
+            element["error"] = e.error
+            c = e.clip
+            element["url"] = c.url
+            element["created_at"] = c.created_at
+            element["game_id"] = c.game_id
+            element["game"] = c.game
+            element["creator"] = c.creator.name
+            element["language"] = c.language
+            element["thumbnail_url"] = c.thumbnail_url
+            element["title"] = c.title
+            element["duration"] = c.duration
+            element["view_count"] = c.view_count
+            clips.append(element)
+        dict["clips"] = clips
+        out = json.dumps(dict, indent=2)
+        return out
+        
     def to_string(self):
         out = f'Compilation contains {len(self.list)}'
         for clip in self.list:

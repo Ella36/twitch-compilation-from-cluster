@@ -1,3 +1,4 @@
+*.AppImage
 clips.db
 *.journal
 *.jpg

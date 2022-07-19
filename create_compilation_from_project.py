@@ -53,6 +53,8 @@ def is_prompt_confirm(step: str):
 
 def argparser():
     parser = argparse.ArgumentParser()
+    # Use Console for selecting/editing
+    parser.add_argument('-c', '--console', action='store_true', help='Use Console')
     # Inputs
     parser.add_argument("--project", default="default", help="name of project, creates working directory")
     parser.add_argument("--dir", default="", help="suffix to project wd")
