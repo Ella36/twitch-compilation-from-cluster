@@ -134,9 +134,9 @@ flowchart LR;
 3. Download/Edit
 ```mermaid
 flowchart LR;
-    download<-->selection_clips
+    download<-->select_clips
     compilation-->download
-    compilation<-->selection_clips
+    compilation<-->select_clips
     download-->create
     compilation[(compilation.pkl)]
     create([create video])
@@ -145,8 +145,10 @@ flowchart LR;
 ```mermaid
 flowchart LR;
     compilation-->format_download_to_input-->merge_input_to_output
+    disk-->format_download_to_input
     merge_input_to_output-->meta
     compilation[(compilation.pkl)]
+    disk[(.mp4 clips)]
     meta([timing data])
 ```
 5. Writing title, description, metadata
@@ -201,11 +203,12 @@ Example table compilations
 ## Implementing GUI
 ```mermaid
 flowchart LR;
-    selfdf-->jsonclips
-    Compilation--may not exist-->jsoncompilation-->Compilation*
+    selfdf-->jsonclips-->gui
+    Compilation--may not exist-->jsoncompilation-->gui-->compilationcsv-->Compilation*
     selfdf[(self.df choices)]
     jsonclips[(clips.JSON)]
     jsoncompilation[(compilation.JSON)]
+    compilationcsv[(compilation.csv)]
 ```
 
     
