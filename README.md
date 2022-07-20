@@ -146,7 +146,7 @@ to set arguments from project configuration in `data.py`
 See submodule or link below
 https://github.com/SoglaHash/gui-compilation-from-cluster
 
-[![GUI Screenshot][gui-screenshot]]
+![GUI Screenshot][gui-screenshot]
 
 ### Upload
 ```
