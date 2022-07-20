@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # Select clips from creators
 # Keep in mind view count, duration to till 10mins and avoid duplicates
+from logging import raiseExceptions
 from pathlib import Path
 import datetime
 from dateutil.relativedelta import relativedelta
-import os
+import subprocess
 
 import pandas as pd
 from InquirerPy import prompt
@@ -340,7 +341,11 @@ def select_compilation_from_db(args):
         if file.exists():
             file.unlink()
         # Wait for GUI edit
-        os.system('./gui.AppImage')
+        subprocess.call([
+            './gui.AppImage', 
+        ])
+
+
         is_prompt_confirm('Read compilation.csv')
         # Read URLs from CSV in a txt file. Then read from DB
         file = Path('./compilation.csv')
@@ -392,10 +397,14 @@ def edit_compilation(args):
         with file.open('w') as f:
             f.write(clips_json)
         # Save compilations to compilation.json
-        compilation_json = compilation.to_json()
-        file = Path('./compilation.json')
-        with file.open('w') as f:
-            f.write(compilation_json)
+        try:
+            compilation_json = compilation.to_json()
+            file = Path('./compilation.json')
+            with file.open('w') as f:
+                f.write(compilation_json)
+        except TypeError as e:
+            print("Error saving JSON")
+            print(e)
         # Wait for GUI edit
         is_prompt_confirm('Read compilation.csv')
         # Read URLs from CSV in a txt file. Then read from DB

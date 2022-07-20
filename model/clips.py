@@ -181,7 +181,7 @@ class Compilation:
             element["view_count"] = c.view_count
             clips.append(element)
         dict["clips"] = clips
-        out = json.dumps(dict, indent=2)
+        out = json.dumps(dict, default=str, indent=2)
         return out
         
     def to_string(self):
