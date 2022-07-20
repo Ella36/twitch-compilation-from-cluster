@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # Select clips from creators
 # Keep in mind view count, duration to till 10mins and avoid duplicates
-from logging import raiseExceptions
 from pathlib import Path
 import datetime
 from dateutil.relativedelta import relativedelta
+import os
 
 import pandas as pd
 from InquirerPy import prompt
@@ -340,16 +340,19 @@ def select_compilation_from_db(args):
         if file.exists():
             file.unlink()
         # Wait for GUI edit
+        os.system('./gui.AppImage')
         is_prompt_confirm('Read compilation.csv')
         # Read URLs from CSV in a txt file. Then read from DB
         file = Path('./compilation.csv')
         urls = file.read_text().strip().split(',')
         db = Mydb()
-        df_clip_ids = db.read_clips_clip_urls_df_from_db(urls)
+        df = db.read_clips_clip_urls_df_from_db(urls)
         db.close()
+        # df is not ordered like csv
         clips = []
-        for _, row in df_clip_ids.iterrows():
-                clips.append(Clip(from_row=True,row=row))
+        for url in urls:
+            result = df[df['url'] == url].iloc[0]
+            clips.append(Clip(from_row=True,row=result))
         compilation = Compilation(wd=args.wd, clips=clips, project=args.project)
     print(compilation.to_string())
     compilation.sync_compilation_with_disk()
@@ -399,11 +402,13 @@ def edit_compilation(args):
         file = Path('./compilation.csv')
         urls = file.read_text().strip().split(',')
         db = Mydb()
-        df_clip_ids = db.read_clips_clip_urls_df_from_db(urls)
+        df = db.read_clips_clip_urls_df_from_db(urls)
         db.close()
+        # df is not ordered like csv
         clips = []
-        for _, row in df_clip_ids.iterrows():
-                clips.append(Clip(from_row=True,row=row))
+        for url in urls:
+            result = df[df['url'] == url].iloc[0]
+            clips.append(Clip(from_row=True,row=result))
         compilation = Compilation(wd=args.wd, clips=clips, project=args.project)
     print(compilation.to_string())
     compilation.sync_compilation_with_disk()
