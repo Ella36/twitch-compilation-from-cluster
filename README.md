@@ -1,3 +1,35 @@
+<div id="top"></div>
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/SoglaHash/twitch-compilation-from-cluster">
+    <img src="images/logo192.png" alt="Logo" width="80" height="80">
+  </a>
+
+  <h3 align="center">Create twitch compilations and upload to youtube</h3>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#requirements">Requirements</a></li>
+        <li><a href="#built-with">Built With</a></li>
+        <li><a href="#resources">Requirements</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#notes">Notes</a></li>
+    <li><a href="#gui">GUI</a></li>
+    <li><a href="#upload">Upload</a></li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
+
 # Twitch-Compilation-From-Cluster
 Create Twitch compilations and upload to Youtube with ease.
 
@@ -10,6 +42,16 @@ Closely related creators can be put in a cluster defined in config file and a co
 Sample speed-up gif of output 1min video 360p mp4
 see `./proj-cluster_sample_30d-1/` for example
 ![Sample video output](./output.gif)
+
+## Built With
+
+
+* [![Python][Python.org]][Python-url]
+* [![Twitch][Twitch.com]][Twitch-url]
+* [![Youtube][Youtube.com]][Youtube-url]
+* [![Electron.js][Electron.js]][Electron-url]
+* [![React][React.js]][React-url]
+* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
 
 ## Requirements
 Python3 3.10+, lower may work
@@ -35,7 +77,7 @@ Youtube API: https://developers.google.com/youtube/v3/guides/uploading_a_video
 Twitch API: https://dev.twitch.tv/docs/api/reference#get-clips
 
 
-## Use
+## Usage
 There's only a few steps to create a compilation.
 
 First make sure tables are created
@@ -99,6 +141,13 @@ or use
 ```
 to set arguments from project configuration in `data.py`
 
+### GUI
+
+See submodule or link below
+https://github.com/SoglaHash/gui-compilation-from-cluster
+
+[![GUI Screenshot][gui-screenshot]]
+
 ### Upload
 ```
 ./youtubeuploader-bin/youtubeuploader -filename ./proj-sample_30d-1/proj-sample_30d-1.mp4 --metaJSON ./proj-sample_30d-1/meta.json -thumbnail ./proj-sample_30d-1/thumbnail_with_icon.jpg -oAuthPort 8082
@@ -113,7 +162,7 @@ When you create the credentials in the APIs Console, make sure you select "Deskt
 
 Add yourself to test users (email)
 
-## Notes on program Workflow 
+## Notes
 Set setting vars with arguments main.py or load project settings to set arg
 1. Find clips
 ```mermaid
@@ -241,3 +290,27 @@ missing `./OpenSans-Regular.ttf` can be found here https://fontsgeek.com/fonts/O
 ```
 ffmpeg -i input.mp4 -vf "setpts=0.2*PTS,fps=10,scale=320:-1:flags=lanczos" -c:v pam -f image2pipe - | convert -delay 10 - -loop 0 -layers optimize output.gif
 ```
+
+<!-- LICENSE -->
+## License
+
+Distributed under the MIT License. See `LICENSE.txt` for more information.
+
+
+ 	
+
+[Python.org]: https://img.shields.io/badge/Python-14354C?style=for-the-badge&logo=python&logoColor=white
+[Python-url]: https://www.python.org/
+[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[React-url]: https://reactjs.org/
+[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
+[Bootstrap-url]: https://getbootstrap.com
+[Electron.js]: https://img.shields.io/badge/Electron-191970?style=for-the-badge&logo=Electron&logoColor=white
+[Electron-url]: https://www.electronjs.org/
+
+
+[Twitch.com]: 	https://img.shields.io/badge/Twitch-9146FF?style=for-the-badge&logo=twitch&logoColor=white
+[Twitch-url]:    https://twitch.com
+[Youtube-url]:    https://youtube.com
+[Youtube.com]: https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white
+[gui-screenshot]: https://github.com/SoglaHash/gui-compilation-from-cluster/raw/main/screenshot.png
