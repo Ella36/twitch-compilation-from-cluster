@@ -89,9 +89,10 @@ class ClipsSelector:
         compilation_with_errors.sync_compilation_with_disk()
         def _handle_errors(errors):
             db = Mydb()
-            for u in [e.clip.url for e in errors]:
-                db.set_broken(u)
-                print(f'Set broken url:\n\t{u}')
+            for e in errors:
+                url = e.clip.url
+                db.set_broken(url)
+                print(f"Set broken clip:\n\t{e.clip.to_string()}")
             db.commit()
             db.close()
             for e in errors:
@@ -342,7 +343,7 @@ def select_compilation_from_db(args):
             file.unlink()
         # Wait for GUI edit
         subprocess.call([
-            './gui.AppImage', 
+            './gui.AppImage',
         ])
         is_prompt_confirm('Read compilation.csv')
         # Read URLs from CSV in a txt file. Then read from DB
