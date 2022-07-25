@@ -344,8 +344,6 @@ def select_compilation_from_db(args):
         subprocess.call([
             './gui.AppImage', 
         ])
-
-
         is_prompt_confirm('Read compilation.csv')
         # Read URLs from CSV in a txt file. Then read from DB
         file = Path('./compilation.csv')
@@ -394,6 +392,8 @@ def edit_compilation(args):
         # Save choices to clips.json
         clips_json = sh.df.reset_index().to_json(orient='index')
         file = Path('./clips.json')
+        # Wait for GUI edit
+        is_prompt_confirm('Save compilation.json')
         with file.open('w') as f:
             f.write(clips_json)
         # Save compilations to compilation.json
@@ -406,6 +406,9 @@ def edit_compilation(args):
             print("Error saving JSON")
             print(e)
         # Wait for GUI edit
+        subprocess.call([
+            './gui.AppImage', 
+        ])
         is_prompt_confirm('Read compilation.csv')
         # Read URLs from CSV in a txt file. Then read from DB
         file = Path('./compilation.csv')

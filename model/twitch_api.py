@@ -1,7 +1,11 @@
+#!/usr/bin/env python
 import requests
 import pandas as pd
 
-from cfg.secrets import TWITCH_CREDENTIALS
+if __name__ == "__main__":
+    from secrets import TWITCH_CREDENTIALS
+else:
+    from cfg.secrets import TWITCH_CREDENTIALS
 
 TWITCH_OAUTH_ENDPOINT = "https://id.twitch.tv/oauth2/token"
 TWITCH_CLIPS_ENDPOINT = "https://api.twitch.tv/helix/clips"
@@ -130,19 +134,28 @@ def get_game_from_id(twitch_credentials, game_id):
 if __name__ == "__main__":
     twitch_oauth_header = login(TWITCH_CREDENTIALS)
 
-    #game_name = "The Quarry"
-    #game_id = get_category_id(twitch_oauth_header, game_name)
-    #with open('./model/game_info_semicolon.csv', "a") as f:
-    #    f.write(f'\n"{game_id}";"{game_name}";""')
-    #    print(game_name, game_id)
+    game_names_tolookup = [
+    ]
 
-    lookup = []
+    game_ids_to_lookup = [
+    ]
 
-    for game_id in lookup:
+    for game_name in game_names_tolookup:
+        try:
+            game_id = get_category_id(twitch_oauth_header, game_name)
+            with open('./model/game_info_semicolon.csv', "a") as f:
+                print(f'\n"{game_id}";"{game_name}";""')
+                f.write(f'\n"{game_id}";"{game_name}";""')
+        except Exception:
+            print(f"Not found {game_name}")
+            pass
+
+    for game_id in game_ids_to_lookup:
         try:
             game_name = get_game_from_id(twitch_oauth_header, game_id)
+            with open('./model/game_info_semicolon.csv', "a") as f:
+                print(f'\n"{game_id}";"{game_name}";""')
+                f.write(f'\n"{game_id}";"{game_name}";""')
         except Exception:
+            print(f"Not found {game_id}")
             pass
-        with open('./model/game_info_semicolon.csv', "a") as f:
-            f.write(f'\n"{game_id}";"{game_name}";""')
-        print(game_name)

@@ -165,6 +165,9 @@ class Compilation:
         dict["n"] = len(self.list)
         clips = []
         for e in self.list:
+            # Do not add if clip has encountered error
+            if e.error:
+                continue
             element = {}
             element["download"] = e.download
             element["error"] = e.error

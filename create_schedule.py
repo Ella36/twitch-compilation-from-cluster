@@ -1,19 +1,16 @@
 #!/usr/bin/env python
-# List dates when new releases should be made
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
 import argparse
 import datetime
 import math
-import pickle
 import random
 
 from InquirerPy import prompt
 
 from cfg.data import PROJECTS
 from model.mydb import Mydb
-from model.project import Project
 
 
 @dataclass
@@ -38,7 +35,7 @@ class Day:
 class ReleaseSolver:
     def __init__(self, initial, target_interval_per_day):
         self.initial = initial # Array to manipulate
-        self.n_iterations = 600
+        self.n_iterations = 1000
         self.target_interval_per_day = target_interval_per_day
 
     def cost(self, candidate):
@@ -115,7 +112,7 @@ def is_prompt_confirm(step: str):
 def argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--today", action="store_true", help="ignores date and starts from today")
-    parser.add_argument('-d', '--date', default='2022-06-21', help='start date in format: MM-DD-YYYY')
+    parser.add_argument('-d', '--date', default='2022-07-21', help='start date in format: MM-DD-YYYY')
     return parser.parse_args()
 
 def print_days_since_release():

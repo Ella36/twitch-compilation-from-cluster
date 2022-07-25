@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 from dataclasses import dataclass, field
 
-from .cluster import Cluster
-
 
 class Projects():
     def __init__(self, projects: list):
