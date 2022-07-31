@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from pathlib import Path
 import json
 import requests
@@ -65,9 +65,9 @@ def parse_time_file(args):
     return title, description, keywords
 
 def _publish_date_formatted():
-    today = date.today()
-    tomorrow = datetime(today.year, today.month, today.day+1)
-    tomorrow_16_30 = tomorrow.replace(hour=16, minute=30)
+    now = datetime.utcnow()
+    time_in_1_day = now + timedelta(days=1)
+    tomorrow_16_30 = time_in_1_day.replace(hour=16, minute=30, second=0)
     return tomorrow_16_30.strftime("%Y-%m-%dT%H:%M:%S+02:00")
 
 def _record_date_formatted():
