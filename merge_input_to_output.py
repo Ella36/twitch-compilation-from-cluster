@@ -7,6 +7,7 @@ import subprocess
 
 from model.clips import Compilation
 
+DELIMITER = "@;>>;@^_^@;<<@;"
 
 def clear_build_directory(args):
     # Clear BUILD directory of files
@@ -33,7 +34,7 @@ def convert_mp4_to_ts(args):
         ], capture_output=True, text=True)
         with TIME.open("a") as t:
             creator, title = e.clip.creator.name, e.clip.title
-            t.write(f'{int(count)};;{creator};;{title}\n')
+            t.write(f'{int(count)}{DELIMITER}{creator}{DELIMITER}{title}\n')
             # Sometimes doesn't print duration, use clip duration instead
             # count += FFMPEGOutputToDurationInSeconds(p.stderr).duration
             count += e.clip.duration

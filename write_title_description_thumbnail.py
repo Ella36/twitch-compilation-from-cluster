@@ -10,6 +10,7 @@ from InquirerPy import prompt
 from model.mydb import Mydb
 from model.clips import Compilation
 
+DELIMITER = "@;>>;@^_^@;<<@;"
 
 def parse_time_file(args):
     def _filter_description(d):
@@ -20,7 +21,7 @@ def parse_time_file(args):
     # Description
     creators = []
     for t in text:
-        seconds, creator, title = t.split(';;')
+        seconds, creator, title = t.split(DELIMITER)
         creators.append(creator)
         seconds = f'{int(seconds)//60:02d}:{int(seconds)%60:02d}'
         creator_url = f'https://twitch.tv/{creator}'
@@ -42,7 +43,7 @@ def parse_time_file(args):
         title = """{} {}""".format(title_prefix, cmi[0])
         if args.single:
             for t in text:
-                _, _, title = t.split(';;')
+                _, _, title = t.split(DELIMITER)
                 title = _filter_description(title)
             title = "#Twitch Compilation {} #{:03d} {}".format(args.title, pid, title)
     elif len(cmi) == 2:
