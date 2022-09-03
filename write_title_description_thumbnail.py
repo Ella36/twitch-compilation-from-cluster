@@ -73,11 +73,49 @@ def parse_time_file(args):
     description += '\n'+description_postfix+'\n'
     return title, description, keywords
 
+def prompt_for_date():
+    def prompt_choices_publish_date():
+        def _gen_choices() -> list:
+            def _to_choice_format(date):
+                name = date.strftime('%-d/%m, %H:%M')
+                value = date
+                return {'name': name, 'value': value}
+            now = datetime.utcnow()
+            time_in_1_day = now + timedelta(days=1)
+            time_in_2_days = now + timedelta(days=2)
+            time_in_3_days = now + timedelta(days=2)
+            tomorrow_12_00 = time_in_1_day.replace(hour=12, minute=0, second=0, microsecond=0)
+            tomorrow_16_30 = time_in_1_day.replace(hour=16, minute=30, second=0, microsecond=0)
+            tomorrow_15_30 = time_in_1_day.replace(hour=15, minute=30, second=0, microsecond=0)
+            day_after_tomorrow_15_30 = time_in_2_days.replace(hour=15, minute=30, second=0, microsecond=0)
+            day_after_tomorrow_16_30 = time_in_2_days.replace(hour=16, minute=30, second=0, microsecond=0)
+            day_after_tomorrow_12_00 = time_in_2_days.replace(hour=12, minute=00, second=0, microsecond=0)
+            day_plus_3_15_30 = time_in_3_days.replace(hour=15, minute=30, second=0, microsecond=0)
+            day_plus_3_16_30 = time_in_3_days.replace(hour=16, minute=30, second=0, microsecond=0)
+            day_plus_3_12_00 = time_in_3_days.replace(hour=12, minute=00, second=0, microsecond=0)
+            dates_in_choice_order = [
+                tomorrow_15_30, tomorrow_16_30, tomorrow_12_00,
+                day_after_tomorrow_15_30, day_after_tomorrow_16_30, day_after_tomorrow_12_00,
+                day_plus_3_15_30, day_plus_3_16_30, day_plus_3_12_00
+            ]
+            choices = list(map(_to_choice_format, dates_in_choice_order))
+            return choices
+        choices = _gen_choices()
+        questions = [
+            {
+                'type': 'checkbox',
+                'qmark': '😃',
+                'message': 'Select date option',
+                'name': 'date_option',
+                'choices': choices
+            }
+        ]
+        answers = prompt(questions)['date_option']
+        return answers[0] if len(answers) > 0 else choices[0]['value']
+    return prompt_choices_publish_date()
+
 def _publish_date_formatted():
-    now = datetime.utcnow()
-    time_in_1_day = now + timedelta(days=1)
-    tomorrow_16_30 = time_in_1_day.replace(hour=16, minute=30, second=0)
-    return tomorrow_16_30.strftime("%Y-%m-%dT%H:%M:%S+02:00")
+    return prompt_for_date().strftime("%Y-%m-%dT%H:%M:%S+02:00")
 
 def _record_date_formatted():
     return datetime.now().strftime("%Y-%m-%d")
