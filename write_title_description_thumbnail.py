@@ -84,6 +84,9 @@ def prompt_for_date():
             time_in_1_day = now + timedelta(days=1)
             time_in_2_days = now + timedelta(days=2)
             time_in_3_days = now + timedelta(days=2)
+            today_12_00 = now.replace(hour=12, minute=0, second=0, microsecond=0)
+            today_16_30 = now.replace(hour=16, minute=30, second=0, microsecond=0)
+            today_15_30 = now.replace(hour=15, minute=30, second=0, microsecond=0)
             tomorrow_12_00 = time_in_1_day.replace(hour=12, minute=0, second=0, microsecond=0)
             tomorrow_16_30 = time_in_1_day.replace(hour=16, minute=30, second=0, microsecond=0)
             tomorrow_15_30 = time_in_1_day.replace(hour=15, minute=30, second=0, microsecond=0)
@@ -96,6 +99,7 @@ def prompt_for_date():
             dates_in_choice_order = [
                 tomorrow_15_30, tomorrow_16_30, tomorrow_12_00,
                 day_after_tomorrow_15_30, day_after_tomorrow_16_30, day_after_tomorrow_12_00,
+                today_15_30, today_16_30, today_12_00,
                 day_plus_3_15_30, day_plus_3_16_30, day_plus_3_12_00
             ]
             choices = list(map(_to_choice_format, dates_in_choice_order))
