@@ -96,9 +96,9 @@ def setup_args(args):
     # Add clip_ids
     if args.clip_ids or args.load_compilation:
         args.clip_ids = args.clip_ids
-        args.game_ids = [] 
-        args.clusters = [] 
-        args.creators = [] 
+        args.game_ids = []
+        args.clusters = []
+        args.creators = []
         args.published_ok = True
     print(f'Args set:\n\t{args}')
     return args
@@ -115,9 +115,9 @@ if __name__ == '__main__':
         db = Mydb()
         args.clip_urls = db.select_urls_from_project_and_pid(args.project, args.pid)
         db.close()
-        if is_prompt_confirm('Add clips to DB'):
+        if is_prompt_confirm('Load compilation -- Add clips to DB'):
             find_and_add_clips_to_db(args)
-        if is_prompt_confirm('Load compilation from project and pid'):
+        if is_prompt_confirm('Load compilation -- Create compilation from project and pid'):
             load_compilation_from_published_project(args)
             print('Compilation loaded!')
         args.load_compilation = False
@@ -161,6 +161,7 @@ if __name__ == '__main__':
         publish(args)
     p = args.project
     pf = f'./proj-{p}-1'
+    # select date here
     upload_cmd = f"./youtubeuploader-bin/youtubeuploader -filename {pf}/proj-{p}-1.mp4 --metaJSON {pf}/meta.json -thumbnail {pf}/thumbnail_with_icon.jpg -oAuthPort 8082\n"
     if is_prompt_confirm(f'Upload to YT\n{upload_cmd}'):
         import os

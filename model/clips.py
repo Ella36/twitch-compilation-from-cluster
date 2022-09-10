@@ -91,10 +91,10 @@ class Element:
         self.download: bool = download
         self.error: bool = error
         self.wd: Path = wd
-        
+
     def to_string(self):
         return f"{self.order} {self.filename_stem_without_order} DL?{self.download} ERR?{self.error} Clip:{self.clip.to_string()}"
-    
+
     @property
     def filename(self):
         return self.wd / Path('./download') / Path(str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}-{self.clip.title}")+".mp4")
@@ -112,6 +112,10 @@ class Element:
         return str_to_filename(f"{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}")
 
     @property
+    def filename_match_glob_without_order(self):
+        return '*' + self.filename_stem_without_order.split('-')[0] + '*' + self.filename_stem_without_order.split('-')[2] + '*'
+
+    @property
     def url(self):
         return self.clip.url
 
@@ -119,7 +123,7 @@ class Element:
         # Remove file
         f = Path(self.filename)
         if not f.exists():
-            find = list(f.parent.glob(f"*{self.filename_stem_without_order}*"))
+            find = list(f.parent.glob(self.filename_match_glob_without_order))
             if len(find) == 1:
                 print("\tRemoving clip from disk:\n\t\t{f.name}")
                 find[0].unlink()
@@ -220,7 +224,7 @@ class Compilation:
             for e in [e for e in elements if e.error]:
                 f = Path(e.filename)
                 if not f.exists():
-                    find = list(f.parent.glob(f"*{e.filename_stem_without_order}*"))
+                    find = list(f.parent.glob(e.filename_match_glob_without_order))
                     if len(find) == 1:
                         print(f"\tFound(ish) on disk:\n\t\t{find[0].name}")
                         print(f"\Remove file with error!\n\t\t{f.name}")
@@ -243,7 +247,7 @@ class Compilation:
                 e.download = False
                 return
             if not f.exists():
-                find = list(f.parent.glob(f"*{e.filename_stem_without_order}*"))
+                find = list(f.parent.glob(e.filename_match_glob_without_order))
                 if len(find) == 1:
                     print(f"\tFound(ish) on disk:\n\t\t{find[0].name}")
                     e.download = True
