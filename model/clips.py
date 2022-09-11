@@ -96,33 +96,40 @@ class Element:
         return f"{self.order} {self.filename_stem_without_order} DL?{self.download} ERR?{self.error} Clip:{self.clip.to_string()}"
 
     @property
+    def filename_base(self):
+        return Path(str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.unique_url_part}-{self.clip.game_id}-{self.clip.title}"))
+
+    @property
     def filename(self):
-        return self.wd / Path('./download') / Path(str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}-{self.clip.title}")+".mp4")
+        return self.wd / Path('./download') / (self.filename_base + ".mp4")
 
     @property
     def filename_input(self):
-        return self.wd / Path('./input') / Path(str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}-{self.clip.title}")+".mp4")
+        return self.wd / Path('./input') / (self.filename_base + ".mp4")
 
     @property
     def filename_build_ts(self):
-        return self.wd / Path('./build') / Path(str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}-{self.clip.title}")+".ts")
-
+        return self.wd / Path('./build') / (self.filename_base + ".ts")
 
     @property
     def filename_build_mpg(self):
-        return self.wd / Path('./build') / Path(str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}-{self.clip.title}")+".mpg")
+        return self.wd / Path('./build') / (self.filename_base + ".mpg")
 
     @property
     def filename_stem_without_order(self):
-        return str_to_filename(f"{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}")
+        return str_to_filename(f"{self.clip.creator.name}-{self.unique_url_part}-{self.clip.game_id}")
 
     @property
     def filename_match_glob_without_order(self):
-        return '*' + self.filename_stem_without_order.split('-')[0] + '*' + self.filename_stem_without_order.split('-')[2] + '*'
+        return '*' + self.filename_stem_without_order + '*'
 
     @property
     def url(self):
         return self.clip.url
+
+    @property
+    def unique_url_part(self):
+        return self.clip.url.split('/')[-1].split('-')[0]
 
     def remove_from_disk(self):
         # Remove file
@@ -158,10 +165,10 @@ class Compilation:
         if len(clips) > 0:
             for clip in clips:
                 self.add(clip)
-    
+
     def __post_init__(self):
         self.sync_compilation_with_disk()
-    
+
     def __iter__(self):
         for element in self.list:
             yield element
@@ -195,7 +202,7 @@ class Compilation:
         dict["clips"] = clips
         out = json.dumps(dict, default=str, indent=2)
         return out
-        
+
     def to_string(self):
         out = f'Compilation contains {len(self.list)}'
         for clip in self.list:
