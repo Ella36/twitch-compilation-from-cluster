@@ -107,6 +107,11 @@ class Element:
     def filename_build_ts(self):
         return self.wd / Path('./build') / Path(str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}-{self.clip.title}")+".ts")
 
+
+    @property
+    def filename_build_mpg(self):
+        return self.wd / Path('./build') / Path(str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}-{self.clip.title}")+".mpg")
+
     @property
     def filename_stem_without_order(self):
         return str_to_filename(f"{self.clip.creator.name}-{self.clip.view_count}-{self.clip.game_id}")

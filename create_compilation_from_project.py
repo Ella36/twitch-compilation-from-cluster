@@ -5,7 +5,7 @@
 # 4. Download the clips
 # 5. Format Download to Input. Draw text if needed
 # 6. Merge to MP4
-# 7. Publish and Update database 
+# 7. Publish and Update database
 import argparse
 from pathlib import Path
 import uuid

@@ -29,6 +29,7 @@ def convert_mp4_to_ts(args):
             '-i', f,
             '-c', 'copy',
             '-bsf:v', 'h264_mp4toannexb',
+            '-muxdelay', '0',
             '-f', 'mpegts',
             e.filename_build_ts,
         ], capture_output=True, text=True)
