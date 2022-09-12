@@ -16,7 +16,7 @@ def format_file(args, e: Element):
         text = f'{e.clip.creator.name} - {e.clip.title}'
         vf_string = f"fps=30,scale=-1:720,drawtext=fontfile=OpenSans-Regular.ttf:text='{text}':fontcolor=white:fontsize=48:box=1:boxcolor=black@0.5:boxborderw=5:x=(w-text_w)/2:y=10"
         subprocess.call([
-            'ffmpeg', 
+            'ffmpeg',
             '-i', input,
             '-vf', vf_string,
             '-crf', '23', # optimize, higher is faster and lower quality [0-51]

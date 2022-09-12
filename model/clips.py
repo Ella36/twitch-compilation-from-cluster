@@ -97,23 +97,23 @@ class Element:
 
     @property
     def filename_base(self):
-        return Path(str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.unique_url_part}-{self.clip.game_id}-{self.clip.title}"))
+        return str_to_filename(f"{self.order:03d}-{self.clip.creator.name}-{self.unique_url_part}-{self.clip.game_id}-{self.clip.title}")
 
     @property
     def filename(self):
-        return self.wd / Path('./download') / (self.filename_base + ".mp4")
+        return self.wd / Path('./download') / Path(self.filename_base + ".mp4")
 
     @property
     def filename_input(self):
-        return self.wd / Path('./input') / (self.filename_base + ".mp4")
+        return self.wd / Path('./input') / Path(self.filename_base + ".mp4")
 
     @property
     def filename_build_ts(self):
-        return self.wd / Path('./build') / (self.filename_base + ".ts")
+        return self.wd / Path('./build') / Path(self.filename_base + ".ts")
 
     @property
     def filename_build_mpg(self):
-        return self.wd / Path('./build') / (self.filename_base + ".mpg")
+        return self.wd / Path('./build') / Path(self.filename_base + ".mpg")
 
     @property
     def filename_stem_without_order(self):
