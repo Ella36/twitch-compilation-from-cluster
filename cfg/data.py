@@ -250,6 +250,16 @@ CLUSTERS  = Clusters([
 
 PROJECTS = Projects([
     Project(
+        name='disneydreamlightvalley_30d',
+        description='Popular Disney Dreamlight Valley clips!',
+        title='Disney Dreamlight Valley',
+        playlist_title='Disney Dreamlight Valley',
+        game_ids=['1515862749'],
+        days=30,
+        n_per_month=1,
+        is_active=True,
+    ),
+    Project(
         name='thequarry_30d',
         description='Popular The Quarry twitch clips!',
         title='The Quarry',
@@ -258,6 +268,25 @@ PROJECTS = Projects([
         days=30,
         n_per_month=2,
         is_active=False,
+    ),
+    Project(
+        name='overwatch2_30d',
+        description='Popular Overwatch 2 twitch clips!',
+        title='Overwatch 2',
+        playlist_title='Overwatch 2',
+        game_ids=['515025'],
+        days=30,
+        n_per_month=2,
+        is_active=True,
+    ),
+    Project(
+        name='apex_30d',
+        description='Popular Apex Legends twitch clips past 30 days!',
+        title='Apex Legends',
+        playlist_title='Apex legends',
+        game_ids=['511224'],
+        days=30,
+        n_per_month=1,
     ),
     Project(
         name='csgo_30d',

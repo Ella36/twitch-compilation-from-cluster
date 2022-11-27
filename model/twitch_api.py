@@ -135,6 +135,7 @@ if __name__ == "__main__":
     twitch_oauth_header = login(TWITCH_CREDENTIALS)
 
     game_names_tolookup = [
+        "Disney Dreamlight Valley",
     ]
 
     game_ids_to_lookup = [

@@ -31,6 +31,7 @@ class Project:
     resolution: str = '720'
     is_ok_already_published: bool = False
     skip_draw: bool = True
+    draw_clip_title_only: bool = False
     single: bool = False # compilation of 1 single clip
     is_active: bool = True # compilation of 1 single clip
     youtube_category_id: str = "20" # Gaming 20,  Entertainment 24, People Blogs 22,

@@ -66,6 +66,7 @@ def argparser():
     parser.add_argument("--resolution", default='720')
     # Input formatter
     parser.add_argument("--skip_draw", action="store_true")
+    parser.add_argument("--draw_clip_title_only", action="store_true")
     # Publishing
     parser.add_argument("--title", default="untitled", help="title part before numbers ex. Twitch Compilation -->(NA)<-- #001")
     parser.add_argument("--description", default="description not added", help="ex. Best twitch clips past 30 days!")

@@ -81,6 +81,7 @@ def setup_args(args):
     args.resolution = project.resolution
     args.published_ok = project.is_ok_already_published
     args.skip_draw = project.skip_draw
+    args.draw_clip_title_only = project.draw_clip_title_only
     args.youtube_category_id = project.youtube_category_id
     args.clip_urls = []
     if project.playlist_title == "untitled":

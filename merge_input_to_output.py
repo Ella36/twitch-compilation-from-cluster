@@ -27,7 +27,8 @@ def convert_mp4_to_ts(args):
         p = subprocess.run([
             'ffmpeg',
             '-i', f,
-            '-c', 'copy',
+            '-c:v', 'copy',
+            '-c:a', 'aac',
             '-bsf:v', 'h264_mp4toannexb',
             '-muxdelay', '0',
             '-f', 'mpegts',
