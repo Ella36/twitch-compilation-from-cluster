@@ -112,7 +112,7 @@ def is_prompt_confirm(step: str):
 def argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--today", action="store_true", help="ignores date and starts from today")
-    parser.add_argument('-d', '--date', default='2022-07-21', help='start date in format: MM-DD-YYYY')
+    parser.add_argument('-d', '--date', default='2022-07-21', help='start date in format: YYYY-MM-DD')
     return parser.parse_args()
 
 def print_days_since_release():
