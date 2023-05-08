@@ -3,7 +3,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/SoglaHash/twitch-compilation-from-cluster">
+  <a href="https://github.com/Ella36/twitch-compilation-from-cluster">
     <img src="images/logo192.png" alt="Logo" width="80" height="80">
   </a>
 
@@ -144,7 +144,7 @@ to set arguments from project configuration in `data.py`
 ### GUI
 
 See submodule or link below
-https://github.com/SoglaHash/gui-compilation-from-cluster
+https://github.com/Ella36/gui-compilation-from-cluster
 
 ![GUI Screenshot][gui-screenshot]
 
@@ -313,4 +313,4 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 [Twitch-url]:    https://twitch.com
 [Youtube-url]:    https://youtube.com
 [Youtube.com]: https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white
-[gui-screenshot]: https://github.com/SoglaHash/gui-compilation-from-cluster/raw/main/screenshot.png
+[gui-screenshot]: https://github.com/Ella36/gui-compilation-from-cluster/raw/main/screenshot.png
