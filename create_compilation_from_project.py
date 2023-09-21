@@ -160,10 +160,8 @@ if __name__ == '__main__':
         write_title_description_thumbnail.thumbnail(args)
     if is_prompt_confirm('Publish to DB!'):
         publish(args)
-    p = args.project
-    pf = f'./proj-{p}-1'
-    # select date here
-    upload_cmd = f"./youtubeuploader-bin/youtubeuploader -filename {pf}/proj-{p}-1.mp4 --metaJSON {pf}/meta.json -thumbnail {pf}/thumbnail_with_icon.jpg -oAuthPort 8082\n"
+    upload_cmd = f"./youtubeuploader-bin/youtubeuploader -filename {args.wd}/{args.wd}.mp4 --metaJSON {args.wd}/meta.json -thumbnail {args.wd}/thumbnail_with_icon.jpg -oAuthPort 8082\n"
+    print(upload_cmd)
     if is_prompt_confirm(f'Upload to YT\n{upload_cmd}'):
         import os
         os.system(upload_cmd)
