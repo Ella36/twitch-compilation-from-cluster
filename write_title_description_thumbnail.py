@@ -85,6 +85,12 @@ def prompt_for_date():
             time_in_2_days = now + timedelta(days=2)
             time_in_3_days = now + timedelta(days=3)
             time_in_4_days = now + timedelta(days=4)
+            time_in_5_days = now + timedelta(days=5)
+            time_in_6_days = now + timedelta(days=6)
+            time_in_7_days = now + timedelta(days=7)
+            time_in_8_days = now + timedelta(days=8)
+            time_in_9_days = now + timedelta(days=9)
+            time_in_10_days = now + timedelta(days=10)
             today_12_00 = now.replace(hour=12, minute=0, second=0, microsecond=0)
             today_16_30 = now.replace(hour=16, minute=30, second=0, microsecond=0)
             today_15_30 = now.replace(hour=15, minute=30, second=0, microsecond=0)
@@ -102,12 +108,43 @@ def prompt_for_date():
             day_plus_4_16_30 = time_in_4_days.replace(hour=16, minute=30, second=0, microsecond=0)
             day_plus_4_12_00 = time_in_4_days.replace(hour=12, minute=00, second=0, microsecond=0)
 
+            day_plus_5_15_30 = time_in_5_days.replace(hour=15, minute=30, second=0, microsecond=0)
+            day_plus_5_16_30 = time_in_5_days.replace(hour=16, minute=30, second=0, microsecond=0)
+            day_plus_5_12_00 = time_in_5_days.replace(hour=12, minute=00, second=0, microsecond=0)
+
+            day_plus_6_15_30 = time_in_6_days.replace(hour=15, minute=30, second=0, microsecond=0)
+            day_plus_6_16_30 = time_in_6_days.replace(hour=16, minute=30, second=0, microsecond=0)
+            day_plus_6_12_00 = time_in_6_days.replace(hour=12, minute=00, second=0, microsecond=0)
+
+            day_plus_7_15_30 = time_in_7_days.replace(hour=15, minute=30, second=0, microsecond=0)
+            day_plus_7_16_30 = time_in_7_days.replace(hour=16, minute=30, second=0, microsecond=0)
+            day_plus_7_12_00 = time_in_7_days.replace(hour=12, minute=00, second=0, microsecond=0)
+
+
+            day_plus_8_15_30 = time_in_8_days.replace(hour=15, minute=30, second=0, microsecond=0)
+            day_plus_8_16_30 = time_in_8_days.replace(hour=16, minute=30, second=0, microsecond=0)
+            day_plus_8_12_00 = time_in_8_days.replace(hour=12, minute=00, second=0, microsecond=0)
+
+            day_plus_9_15_30 = time_in_9_days.replace(hour=15, minute=30, second=0, microsecond=0)
+            day_plus_9_16_30 = time_in_9_days.replace(hour=16, minute=30, second=0, microsecond=0)
+            day_plus_9_12_00 = time_in_9_days.replace(hour=12, minute=00, second=0, microsecond=0)
+
+            day_plus_10_15_30 = time_in_10_days.replace(hour=15, minute=30, second=0, microsecond=0)
+            day_plus_10_16_30 = time_in_10_days.replace(hour=16, minute=30, second=0, microsecond=0)
+            day_plus_10_12_00 = time_in_10_days.replace(hour=12, minute=00, second=0, microsecond=0)
+
             dates_in_choice_order = [
                 tomorrow_15_30, tomorrow_16_30, tomorrow_12_00,
                 day_after_tomorrow_15_30, day_after_tomorrow_16_30, day_after_tomorrow_12_00,
                 today_15_30, today_16_30, today_12_00,
                 day_plus_3_15_30, day_plus_3_16_30, day_plus_3_12_00,
-                day_plus_4_15_30, day_plus_4_16_30, day_plus_4_12_00
+                day_plus_4_15_30, day_plus_4_16_30, day_plus_4_12_00,
+                day_plus_5_15_30, day_plus_5_16_30, day_plus_5_12_00,
+                day_plus_6_15_30, day_plus_6_16_30, day_plus_6_12_00,
+                day_plus_7_15_30, day_plus_7_16_30, day_plus_7_12_00,
+                day_plus_8_15_30, day_plus_8_16_30, day_plus_8_12_00,
+                day_plus_9_15_30, day_plus_9_16_30, day_plus_9_12_00,
+                day_plus_10_15_30, day_plus_10_16_30, day_plus_10_12_00
             ]
             choices = list(map(_to_choice_format, dates_in_choice_order))
             return choices
