@@ -3,7 +3,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/Ella36/twitch-compilation-from-cluster">
+  <a href="https://github.com/jellemeeus/twitch-compilation-from-cluster">
     <img src="images/logo192.png" alt="Logo" width="80" height="80">
   </a>
 
@@ -38,6 +38,45 @@ Find clips by creators, clip ids, clip urls, game ids, category name, or a `clus
 A Cluster is based off Twitch Atlas (13.3MB!) 
 ![Twitch Atlas](./2022-01-atlas.png)
 Closely related creators can be put in a cluster defined in config file and a compilation can be made
+
+## Twitch Atlas
+https://twitchatlas.com
+https://twitchatlas.com/data.json
+nodes
+edges
+
+jq .nodes <data.json
+```
+  {
+    "label": "Everyeyeit",
+    "x": -1489.9862060546875,
+    "y": 1364.9002685546875,
+    "id": "1541",
+    "attributes": {
+      "Modularity Class": "24",
+      "count": "9011"
+    },
+    "color": "rgb(44,49,0)",
+    "size": 5.235116958618164
+  },
+  {
+    "label": "Pestily",
+    "x": 1214.4559326171875,
+    "y": 284.9556884765625,
+    "id": "263",
+    "attributes": {
+      "Modularity Class": "13",
+      "count": "68644"
+    },
+    "color": "rgb(0,247,255)",
+    "size": 6.791074275970459
+  }
+]
+```
+Sort by color, size
+ end to end gui with PySide2 instead of pyqt.
+ more favorable licensing
+
 
 Sample speed-up gif of output 1min video 360p mp4
 see `./proj-cluster_sample_30d-1/` for example
@@ -141,10 +180,35 @@ or use
 ```
 to set arguments from project configuration in `data.py`
 
+## json
+
+Missing "project" name from clips
+
+```
+jq 'keys' < clips.json
+[
+  "0",
+  "1",
+  "10",
+  "100",
+  "101",
+```
+
+```
+jq 'keys' < compilation.json
+[
+  "clips",
+  "n",
+  "project",
+  "wd"
+]
+```
+
+
 ### GUI
 
 See submodule or link below
-https://github.com/Ella36/gui-compilation-from-cluster
+https://github.com/jellemeeus/gui-compilation-from-cluster
 
 ![GUI Screenshot][gui-screenshot]
 
@@ -313,4 +377,4 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 [Twitch-url]:    https://twitch.com
 [Youtube-url]:    https://youtube.com
 [Youtube.com]: https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white
-[gui-screenshot]: https://github.com/Ella36/gui-compilation-from-cluster/raw/main/screenshot.png
+[gui-screenshot]: https://github.com/jellemeeus/gui-compilation-from-cluster/raw/main/screenshot.png
