@@ -1,0 +1,543 @@
+[lightgreen]
+algo = 'xy'
+max = 50
+creators = [
+    'Acie',
+    'aircool',
+    'Apryze',
+    'Aydan',
+    'bateson87',
+    'BobbyPoffGaming',
+    'CPentagon',
+    'daltoosh',
+    'Dezignful',
+    'DiazBiffle',
+    'Diegosaurs',
+    'DougisRaw',
+    'Faide',
+    'fifakillvizualz',
+    'GuhRL',
+    'HisandHersLive',
+    'HusKerrs',
+    'ImMarksman',
+    'ImNio',
+    'its_iron',
+    'Jiozi',
+    'JoeWo',
+    'Jukeyz',
+    'LuckyChamu',
+    'MuTeX',
+    'Natarsha',
+    'NiceWigg',
+    'NickEh30',
+    'Pieface23',
+    'pokimane',
+    'Rogue',
+    'ShivFPS',
+    'Snip3down',
+    'stormen',
+    'SuperEvan',
+    'Swagg',
+    'sweetdreams',
+    'Symfuhny',
+    'SypherPK',
+    'taxi2g',
+    'Tfue',
+    'TheDanDangler',
+    'Tommey',
+    'wagnificent',
+]
+
+[orange]
+algo = 'color'
+max = 80
+creators = [
+    '39daph',
+    'EsfandTV',
+    'forsen',
+    'GMHikaru',
+    'HasanAbi',
+    'ludwig',
+    'Mizkif',
+    'moistcr1tikal',
+    'Nmplol',
+    'pokelawls',
+    'QTCinderella',
+    'SmallAnt',
+    'sodapoppin',
+    'Trainwreckstv',
+    'xQcOW',
+]
+
+[giants]
+algo = 'edge'
+max = 60
+creators = [
+    'aceu',
+    'alanzoka',
+    'Asmongold',
+    'bnans',
+    'BurkeBlack',
+    'CDawgVA',
+    'CohhCarnage',
+    'csgomc_ru',
+    'cyr',
+    'DeuceAce',
+    'dogdog',
+    'Drututt',
+    'EsfandTV',
+    'ESL_CSGO',
+    'ethos',
+    'Fextralife',
+    'forsen',
+    'gafallen',
+    'ghazzytv',
+    'Grimmmz',
+    'HasanAbi',
+    'HutchMF',
+    'jakenbakeLIVE',
+    'Jinnytty',
+    'limit_maximum',
+    'LIRIK',
+    'lol_nemesis',
+    'loltyler1',
+    'ludwig',
+    'mang0',
+    'Maya',
+    'Meowko',
+    'moistcr1tikal',
+    'Nmplol',
+    'nyanners',
+    'pokelawls',
+    'pokimane',
+    'Preachlfw',
+    'QTCinderella',
+    'Quin69',
+    'richwcampbell',
+    'Shiphtur',
+    'Shotz',
+    'shroud',
+    'SilverName',
+    'sodapoppin',
+    'StreamerHouse',
+    'stylishnoob4',
+    'summit1g',
+    'Sykkuno',
+    'tarik',
+    'Timmac',
+    'Towelliee',
+    'Trainwreckstv',
+    'VALORANT',
+    'xQcOW',
+    'zackrawrr',
+]
+
+[yellow]
+algo = 'xy'
+max = 50
+creators = [
+    'Baso',
+    'BeamTwitch',
+    'Bonjwa',
+    'Dhalucard',
+    'DoktorFroid',
+    'Gnu_Live',
+    'GRONKH',
+    'GronkhTV',
+    'hc_diZee',
+    'Heideltraut',
+    'HoneyPuu',
+    'JenNyan',
+    'jessirocks',
+    'Kamikatze',
+    'maxim',
+    'metashi12',
+    'PietSmiet',
+    'RevedTV',
+    'Rezo',
+    'RocketBeansTV',
+    'RoyalPhunk',
+    'RvNxMango',
+    'SchwabbelTown',
+    'Shlorox',
+    'ShoXx__',
+    'shroud',
+    'Shurjoka',
+    'Sintica',
+    'SirhcEz',
+    'Staiy',
+    'Tinkerleo',
+    'TORRO',
+    'TwitchFarming',
+    'Vlesk',
+    'xPandorya',
+]
+
+
+[fortnite]
+algo = 'color'
+max = 30
+creators = [
+    'AdinRoss',
+    'AussieAntics',
+    'benjyfishy',
+    'BLOU',
+    'Bugha',
+    'Chica',
+    'Clix',
+    'Co1azo',
+    'Fortnite',
+    'ImKaiCenat',
+    'LosPollosTV',
+    'Mongraal',
+    'NickEh30',
+    'ops1x',
+    'SypherPK',
+    'Tyceno',
+    'yourragegaming',
+]
+
+[offlinetv]
+algo = 'color'
+max = 50
+creators = [
+    'boxbox',
+    'CDawgVA',
+    'Enviosity',
+    'fuslie',
+    'ironmouse',
+    'lilypichu',
+    'Natsumiii',
+    'nyanners',
+    'pokimane',
+    'QuarterJade',
+    'Scarra',
+    'starsmitten',
+    'Sykkuno',
+    'Tectone',
+    'TinaKitten',
+    'veibae',
+    'xChocoBars',
+    'yvonnie',
+]
+
+
+[NA]
+algo = 'xy'
+max = 80
+creators = [
+    'adeptthebest',
+    'artesianbuilds',
+    'Atrioc',
+    'AvoidingThePuddle',
+    'buddha',
+    'BurkeBlack',
+    'Calebhart42',
+    'CDawgVA',
+    'CDNThe3rd',
+    'ClintStevens',
+    'CodeMiko',
+    'cyr',
+    'DatModz',
+    'Destiny',
+    'Dexbonus',
+    'DolphinChemist',
+    'Elajjaz',
+    'erobb221',
+    'EsfandTV',
+    'ExcessiveProfanity',
+    'forsen',
+    'Freakazoid',
+    'GMHikaru',
+    'Grimmmz',
+    'gsmVoiD',
+    'GTAWiseGuy',
+    'HasanAbi',
+    'jakenbakeLIVE',
+    'Kitboga',
+    'Klean',
+    'Lacari',
+    'Leffen',
+    'Linkus7',
+    'mang0',
+    'Maya',
+    'moistcr1tikal',
+    'Northernlion',
+    'nyanners',
+    'NymN',
+    'PaymoneyWubby',
+    'pokelawls',
+    'pokimane',
+    'RetroGaijin',
+    'richwcampbell',
+    'Robbaz',
+    'robcdee',
+    'roflgator',
+    'Russel',
+    'Sajam',
+    'Shibuya_Kaho',
+    'shroud',
+    'Silent',
+    'Simply',
+    'sips_',
+    'SirhcEz',
+    'SmallAnt',
+    'Stanz',
+    'Strippin',
+    'The_Happy_Hob',
+    'TheStockGuy',
+    'Timmac',
+    'willneff',
+    'Wingsofdeath',
+    'zackrawrr',
+    'Zoil',
+]
+
+[vtuber]
+algo = 'xy'
+max = 40
+creators = [
+    'anny',
+    'AussieAntics',
+    'bateson87',
+    'CDawgVA',
+    'CDNThe3rd',
+    'cyr',
+    'Elajjaz',
+    'ethos',
+    'Freakazoid',
+    'Grimmmz',
+    'GTAWiseGuy',
+    'harbleu',
+    'HasanAbi',
+    'jakenbakeLIVE',
+    'Leffen',
+    'LosPollosTV',
+    'mang0',
+    'Maya',
+    'Meowko',
+    'moistcr1tikal',
+    'MOONMOON',
+    'MurderCrumpet',
+    'NiceWigg',
+    'nyanners',
+    'Odablock',
+    'pokimane',
+    'PotasticP',
+    'projektmelody',
+    'RetroGaijin',
+    'roflgator',
+    'Sajam',
+    'Scarra',
+    'Shibuya_Kaho',
+    'Silvervale',
+    'snuffy',
+    'Strippin',
+    'Timmac',
+    'Zentreya',
+]
+
+[cyan]
+algo = 'xy'
+max = 80
+creators = [
+    'AdmiralBahroo',
+    'AdmiralBulldog',
+    'Alinity',
+    'AnneMunition',
+    'Anthony_Kongphan',
+    'AquaFPS',
+    'Asmongold',
+    'BoxyFresh',
+    'BurkeBlack',
+    'Calebhart42',
+    'chocoTaco',
+    'CohhCarnage',
+    'DansGaming',
+    'DatModz',
+    'Deadlyslob',
+    'DolphinChemist',
+    'Doublelift',
+    'Elajjaz',
+    'ExcessiveProfanity',
+    'Faux',
+    'Fextralife',
+    'forsen',
+    'GamesDoneQuick',
+    'Glorious_E',
+    'GoldGlove',
+    'Grimmmz',
+    'harbleu',
+    'HasanAbi',
+    'IFrostBolt',
+    'Insym',
+    'JERICHO',
+    'JokerdTV',
+    'Klean',
+    'Leffen',
+    'limit_maximum',
+    'LIRIK',
+    'LVNDMARK',
+    'Mathil1',
+    'Method',
+    'MOONMOON',
+    'nl_Kripp',
+    'nyanners',
+    'Otzdarva',
+    'Pace22',
+    'Payo',
+    'Pestily',
+    'Psychoghost',
+    'Quin69',
+    'RaizQT',
+    'RduLIVE',
+    'richwcampbell',
+    'Savjz',
+    'Sequisha',
+    'shenryyr',
+    'SheriffEli',
+    'sips_',
+    'Smoke',
+    'sneakylol',
+    'sodapoppin',
+    'SourSweet',
+    'SovietWomble',
+    'Strippin',
+    'superjj102',
+    'tarik',
+    'The_Happy_Hob',
+    'TheStockGuy',
+    'Thijs',
+    'Trainwreckstv',
+    'TSM_TheOddOne',
+    'venruki',
+    'Warframe',
+    'WillerZ',
+    'witwix',
+    'Zizaran',
+    'ZubatLEL',
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

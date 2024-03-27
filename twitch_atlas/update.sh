@@ -1,2 +1,2 @@
 #!/usr/bin/bash
-curl -o https://twitchatlas.com/data.json
+curl https://twitchatlas.com/data.json -o data.json
