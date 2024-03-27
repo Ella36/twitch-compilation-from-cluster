@@ -95,13 +95,15 @@ see `./proj-cluster_sample_30d-1/` for example
 ## Requirements
 Python3 3.10+, lower may work
 
+`pip install -r requirements.txt `
+
 youtube-dl (pip)
 
 pandas (pip)
 
 [ffmpeg](https://ffmpeg.org)
 
-[imagemagick](https://imagemagick.org)
+[imagemagick](https://imagemagick.org) `magick` part of $PATH
 
 [youtubeuploader-bin](https://github.com/porjo/youtubeuploader)
 
