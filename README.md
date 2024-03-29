@@ -88,6 +88,11 @@ see `./proj-cluster_sample_30d-1/` for example
 * [![Python][Python.org]][Python-url]
 * [![Twitch][Twitch.com]][Twitch-url]
 * [![Youtube][Youtube.com]][Youtube-url]
+* Vuejs3
+* [![Electron.js][Electron.js]][Electron-url]
+* DaisyUI + tailwindcss
+
+old gui:
 * [![Electron.js][Electron.js]][Electron-url]
 * [![React][React.js]][React-url]
 * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
