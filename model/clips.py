@@ -25,7 +25,7 @@ class Clip:
             self.creator: Creator = creator
             #self.broadcaster_id = request['broadcaster_id']
             #self.creator_id  = request['creator_id']
-            #self.embed_url = request['embed_url']
+            self.embed_url = request['embed_url']
             #self.video_id  = request['video_id']
             #self.broadcaster_name: str = request['broadcaster_name']
             self.created_at: str = self._created_at(request['created_at'])
@@ -51,6 +51,7 @@ class Clip:
             self.url = row.url
             self.created_at = row.created_at
             self.thumbnail_url = row.thumbnail_url
+            self.embed_url = row.embed_url
 
     def __eq__(self, other):
         if not isinstance(other, Clip):
@@ -195,6 +196,7 @@ class Compilation:
             element["creator"] = c.creator.name
             element["language"] = c.language
             element["thumbnail_url"] = c.thumbnail_url
+            element["embed_url"] = c.embed_url
             element["title"] = c.title
             element["duration"] = c.duration
             element["view_count"] = c.view_count
