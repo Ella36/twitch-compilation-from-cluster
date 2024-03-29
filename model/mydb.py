@@ -18,9 +18,9 @@ class Mydb():
         self.cur.execute('''CREATE TABLE clips
             (creator text, url text primary key, duration float,
             view_count integer, created_at text, game text,
-            clipper_name text, game_id text, language text, 
+            clipper_name text, game_id text, language text,
             thumbnail_url text, title text,
-            published integer, broken integer) ''')
+            published integer, broken integer, embed_url text) ''')
         self.con.commit()
         print('Created table clips!')
 
@@ -138,7 +138,7 @@ class Mydb():
             f"'{clip.view_count}','{clip.created_at}','{clip.game}',"
             f"'{clip.clipper_name}','{clip.game_id}','{clip.language}',"
             f"'{clip.thumbnail_url}','{clip.title}',"
-            f"'{published}','{broken}')"
+            f"'{published}','{broken}','{clip.embed_url}')"
                  )
         self.cur.execute(string)
     
