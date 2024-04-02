@@ -217,7 +217,13 @@ jq 'keys' < compilation.json
 See submodule or link below
 https://github.com/jellemeeus/gui-compilation-from-cluster
 
-![GUI Screenshot][gui-screenshot]
+https://github.com/jellemeeus/gui-compilation-from-cluster-vue
+
+React
+![old GUI Screenshot][gui-screenshot]
+
+Vue
+![GUI Screenshot][gui-screenshot2]
 
 ### Upload
 ```
@@ -385,3 +391,4 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 [Youtube-url]:    https://youtube.com
 [Youtube.com]: https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white
 [gui-screenshot]: https://github.com/jellemeeus/gui-compilation-from-cluster/raw/main/screenshot.png
+[gui-screenshot2]: https://raw.githubusercontent.com/jellemeeus/gui-compilation-from-cluster-vue/main/images/gui.png
