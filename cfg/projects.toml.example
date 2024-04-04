@@ -1,0 +1,31 @@
+[default]
+name = "default"
+description = "no description added"
+title = "untitled"
+playlist_title = "untitled"
+days = 30
+n_per_month = 1 # videos per month
+duration = 600
+categories = []
+clip_ids = []
+clusters = []
+creators = []
+game_ids = []
+lang = "en"
+resolution = "720"
+is_ok_already_published = false
+skip_draw = true
+draw_clip_title_only = false
+single = false # compilation of 1 single clip
+is_active = true # compilation of 1 single clip
+youtube_category_id = "20" # Gaming 20,  Entertainment 24, People Blogs 22
+
+[someothertitle]
+name = "somename"
+description = "Popular clips!"
+title = ""
+playlist_title = ""
+game_ids = []
+days = 30
+n_per_month = 1
+is_active = true

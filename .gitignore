@@ -25,6 +25,7 @@ images/secrets/
 thumbnails_save
 youtube-upload-master
 secrets.toml
+projects.toml
 !images/thumbnail_overlay.png
 !images/thumbnail_overlay_single.png
 !project.py
@@ -43,3 +44,4 @@ secrets.toml
 !proj-cluster_sample_30d-1/build/
 !requirements.txt
 !description_postfix.txt
+compilation.csv
