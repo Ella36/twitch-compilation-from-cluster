@@ -2,10 +2,8 @@
 import requests
 import pandas as pd
 
-if __name__ == "__main__":
-    from secrets import TWITCH_CREDENTIALS
-else:
-    from cfg.secrets import TWITCH_CREDENTIALS
+from model.secrets import load_twitch_credentials
+TWITCH_CREDENTIALS = load_twitch_credentials()
 
 TWITCH_OAUTH_ENDPOINT = "https://id.twitch.tv/oauth2/token"
 TWITCH_CLIPS_ENDPOINT = "https://api.twitch.tv/helix/clips"

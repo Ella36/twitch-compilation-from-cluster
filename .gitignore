@@ -20,12 +20,11 @@ client_secrets.json
 geckodriver.log
 proj*/
 proj-*/meta.json
-secrets.py
 !cfg/data.py
-cfg/data_secret.py
 images/secrets/
 thumbnails_save
 youtube-upload-master
+secrets.toml
 !images/thumbnail_overlay.png
 !images/thumbnail_overlay_single.png
 !project.py
