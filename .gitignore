@@ -26,6 +26,7 @@ cfg/data_secret.py
 images/secrets/
 thumbnails_save
 youtube-upload-master
+config.toml
 !images/thumbnail_overlay.png
 !images/thumbnail_overlay_single.png
 !project.py

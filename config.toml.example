@@ -1,0 +1,6 @@
+[twitch]
+client-id="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+client-secret="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+[youtube]
+api-key="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
