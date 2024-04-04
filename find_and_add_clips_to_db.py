@@ -8,7 +8,8 @@ from model.clips import Clip
 from model.cluster import Creator
 from model.mydb import Mydb
 
-from cfg.secrets import TWITCH_CREDENTIALS
+from model.secrets import load_twitch_credentials
+TWITCH_CREDENTIALS = load_twitch_credentials()
 
 class TwitchSelectorRequests():
     def __init__(self):
