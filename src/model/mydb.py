@@ -64,13 +64,15 @@ class Mydb():
         )
         return df
 
-
     def set_publish_temp(self, url: str):
-        self.cur.execute(f"UPDATE clips SET published = '1' where url = '{url}'")
+        self.cur.execute(
+            f"UPDATE clips SET published = '1' where url = '{url}'")
 
     def set_published_from_compilations(self):
         def _set_publish(self, url: str):
-            self.cur.execute(f"UPDATE clips SET published = '1' where url = '{url}'")
+            self.cur.execute(
+                f"UPDATE clips SET published = '1' where url = '{url}'")
+
         def _set_all_clips_unpublished(self):
             self.cur.execute(f"UPDATE clips SET published = '0'")
         _set_all_clips_unpublished(self)
@@ -85,7 +87,7 @@ class Mydb():
             _set_publish(self, url)
         self.con.commit()
         print('Set published flags in clips table from compilations table!')
-    
+
     def create_compilation(self):
         self.cur.execute('''DROP table IF EXISTS compilations''')
         self.cur.execute('''CREATE TABLE compilations
@@ -95,20 +97,24 @@ class Mydb():
 
     def add_compilation(self, creators: str, urls: str, duration: int, time: str, project: str, pid: int):
         # Overwrite if already exists
-        self.cur.execute(f"DELETE FROM compilations WHERE project='{project}' AND pid='{pid}'")
-        self.cur.execute('INSERT INTO compilations(creators, urls, duration, time, project, pid) VALUES (?,?,?,?,?,?)', (creators, urls, duration, time, project, pid))
+        self.cur.execute(
+            f"DELETE FROM compilations WHERE project='{project}' AND pid='{pid}'")
+        self.cur.execute('INSERT INTO compilations(creators, urls, duration, time, project, pid) VALUES (?,?,?,?,?,?)',
+                         (creators, urls, duration, time, project, pid))
 
     def select_latest_pid(self, project: str) -> int:
-        self.cur.execute(f"""SELECT COUNT(pid) FROM compilations WHERE project LIKE '{project.split('_')[0]}_%'""")
+        self.cur.execute(
+            f"""SELECT COUNT(pid) FROM compilations WHERE project LIKE '{project.split('_')[0]}_%'""")
         return self.cur.fetchone()
 
     def select_urls_from_project_and_pid(self, project: str, pid: str) -> tuple:
-        self.cur.execute(f"SELECT urls FROM compilations WHERE project = '{project}' and pid = '{pid}'")
+        self.cur.execute(
+            f"SELECT urls FROM compilations WHERE project = '{project}' and pid = '{pid}'")
         return self.cur.fetchone()[0].split(',')
 
-
     def select_thumbnail_url(self, url: str) -> str:
-        self.cur.execute("""SELECT thumbnail_url FROM clips WHERE url=?""", (url,))
+        self.cur.execute(
+            """SELECT thumbnail_url FROM clips WHERE url=?""", (url,))
         return self.cur.fetchone()[0]
 
     def lookup_url(self, url: str) -> dict:
@@ -121,12 +127,12 @@ class Mydb():
 
     def set_broken(self, url: str):
         self.cur.execute(f"UPDATE clips SET broken = '1' where url = '{url}'")
-    
+
     def add(self, clip: Clip):
         # Add unpublished clip
         published = 0
         broken = 0
-        row  = self.lookup_url(clip.url)
+        row = self.lookup_url(clip.url)
         if row:
             broken = row[-1]
             published = row[-2]
@@ -139,8 +145,8 @@ class Mydb():
             f"'{clip.clipper_name}','{clip.game_id}','{clip.language}',"
             f"'{clip.thumbnail_url}','{clip.title}',"
             f"'{published}','{broken}','{clip.embed_url}')"
-                 )
+        )
         self.cur.execute(string)
-    
+
     def commit(self):
         self.con.commit()
