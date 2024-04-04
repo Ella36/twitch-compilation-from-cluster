@@ -45,3 +45,6 @@ projects.toml
 !requirements.txt
 !description_postfix.txt
 compilation.csv
+cfg/clusters.toml
+src/cfg/clusters.toml
+cfg/clusters.toml
