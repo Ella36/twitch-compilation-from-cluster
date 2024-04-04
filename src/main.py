@@ -48,6 +48,7 @@ def argparser():
     # Database
     parser.add_argument('-co', '--compilations', action='store_true', help='create table compilations')
     parser.add_argument('-c', '--clips', action='store_true', help='create table clips')
+    parser.add_argument('-b', '--broadcasters', action='store_true', help='create table broadcasters')
     parser.add_argument('--sync', action='store_true', help='update published flag from compilations')
     parser.add_argument('--fix-games', action='store_true', help='fix unknown game titles in db')
     # Confirm
@@ -98,6 +99,8 @@ if __name__ == '__main__':
             db.create_compilation()
         if args.clips and is_prompt_confirm('DELETE or CREATE clips'):
             db.create_clips()
+        if args.broadcasters and is_prompt_confirm('DELETE or CREATE broadcasters'):
+            db.create_broadcasters()
         if args.sync:
            db.set_published_from_compilations()
            db.commit()

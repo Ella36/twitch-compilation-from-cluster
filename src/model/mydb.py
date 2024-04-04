@@ -24,6 +24,20 @@ class Mydb():
         self.con.commit()
         print('Created table clips!')
 
+    def create_broadcasters(self):
+        self.cur.execute('''DROP table IF EXISTS broadcasters''')
+        self.cur.execute('''CREATE TABLE broadcasters (name TEXT, id TEXT)''')
+        self.con.commit()
+        print('Created table broadcasters!')
+
+    def get_broadcaster_id(self, broadcaster_name):
+        broadcaster_id = self.cur.execute('SELECT id FROM broadcasters WHERE name =?', (broadcaster_name,)).fetchone()
+        return broadcaster_id
+
+    def store_broadcaster(self, broadcaster_name, broadcaster_id):
+        self.cur.execute("INSERT INTO broadcasters (name, id) VALUES (?, ?)", (broadcaster_name, broadcaster_id))
+        self.con.commit()
+
     def read_clips_clip_urls_df_from_db(self, urls: list) -> pd.DataFrame:
         urls_str = '('+','.join([f"'{u}'" for u in urls])+')'
         df = pd.read_sql_query(

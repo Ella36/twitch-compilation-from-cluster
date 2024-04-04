@@ -2,6 +2,8 @@
 import requests
 import pandas as pd
 
+from model.mydb import Mydb
+
 from model.secrets import load_twitch_credentials
 TWITCH_CREDENTIALS = load_twitch_credentials()
 
@@ -82,14 +84,17 @@ def get_category_id(twitch_credentials, category_name):
 
     return found_category["id"]
 
-
 def get_broadcaster_id(twitch_credentials, broadcaster_name):
-    query_parameters = f'?login={broadcaster_name}'
-    broadcaster_data = get_request(twitch_credentials, TWITCH_BROADCASTER_ENDPOINT, query_parameters)
-    if len(broadcaster_data) == 0:
-        raise Exception(f'Broadcaster with name "{broadcaster_name}" not found.')
-
-    return broadcaster_data[0]["id"]
+    db = Mydb()
+    broadcaster_id = db.get_broadcaster_id(broadcaster_name)
+    if not broadcaster_id:
+        query_parameters = f'?login={broadcaster_name}'
+        broadcaster_data = get_request(twitch_credentials, TWITCH_BROADCASTER_ENDPOINT, query_parameters)
+        if len(broadcaster_data) == 0:
+            raise Exception(f'Broadcaster with name "{broadcaster_name}" not found.')
+        broadcaster_id = broadcaster_data[0]["id"]
+        db.store_broadcaster(broadcaster_name, broadcaster_id)
+    return broadcaster_id
 
 
 def get_clips_request_by_id(twitch_credentials, category_id, started_at, ended_at):
