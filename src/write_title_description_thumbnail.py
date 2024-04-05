@@ -42,7 +42,7 @@ def parse_time_file(args):
     compilation.pid = pid
     compilation.dump(args.wd)
 
-    title_prefix = "#Twitch Compilation {} #{:03d}".format(args.title, pid)
+    title_prefix = "#Twitch {} #{:03d}".format(args.title, pid)
     if len(cmi) == 1:
         title = """{} {}""".format(title_prefix, cmi[0])
         if args.single:
