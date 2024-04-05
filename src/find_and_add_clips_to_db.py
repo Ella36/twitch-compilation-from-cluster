@@ -23,8 +23,8 @@ class TwitchSelectorRequests():
         self.twitch_oauth_header = twitch_api.login(TWITCH_CREDENTIALS)
 
     def get_clips_from_id(self, id: str, args):
-        started_at=datetime.now(datetime.UTC) - timedelta(days=int(args.days))
-        ended_at=datetime.now(datetime.UTC) - timedelta(hours=12)
+        started_at=datetime.utcnow() - timedelta(days=int(args.days))
+        ended_at=datetime.utcnow() - timedelta(hours=12)
         requests = twitch_api.get_clips_request_by_id(
             self.twitch_oauth_header, id, started_at, ended_at
         )
