@@ -4,9 +4,21 @@ import toml
 from model.cluster import Creator, Cluster, Clusters
 from model.project import Project, Projects
 
-clusters_toml = toml.load("./cfg/clusters.toml")
-
 clusters = []
+try:
+    # If manual entry
+    clusters_manual_toml = toml.load("./cfg/clusters_manual.toml")
+    for name, cluster_info in clusters_manual_toml.items():
+        cluster = Cluster(
+            name,
+            cluster_info.get('description', ''),
+            [Creator(creator) for creator in cluster_info['creators']],
+        )
+        clusters.append(cluster)
+except:
+    pass
+
+clusters_toml = toml.load("./cfg/clusters.toml")
 for name, cluster_info in clusters_toml.items():
     cluster = Cluster(
         name,
@@ -14,6 +26,7 @@ for name, cluster_info in clusters_toml.items():
         [Creator(creator) for creator in cluster_info['creators']],
     )
     clusters.append(cluster)
+
 CLUSTERS = Clusters(clusters)
 
 projects_toml = toml.load("./cfg/projects.toml")
