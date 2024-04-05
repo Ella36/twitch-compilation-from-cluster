@@ -235,8 +235,12 @@ if __name__ == '__main__':
     # Generate commands
     if is_prompt_confirm('Generate commands from schedule.txt'):
         out = 'Date, project name, commands'
+        group_by_count = 0
         for date, project_names in schedule.items():
-            out += f'{"-"*40}\n'
+            group_by_count += 1
+            if group_by_count % 5 == 0:
+                out += f'{"-"*40}\n'
+                group_by_count = 0
             out += f'{date} {", ".join(project_names)}\n'
             for p in project_names:
                 out += f'./create_compilation_from_project.py --project {p} --dir 1\n'
