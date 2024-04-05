@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from datetime import timedelta, datetime
 import argparse
+import logging
 
 from cfg.data import CLUSTERS
 from model import twitch_api
@@ -11,13 +12,19 @@ from model.mydb import Mydb
 from model.secrets import load_twitch_credentials
 TWITCH_CREDENTIALS = load_twitch_credentials()
 
+logger = logging.getLogger("find_clips")
+logger.setLevel(logging.INFO)
+file_handler = logging.FileHandler('failed_game_ids.log')
+file_handler.setLevel(logging.INFO)
+logger.addHandler(file_handler)
+
 class TwitchSelectorRequests():
     def __init__(self):
         self.twitch_oauth_header = twitch_api.login(TWITCH_CREDENTIALS)
 
     def get_clips_from_id(self, id: str, args):
-        started_at=datetime.utcnow() - timedelta(days=int(args.days))
-        ended_at=datetime.utcnow() - timedelta(hours=12)
+        started_at=datetime.now(datetime.UTC) - timedelta(days=int(args.days))
+        ended_at=datetime.now(datetime.UTC) - timedelta(hours=12)
         requests = twitch_api.get_clips_request_by_id(
             self.twitch_oauth_header, id, started_at, ended_at
         )
@@ -27,6 +34,7 @@ class TwitchSelectorRequests():
             except (ValueError, IndexError):
                 game = "unknown"
                 print(f"Game not found!\n\t{request['game_id']}")
+                logger.error(f"{request['game_id']}")
             return Clip(creator=Creator(request['broadcaster_name']),request=request, game=game)
         clips_formatted = list(map(_format_to_clip, requests))
         return clips_formatted
@@ -41,6 +49,7 @@ class TwitchSelectorRequests():
             except (ValueError, IndexError):
                 game = "unknown"
                 print(f"Game not found!\n\t{request['game_id']}")
+                logger.error(f"{request['game_id']}")
             return Clip(creator=Creator(request['broadcaster_name']),request=request, game=game)
         clips_formatted = list(map(_format_to_clip, requests))
         return clips_formatted
@@ -55,6 +64,7 @@ class TwitchSelectorRequests():
             except (ValueError, IndexError):
                 game = "unknown"
                 print(f"Game not found!\n\t{request['game_id']}")
+                logger.error(f"{request['game_id']}")
             return Clip(creator=Creator(request['broadcaster_name']),request=request, game=game)
         clips_formatted = list(map(_format_to_clip, requests))
         return clips_formatted
@@ -88,6 +98,7 @@ class TwitchSelectorRequests():
             except (ValueError, IndexError):
                 game = "unknown"
                 print(f"Game not found!\n\t{request['game_id']}")
+                logger.error(f"{request['game_id']}")
             return Clip(creator, request, game)
         clips_formatted = list(map(_format_to_clip, requests))
         return clips_formatted
