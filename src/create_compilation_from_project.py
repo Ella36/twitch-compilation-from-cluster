@@ -61,7 +61,8 @@ def argparser():
     parser.add_argument("--clip_ids", nargs='+', help="set if input are clip id ex AwkardHelpless... ")
     parser.add_argument("--load_compilation", action="store_true", help="loads compilation from pid and project name")
     parser.add_argument("--pid", help="used with load_compilation")
-    parser.add_argument("--days_overwrite", help="overwrite days from project")
+    parser.add_argument("--d", help="overwrite days from project")
+    parser.add_argument("--single", help="overwrite single clip")
     return parser.parse_args()
 
 def setup_args(args):
@@ -71,9 +72,9 @@ def setup_args(args):
     args.wd = create_working_dir(args)
     args.title = project.title
     args.description = project.description
-    args.days = project.days 
-    if args.days_overwrite:
-        args.days = args.days_overwrite
+    args.days = project.days
+    if args.d:
+        args.days = args.d
     args.duration = project.duration
     args.categories = project.categories
     #args.clip_ids = project.clip_ids
@@ -91,7 +92,7 @@ def setup_args(args):
         args.playlist_title = False
     else:
         args.playlist_title = project.playlist_title
-    if project.single:
+    if project.single or args.single:
         # Select only 1 clip
         args.single = True
         args.duration = 1
