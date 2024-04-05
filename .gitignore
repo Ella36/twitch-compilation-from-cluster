@@ -51,3 +51,4 @@ cfg/clusters.toml
 twitch_atlas/clusters_manual.toml
 twitch_atlas/input.toml
 src/cfg/clusters_manual.toml
+twitch_atlas/clusters.toml
